@@ -1,13 +1,603 @@
-body {
+/* Global Styles - aynı kalıyor */
+* {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background-color: #f0f9ff;
+}
+
+/* Search Page - BEYAZ ARKAPLAN */
+.search-page {
+  min-height: 100vh;
+  background: white;
+  padding: 2rem 1rem;
+}
+
+.search-hero {
+  text-align: center;
+  color: #1f2937;
+  margin-bottom: 3rem;
+}
+
+.search-title {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #6ee7b7 0%, #7dd3fc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.search-subtitle {
+  font-size: 1.2rem;
+  opacity: 0.8;
+  color: #6b7280;
+}
+
+/* Compact Modern Search Form */
+.compact-search-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.compact-search-form {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  border: 1px solid #e5e7eb;
+}
+
+.search-main-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.input-group {
+  flex: 1;
+  min-width: 140px;
+}
+
+.destination-group {
+  flex: 2;
+  min-width: 200px;
+}
+
+.date-group {
+  min-width: 150px;
+}
+
+.guest-group {
+  min-width: 120px;
+}
+
+.compact-input,
+.compact-select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background: white;
+  transition: border-color 0.2s ease;
+}
+
+.compact-input:focus,
+.compact-select:focus {
+  outline: none;
+  border-color: #10b981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1);
+}
+
+.compact-search-btn {
+  padding: 0.75rem 2rem;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.compact-search-btn:hover {
+  background: #059669;
+}
+
+/* Child Ages - Ana formda */
+.child-ages-main {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  animation: slideDown 0.3s ease-out;
+}
+
+.child-ages-label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.75rem;
+}
+
+.child-ages-row {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.age-select-main {
+  padding: 0.6rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  min-width: 120px;
+  background: white;
+  transition: border-color 0.2s ease;
+}
+
+.age-select-main:focus {
+  outline: none;
+  border-color: #10b981;
+}
+
+/* Advanced Options */
+.advanced-toggle {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.toggle-btn {
+  background: none;
+  border: none;
+  color: #6b7280;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: color 0.2s ease;
+}
+
+.toggle-btn:hover {
+  color: #10b981;
+}
+
+.advanced-options {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+  animation: slideDown 0.3s ease-out;
+}
+
+.advanced-row {
+  display: flex;
+  gap: 1rem;
+  align-items: end;
+  flex-wrap: wrap;
+}
+
+.input-group-small {
+  flex: 1;
+  min-width: 120px;
+}
+
+.input-group-small label {
+  display: block;
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
+.compact-select-small {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  background: white;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    max-height: 200px;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .search-main-row {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .input-group,
+  .destination-group,
+  .date-group,
+  .guest-group {
+    min-width: auto;
+    width: 100%;
+  }
+  
+  .child-ages-row {
+    justify-content: center;
+  }
+  
+  .advanced-row {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .input-group-small {
+    min-width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .compact-search-form {
+    padding: 1rem;
+  }
+  
+  .age-select-main {
+    min-width: 100px;
+  }
+}
+
+/* Header - YENİ YEŞİL-MAVİ GRADIENT */
+.header {
+  background: linear-gradient(135deg, #0a825a 0%, #06b6d4 50%, #3b82f6 100%);
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Logo */
+.logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: white;
+  font-weight: 700;
+  font-size: 2rem;
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.05);
+}
+
+.logo-icon {
+  font-size: 2.5rem;
+  margin-right: 0.75rem;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.logo-text {
+  background: linear-gradient(135deg, #fff 0%, #ecfdf5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Login Button */
+.login-btn {
+  display: flex;
+  align-items: center;
+  background: rgba(255,255,255,0.2);
+  color: white;
+  border: 2px solid rgba(255,255,255,0.3);
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.login-btn:hover {
+  background: white;
+  color: #00ff80;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+}
+
+.btn-icon {
+  margin-right: 0.5rem;
+  font-size: 1.2rem;
+}
+
+/* Çocuk Yaşları İyileştirmeleri */
+.child-ages {
+  width: 100%;
+}
+
+.child-ages label {
+  margin-bottom: 1rem;
+  font-weight: 600;
+  color: #00e1ff;
+  display: block;
+}
+
+.child-ages-inputs {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.child-age-select {
+  min-width: 140px;
+  flex: none;
+}
+
+.child-ages-inputs::before {
+  content: "👶";
+  font-size: 1.2rem;
+  margin-right: 0.5rem;
+}
+
+.child-ages {
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .search-title {
+    font-size: 2rem;
+  }
+  
+  .form-row {
+    flex-direction: column;
+  }
+  
+  .search-form {
+    padding: 1.5rem;
+  }
+  
+  .header-container {
+    padding: 1rem;
+  }
+  
+  .logo {
+    font-size: 1.7rem;
+  }
+  
+  .logo-icon {
+    font-size: 2rem;
+  }
+  
+  .login-btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+  
+  .btn-text {
+    display: none;
+  }
+  
+  .btn-icon {
+    margin-right: 0;
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo {
+    font-size: 1.5rem;
+  }
+  
+  .logo-icon {
+    font-size: 1.8rem;
+    margin-right: 0.5rem;
+  }
+  
+  .login-btn {
+    padding: 0.5rem;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    justify-content: center;
+  }
+}
+/* Popular Destinations Section */
+.popular-destinations {
+  padding: 4rem 1rem;
+  background: #f8fafc;
+  margin-top: 3rem;
+}
+
+.destinations-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.destinations-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #1f2937;
+  background: linear-gradient(135deg, #6ee7b7 0%, #7dd3fc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.destinations-subtitle {
+  text-align: center;
+  color: #6b7280;
+  font-size: 1.1rem;
+  margin-bottom: 3rem;
+}
+
+.destinations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.destination-card {
+  border-radius: 15px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.destination-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.card-image {
+  position: relative;
+  height: 250px;
+  overflow: hidden;
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.destination-card:hover .card-image img {
+  transform: scale(1.05);
+}
+
+.card-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,0.8) 0%,
+    rgba(0,0,0,0.4) 50%,
+    transparent 100%
+  );
+  color: white;
+  padding: 2rem 1.5rem 1.5rem;
+  transform: translateY(20px);
+  transition: transform 0.3s ease;
+}
+
+.destination-card:hover .card-overlay {
+  transform: translateY(0);
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.card-description {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+.card-button {
+  background: linear-gradient(135deg, #6ee7b7 0%, #7dd3fc 100%);
+  color: #1f2937;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.destination-card:hover .card-button {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.card-button:hover {
+  background: linear-gradient(135deg, #34d399 0%, #38bdf8 100%);
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .destinations-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .destinations-title {
+    font-size: 2rem;
+  }
+  
+  .popular-destinations {
+    padding: 3rem 1rem;
+  }
+  
+  .card-image {
+    height: 200px;
+  }
+  
+  .card-overlay {
+    padding: 1.5rem 1rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .destinations-title {
+    font-size: 1.8rem;
+  }
+  
+  .card-title {
+    font-size: 1.3rem;
+  }
 }
