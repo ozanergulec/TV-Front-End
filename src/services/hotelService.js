@@ -4,9 +4,9 @@ class HotelService {
   // Destinasyon autocomplete
   async getArrivalAutocomplete(searchText) {
     const request = {
-      ProductType: 2,      // 2 olmalı!
+      ProductType: 2,
       Query: searchText,
-      Culture: "en-US"     // en-US olmalı!
+      Culture: "en-US"
     };
     
     try {
@@ -19,69 +19,61 @@ class HotelService {
     }
   }
 
-  // Check-in tarihleri
-  async getCheckInDates(arrivalLocations) {
+  // Check-in tarihleri - FORMAT DÜZELTİLDİ
+  async getCheckInDates(destinationId) {
     const request = {
-      ProductType: 1,
-      IncludeSubLocations: true,
-      Product: null,
-      ArrivalLocations: arrivalLocations  // Büyük harfle
+      ProductType: 2,
+      arrivalLocations: [
+        {
+          Id: destinationId,
+          Type: 1
+        }
+      ]
     };
     
     try {
       const response = await apiService.post('/HotelProduct/get-checkin-dates', request);
-      console.log('Check-in dates response:', response);
-      return response;
+      console.log('📅 RAW Check-in dates response:', response);
+      
+      // FORMAT DÜZELTİLDİ - body.dates kullan, header.success yok
+      if (response && response.body && response.body.dates && response.body.dates.length > 0) {
+        console.log('✅ Check-in dates bulundu:', response.body.dates.length, 'tarih');
+        return response.body.dates;
+      } else {
+        console.log('⚠️ Check-in dates bulunamadı');
+        return [];
+      }
     } catch (error) {
       console.error('Check-in dates failed:', error);
-      throw error;
+      return [];
     }
   }
 
-  // Fiyat arama - DROPDOWN SEÇİMİ DÜZELTİLDİ
-async priceSearch(searchData) {
+  // Fiyat arama - CHECK-IN DATES KONTROLÜ DÜZELTİLDİ
+  async priceSearch(searchData) {
     const nights = this.calculateNights(searchData.checkIn, searchData.checkOut);
     
     let arrivalLocations = [];
     
     if (searchData.destination) {
-      // Eğer destination bir ID ise (sadece rakamlardan oluşuyorsa) direkt kullan
-      if (/^\d+$/.test(searchData.destination)) {
-        console.log('🎯 Destinasyon ID olarak geldi:', searchData.destination);
-        arrivalLocations = [{
-          id: searchData.destination,
-          type: 2
-        }];
-        console.log('✅ Direkt ID kullanıldı:', arrivalLocations);
-        
-      } else if (typeof searchData.destination === 'string') {
-        // Eğer destination text ise autocomplete yap
-        console.log('🔍 Destinasyon text olarak geldi:', searchData.destination);
-        
-        try {
-          const autocompleteResult = await this.getArrivalAutocomplete(searchData.destination);
-          
-          if (autocompleteResult.header?.success && 
-              autocompleteResult.body && 
-              autocompleteResult.body.items && 
-              autocompleteResult.body.items.length > 0) {
-            
-            const firstItem = autocompleteResult.body.items[0];
-            arrivalLocations = [{
-              id: firstItem.city?.id || firstItem.giataInfo?.destinationId,
-              type: 2
-            }];
-            console.log('✅ Autocomplete\'den lokasyon alındı:', arrivalLocations);
-            
-          } else {
-            throw new Error(`"${searchData.destination}" için destinasyon bulunamadı. Lütfen daha spesifik bir şehir adı deneyin.`);
-          }
-          
-        } catch (error) {
-          console.error('❌ Autocomplete hatası:', error);
-          throw error;
-        }
+      // Destinasyon ID'si var
+      console.log('🎯 Destinasyon ID olarak geldi:', searchData.destination);
+      
+      // Check-in dates kontrol et
+      console.log('📅 Check-in dates kontrol ediliyor...');
+      const availableDates = await this.getCheckInDates(searchData.destination);
+      
+      if (availableDates.length === 0) {
+        console.log('❌ Bu destinasyonda uygun tarih bulunamadı');
+        throw new Error('Bu destinasyonda seçilen tarihlerde otel bulunamadı');
       }
+      
+      console.log('✅ Check-in dates onaylandı, price search devam ediyor...');
+      
+      arrivalLocations = [{
+        id: searchData.destination,
+        type: 2  // 1 değil, 2 olmalı!
+      }];
     }
     
     const request = {
@@ -102,11 +94,11 @@ async priceSearch(searchData) {
       culture: "en-US"
     };
     
-    console.log('📤 Price search request:', request);
+    console.log('📤 Price search request:', JSON.stringify(request, null, 2));
     
     try {
       const response = await apiService.post('/HotelProduct/price-search', request);
-      console.log('📥 Price search response:', response);
+      console.log('📥 Price search response:', JSON.stringify(response, null, 2));
       return response;
     } catch (error) {
       console.error('Price search failed:', error);
