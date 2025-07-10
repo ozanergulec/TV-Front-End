@@ -249,13 +249,25 @@ function SearchForm() {
 
   // Öneri seçimi
   const selectDestination = (item) => {
-    const cityName = item.city?.name || item.giataInfo?.destinationId || 'Unknown';
-    const countryName = item.country?.name || '';
-    const displayName = countryName ? `${cityName}, ${countryName}` : cityName;
+    let destinationId, displayName;
+    
+    if (item.type === 1) {
+      // Lokasyon seçimi
+      destinationId = item.city?.id || item.giataInfo?.destinationId;
+      const cityName = item.city?.name || 'Unknown';
+      const countryName = item.country?.name || '';
+      displayName = countryName ? `${cityName}, ${countryName}` : cityName;
+    } else {
+      // Otel seçimi
+      destinationId = item.hotel?.id || item.giataInfo?.hotelId;
+      const hotelName = item.hotel?.name || 'Unknown';
+      const cityName = item.city?.name || '';
+      displayName = `${hotelName} (${cityName})`;
+    }
     
     setSearchData(prev => ({
       ...prev,
-      destination: item.city?.id || item.giataInfo?.destinationId,
+      destination: destinationId,
       destinationName: displayName
     }));
     
@@ -537,7 +549,20 @@ function SearchForm() {
                     className="autocomplete-item"
                     onClick={() => selectDestination(item)}
                   >
-                    {item.city?.name || item.giataInfo?.destinationId}, {item.country?.name}
+                    {item.type === 1 ? (
+                      // Lokasyon (type: 1)
+                      <span>
+                        📍 {item.city?.name || item.giataInfo?.destinationId}, {item.country?.name}
+                      </span>
+                    ) : (
+                      // Otel (type: 2)
+                      <span>
+                        🏨 {item.hotel?.name} 
+                        <small style={{color: '#666', marginLeft: '8px'}}>
+                          {item.city?.name}, {item.country?.name}
+                        </small>
+                      </span>
+                    )}
                   </div>
                 ))}
               </div>
