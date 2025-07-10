@@ -33,9 +33,19 @@ function SearchForm() {
   const [nationalities, setNationalities] = useState([]);
   const [loadingLookups, setLoadingLookups] = useState(true);
   
+  // YENİ SEARCHABLE DROPDOWN STATES
+  const [currencySearch, setCurrencySearch] = useState('');
+  const [nationalitySearch, setNationalitySearch] = useState('');
+  const [showCurrencyDropdown, setShowCurrencyDropdown] = useState(false);
+  const [showNationalityDropdown, setShowNationalityDropdown] = useState(false);
+  const [filteredCurrencies, setFilteredCurrencies] = useState([]);
+  const [filteredNationalities, setFilteredNationalities] = useState([]);
+  
   const suggestionTimeoutRef = useRef(null);
   const dropdownRef = useRef(null);
   const guestDropdownRef = useRef(null);
+  const currencyDropdownRef = useRef(null);
+  const nationalityDropdownRef = useRef(null);
 
   // YENİ LOOKUP DATA ÇEKME EFFECT'İ
   useEffect(() => {
@@ -52,7 +62,7 @@ function SearchForm() {
         // Currencies mapping - sadece isim, icon yok
         const mappedCurrencies = currenciesData.map(curr => ({
           code: curr.code || curr.internationalCode,
-          name: curr.name || curr.code || curr.internationalCode, // Sadece isim
+          name: curr.name || curr.code || curr.internationalCode,
           fullName: curr.name
         }));
         
@@ -66,6 +76,15 @@ function SearchForm() {
         
         setCurrencies(mappedCurrencies);
         setNationalities(mappedNationalities);
+        setFilteredCurrencies(mappedCurrencies);
+        setFilteredNationalities(mappedNationalities);
+        
+        // İlk değerlerin display name'lerini set et
+        const defaultCurrency = mappedCurrencies.find(c => c.code === 'EUR');
+        const defaultNationality = mappedNationalities.find(n => n.code === 'TR');
+        
+        setCurrencySearch(defaultCurrency?.name || 'Euro');
+        setNationalitySearch(defaultNationality?.name || 'Türkiye (TR)');
         
         console.log('✅ Lookup verileri yüklendi:');
         console.log('💱 Para birimleri:', mappedCurrencies.length);
@@ -75,20 +94,27 @@ function SearchForm() {
         console.error('❌ Lookup verileri yüklenemedi:', error);
         
         // Fallback data - icon'sız temiz isimler
-        setCurrencies([
+        const fallbackCurrencies = [
           { code: 'EUR', name: 'Euro', fullName: 'Euro' },
           { code: 'GBP', name: 'British Pound', fullName: 'British Pound' },
           { code: 'USD', name: 'US Dollar', fullName: 'US Dollar' },
           { code: 'TRY', name: 'Turkish Lira', fullName: 'Turkish Lira' }
-        ]);
+        ];
         
-        setNationalities([
+        const fallbackNationalities = [
           { code: 'TR', name: 'Türkiye (TR)', fullName: 'Türkiye' },
           { code: 'DE', name: 'Almanya (DE)', fullName: 'Almanya' },
           { code: 'GB', name: 'İngiltere (GB)', fullName: 'İngiltere' },
           { code: 'US', name: 'Amerika (US)', fullName: 'Amerika' },
           { code: 'FR', name: 'Fransa (FR)', fullName: 'Fransa' }
-        ]);
+        ];
+        
+        setCurrencies(fallbackCurrencies);
+        setNationalities(fallbackNationalities);
+        setFilteredCurrencies(fallbackCurrencies);
+        setFilteredNationalities(fallbackNationalities);
+        setCurrencySearch('Euro');
+        setNationalitySearch('Türkiye (TR)');
       } finally {
         setLoadingLookups(false);
       }
@@ -237,7 +263,51 @@ function SearchForm() {
     setSuggestions([]);
   };
 
-  // Dışarı tıklayınca dropdown'ı kapat
+  // Currency search filtering
+  const handleCurrencySearch = (e) => {
+    const value = e.target.value;
+    setCurrencySearch(value);
+    
+    const filtered = currencies.filter(currency =>
+      currency.name.toLowerCase().includes(value.toLowerCase()) ||
+      currency.code.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredCurrencies(filtered);
+  };
+
+  // Nationality search filtering
+  const handleNationalitySearch = (e) => {
+    const value = e.target.value;
+    setNationalitySearch(value);
+    
+    const filtered = nationalities.filter(nationality =>
+      nationality.name.toLowerCase().includes(value.toLowerCase()) ||
+      nationality.code.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredNationalities(filtered);
+  };
+
+  // Currency selection
+  const selectCurrency = (currency) => {
+    setSearchData(prev => ({
+      ...prev,
+      currency: currency.code
+    }));
+    setCurrencySearch(currency.name);
+    setShowCurrencyDropdown(false);
+  };
+
+  // Nationality selection
+  const selectNationality = (nationality) => {
+    setSearchData(prev => ({
+      ...prev,
+      nationality: nationality.code
+    }));
+    setNationalitySearch(nationality.name);
+    setShowNationalityDropdown(false);
+  };
+
+  // Dışarı tıklayınca dropdown'ları kapat
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (guestDropdownRef.current && !guestDropdownRef.current.contains(event.target)) {
@@ -245,6 +315,12 @@ function SearchForm() {
       }
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowSuggestions(false);
+      }
+      if (currencyDropdownRef.current && !currencyDropdownRef.current.contains(event.target)) {
+        setShowCurrencyDropdown(false);
+      }
+      if (nationalityDropdownRef.current && !nationalityDropdownRef.current.contains(event.target)) {
+        setShowNationalityDropdown(false);
       }
     };
     
@@ -617,81 +693,139 @@ function SearchForm() {
         {showAdvanced && (
           <div className="advanced-options">
             <div className="advanced-grid">
+              {/* SEARCHABLE CURRENCY DROPDOWN */}
               <div>
                 <label>Para Birimi</label>
-                <select 
-                  name="currency" 
-                  value={searchData.currency} 
-                  onChange={handleInputChange}
-                  disabled={loadingLookups}
-                  style={{
-                    padding: '12px',
-                    fontSize: '14px',
-                    fontWeight: '500',
-                    color: loadingLookups ? '#999' : '#333',
-                    backgroundColor: loadingLookups ? '#f5f5f5' : 'white',
-                    border: '2px solid #0a825a',
-                    borderRadius: '6px'
-                  }}
-                >
-                  {loadingLookups ? (
-                    <option>Yükleniyor...</option>
-                  ) : (
-                    currencies.map(currency => (
-                      <option 
-                        key={currency.code} 
-                        value={currency.code}
-                        title={currency.fullName}
-                        style={{
-                          padding: '8px',
-                          backgroundColor: 'white',
-                          color: '#333',
-                          fontSize: '14px'
-                        }}
-                      >
-                        {currency.name}
-                      </option>
-                    ))
+                <div className="searchable-dropdown" ref={currencyDropdownRef}>
+                  <input
+                    type="text"
+                    value={currencySearch}
+                    onChange={handleCurrencySearch}
+                    onFocus={() => setShowCurrencyDropdown(true)}
+                    placeholder={loadingLookups ? "Yükleniyor..." : "Para birimi ara..."}
+                    disabled={loadingLookups}
+                    style={{
+                      padding: '12px',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      color: loadingLookups ? '#999' : '#333',
+                      backgroundColor: loadingLookups ? '#f5f5f5' : 'white',
+                      border: '2px solid #0a825a',
+                      borderRadius: '6px',
+                      width: '100%',
+                      cursor: loadingLookups ? 'not-allowed' : 'text'
+                    }}
+                  />
+                  {showCurrencyDropdown && !loadingLookups && (
+                    <div className="dropdown-list" style={{
+                      position: 'absolute',
+                      top: '100%',
+                      left: 0,
+                      right: 0,
+                      backgroundColor: 'white',
+                      border: '2px solid #0a825a',
+                      borderTop: 'none',
+                      borderRadius: '0 0 6px 6px',
+                      maxHeight: '200px',
+                      overflowY: 'auto',
+                      zIndex: 1000,
+                      boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+                    }}>
+                      {filteredCurrencies.length > 0 ? (
+                        filteredCurrencies.map((currency) => (
+                          <div
+                            key={currency.code}
+                            className="dropdown-item"
+                            onClick={() => selectCurrency(currency)}
+                            style={{
+                              padding: '10px 12px',
+                              cursor: 'pointer',
+                              borderBottom: '1px solid #f0f0f0',
+                              fontSize: '14px',
+                              transition: 'background-color 0.2s'
+                            }}
+                            onMouseEnter={(e) => e.target.style.backgroundColor = '#f8f9fa'}
+                            onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
+                          >
+                            <strong>{currency.name}</strong>
+                            <small style={{ color: '#666', marginLeft: '8px' }}>({currency.code})</small>
+                          </div>
+                        ))
+                      ) : (
+                        <div style={{ padding: '10px 12px', color: '#999', fontSize: '14px' }}>
+                          Sonuç bulunamadı
+                        </div>
+                      )}
+                    </div>
                   )}
-                </select>
+                </div>
               </div>
+
+              {/* SEARCHABLE NATIONALITY DROPDOWN */}
               <div>
                 <label>Uyruk</label>
-                <select 
-                  name="nationality" 
-                  value={searchData.nationality} 
-                  onChange={handleInputChange}
-                  disabled={loadingLookups}
-                  style={{
-                    padding: '12px',
-                    fontSize: '14px',
-                    fontWeight: '500',
-                    color: loadingLookups ? '#999' : '#333',
-                    backgroundColor: loadingLookups ? '#f5f5f5' : 'white',
-                    border: '2px solid #0a825a',
-                    borderRadius: '6px'
-                  }}
-                >
-                  {loadingLookups ? (
-                    <option>Yükleniyor...</option>
-                  ) : (
-                    nationalities.map(nationality => (
-                      <option 
-                        key={nationality.code} 
-                        value={nationality.code}
-                        title={nationality.fullName}
-                        style={{
-                          padding: '8px',
-                          backgroundColor: 'white',
-                          color: '#333',
-                          fontSize: '14px'
-                        }}
-                      >
-                        {nationality.name}
-                      </option>
-                    ))
+                <div className="searchable-dropdown" ref={nationalityDropdownRef}>
+                  <input
+                    type="text"
+                    value={nationalitySearch}
+                    onChange={handleNationalitySearch}
+                    onFocus={() => setShowNationalityDropdown(true)}
+                    placeholder={loadingLookups ? "Yükleniyor..." : "Ülke ara..."}
+                    disabled={loadingLookups}
+                    style={{
+                      padding: '12px',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      color: loadingLookups ? '#999' : '#333',
+                      backgroundColor: loadingLookups ? '#f5f5f5' : 'white',
+                      border: '2px solid #0a825a',
+                      borderRadius: '6px',
+                      width: '100%',
+                      cursor: loadingLookups ? 'not-allowed' : 'text'
+                    }}
+                  />
+                  {showNationalityDropdown && !loadingLookups && (
+                    <div className="dropdown-list" style={{
+                      position: 'absolute',
+                      top: '100%',
+                      left: 0,
+                      right: 0,
+                      backgroundColor: 'white',
+                      border: '2px solid #0a825a',
+                      borderTop: 'none',
+                      borderRadius: '0 0 6px 6px',
+                      maxHeight: '200px',
+                      overflowY: 'auto',
+                      zIndex: 1000,
+                      boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+                    }}>
+                      {filteredNationalities.length > 0 ? (
+                        filteredNationalities.map((nationality) => (
+                          <div
+                            key={nationality.code}
+                            className="dropdown-item"
+                            onClick={() => selectNationality(nationality)}
+                            style={{
+                              padding: '10px 12px',
+                              cursor: 'pointer',
+                              borderBottom: '1px solid #f0f0f0',
+                              fontSize: '14px',
+                              transition: 'background-color 0.2s'
+                            }}
+                            onMouseEnter={(e) => e.target.style.backgroundColor = '#f8f9fa'}
+                            onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
+                          >
+                            {nationality.name}
+                          </div>
+                        ))
+                      ) : (
+                        <div style={{ padding: '10px 12px', color: '#999', fontSize: '14px' }}>
+                          Sonuç bulunamadı
+                        </div>
+                      )}
+                    </div>
                   )}
-                </select>
+                </div>
               </div>
             </div>
           </div>
