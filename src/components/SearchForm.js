@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import hotelService from '../services/hotelService';
+import '../components.css'; // ← Bu satırı ekledim
 
 function SearchForm() {
   const [searchData, setSearchData] = useState({
@@ -9,9 +10,13 @@ function SearchForm() {
     checkOut: '',
     currency: 'EUR',
     nationality: 'TR',
-    adults: 2,
-    children: 0,
-    childAges: []
+    rooms: [
+      {
+        adults: 2,
+        children: 0,
+        childAges: []
+      }
+    ]
   });
 
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -39,6 +44,76 @@ function SearchForm() {
     { code: 'US', name: 'US' },
     { code: 'FR', name: 'FR' }
   ];
+
+  // Oda yönetimi fonksiyonları
+  const addRoom = () => {
+    setSearchData(prev => ({
+      ...prev,
+      rooms: [...prev.rooms, { adults: 2, children: 0, childAges: [] }]
+    }));
+  };
+
+  const removeRoom = (roomIndex) => {
+    if (searchData.rooms.length > 1) {
+      setSearchData(prev => ({
+        ...prev,
+        rooms: prev.rooms.filter((_, index) => index !== roomIndex)
+      }));
+    }
+  };
+
+  // Yetişkin sayısı artır/azalt
+  const updateAdults = (roomIndex, increment) => {
+    setSearchData(prev => ({
+      ...prev,
+      rooms: prev.rooms.map((room, index) => {
+        if (index === roomIndex) {
+          const newAdults = room.adults + increment;
+          return {
+            ...room,
+            adults: Math.max(1, Math.min(6, newAdults)) // 1-6 arası sınırlama
+          };
+        }
+        return room;
+      })
+    }));
+  };
+
+  // Çocuk sayısı artır/azalt
+  const updateChildren = (roomIndex, increment) => {
+    setSearchData(prev => ({
+      ...prev,
+      rooms: prev.rooms.map((room, index) => {
+        if (index === roomIndex) {
+          const newChildren = room.children + increment;
+          const finalChildren = Math.max(0, Math.min(4, newChildren)); // 0-4 arası sınırlama
+          return {
+            ...room,
+            children: finalChildren,
+            childAges: finalChildren > 0 ? Array(finalChildren).fill(0) : []
+          };
+        }
+        return room;
+      })
+    }));
+  };
+
+  const updateChildAge = (roomIndex, childIndex, age) => {
+    setSearchData(prev => ({
+      ...prev,
+      rooms: prev.rooms.map((room, index) => {
+        if (index === roomIndex) {
+          return {
+            ...room,
+            childAges: room.childAges.map((currentAge, i) => 
+              i === childIndex ? parseInt(age) : currentAge
+            )
+          };
+        }
+        return room;
+      })
+    }));
+  };
 
   // Destinasyon input değişikliği
   const handleDestinationInputChange = async (e) => {
@@ -120,23 +195,6 @@ function SearchForm() {
     }));
   };
 
-  const handleChildrenChange = (count) => {
-    setSearchData(prev => ({
-      ...prev,
-      children: count,
-      childAges: count > 0 ? Array(count).fill(0) : []
-    }));
-  };
-
-  const handleChildAgeChange = (index, age) => {
-    setSearchData(prev => ({
-      ...prev,
-      childAges: prev.childAges.map((currentAge, i) => 
-        i === index ? parseInt(age) : currentAge
-      )
-    }));
-  };
-
   const handleSearch = async (e) => {
     e.preventDefault();
     
@@ -150,15 +208,33 @@ function SearchForm() {
       return;
     }
 
+    // Çocuk yaşları validasyonu
+    for (let i = 0; i < searchData.rooms.length; i++) {
+      const room = searchData.rooms[i];
+      if (room.children > 0) {
+        const hasInvalidAge = room.childAges.some(age => age === 0);
+        if (hasInvalidAge) {
+          alert(`${i + 1}. odadaki çocuk yaşlarını belirtiniz`);
+          return;
+        }
+      }
+    }
+
     setIsLoading(true);
     
     try {
       console.log('🚀 =================');
-      console.log('🎯 TEST BAŞLADI');
+      console.log('🎯 ÇOK ODALI TEST BAŞLADI');
       console.log('📝 Seçilen Şehir:', searchData.destinationName);
       console.log('🆔 Şehir ID:', searchData.destination);
       console.log('📅 Tarih Aralığı:', `${searchData.checkIn} → ${searchData.checkOut}`);
-      console.log('👥 Misafir:', `${searchData.adults} yetişkin, ${searchData.children} çocuk`);
+      console.log('🏠 Oda Sayısı:', searchData.rooms.length);
+      
+      searchData.rooms.forEach((room, index) => {
+        console.log(`  📍 Oda ${index + 1}: ${room.adults} yetişkin, ${room.children} çocuk`, 
+                   room.children > 0 ? `(Yaşlar: ${room.childAges.join(', ')})` : '');
+      });
+      
       console.log('💰 Para Birimi:', searchData.currency);
       console.log('🌍 Uyruk:', searchData.nationality);
       
@@ -195,7 +271,8 @@ function SearchForm() {
           
           alert(`✅ BAŞARILI: ${result.body.hotels.length} otel bulundu!\n\n` +
                 `📍 ${searchData.destinationName}\n` +
-                `📅 ${searchData.checkIn} → ${searchData.checkOut}\n\n` +
+                `📅 ${searchData.checkIn} → ${searchData.checkOut}\n` +
+                `🏠 ${searchData.rooms.length} oda\n\n` +
                 `Console'u kontrol edin.`);
           
         } else {
@@ -210,7 +287,8 @@ function SearchForm() {
           
           alert(`⚠️ OTEL BULUNAMADI\n\n` +
                 `📍 ${searchData.destinationName}\n` +
-                `📅 ${searchData.checkIn} → ${searchData.checkOut}\n\n` +
+                `📅 ${searchData.checkIn} → ${searchData.checkOut}\n` +
+                `🏠 ${searchData.rooms.length} oda\n\n` +
                 `💡 Farklı tarih deneyin veya console'u kontrol edin.`);
         }
       } else {
@@ -228,6 +306,36 @@ function SearchForm() {
       console.log('🏁 Test Tamamlandı');
       console.log('=================');
     }
+  };
+
+  // Çocuk satırı render fonksiyonu - özel tasarım
+  const renderChildrenRow = (room, roomIndex) => {
+    if (room.children === 0) return null;
+    
+    return (
+      <div className="children-row">
+        <div className="children-left">
+          <span className="age-label">Çocuk Yaşları:</span>
+        </div>
+        <div className="children-right">
+          <div className="child-ages-inline">
+            {room.childAges.map((age, childIndex) => (
+              <select
+                key={childIndex}
+                className="age-select"
+                value={age}
+                onChange={(e) => updateChildAge(roomIndex, childIndex, e.target.value)}
+              >
+                <option value={0}>Yaş seç</option>
+                {[...Array(18)].map((_, i) => (
+                  <option key={i} value={i}>{i} yaş</option>
+                ))}
+              </select>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -307,35 +415,6 @@ function SearchForm() {
             />
           </div>
 
-          <div className="input-group guest-group">
-            <select
-              name="adults"
-              value={searchData.adults}
-              onChange={handleInputChange}
-              className="compact-select"
-              disabled={isLoading}
-            >
-              {[1,2,3,4,5,6].map(num => (
-                <option key={num} value={num}>{num} Yetişkin</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="input-group guest-group">
-            <select
-              value={searchData.children}
-              onChange={(e) => handleChildrenChange(parseInt(e.target.value))}
-              className="compact-select"
-              disabled={isLoading}
-            >
-              {[0,1,2,3,4].map(num => (
-                <option key={num} value={num}>
-                  {num === 0 ? 'Çocuk Yok' : `${num} Çocuk`}
-                </option>
-              ))}
-            </select>
-          </div>
-
           <button 
             type="submit" 
             className="compact-search-btn"
@@ -345,30 +424,93 @@ function SearchForm() {
           </button>
         </div>
 
-        {/* Child Ages - Ana formda */}
-        {searchData.children > 0 && (
-          <div className="child-ages-main">
-            <label className="child-ages-label">👶 Çocuk Yaşları:</label>
-            <div className="child-ages-row">
-              {searchData.childAges.map((age, index) => (
-                <select
-                  key={index}
-                  value={age}
-                  onChange={(e) => handleChildAgeChange(index, e.target.value)}
-                  className="age-select-main"
-                  disabled={isLoading}
-                >
-                  <option value={0}>Yaş Seçin</option>
-                  {Array.from({length: 17}, (_, i) => i + 1).map(childAge => (
-                    <option key={childAge} value={childAge}>
-                      {childAge} yaş
-                    </option>
-                  ))}
-                </select>
-              ))}
+        {/* Rooms Section */}
+        <div className="rooms-section">
+          <div className="rooms-header">
+            <div className="rooms-title">
+              <span className="rooms-icon">🏨</span>
+              <h3>Odalar ({searchData.rooms.length})</h3>
             </div>
+            <button
+              type="button"
+              onClick={addRoom}
+              className="add-room-btn"
+              disabled={isLoading || searchData.rooms.length >= 5}
+            >
+              <span className="btn-icon">+</span>
+              Oda Ekle
+            </button>
           </div>
-        )}
+
+          {searchData.rooms.map((room, roomIndex) => (
+            <div key={roomIndex} className="room-item">
+              <div className="room-header">
+                <div className="room-title">{roomIndex + 1}. Oda</div>
+                {searchData.rooms.length > 1 && (
+                  <button
+                    className="remove-room-link"
+                    onClick={() => removeRoom(roomIndex)}
+                  >
+                    Odayı Kaldır
+                  </button>
+                )}
+              </div>
+
+              {/* Yetişkin satırı */}
+              <div className="guest-row">
+                <div className="guest-label">
+                  <strong>👥 Yetişkin</strong>
+                  <small>18 yaş ve üzeri</small>
+                </div>
+                <div className="guest-counter">
+                  <button
+                    className="counter-btn"
+                    onClick={() => updateAdults(roomIndex, -1)}
+                    disabled={room.adults <= 1}
+                  >
+                    -
+                  </button>
+                  <span className="counter-num">{room.adults}</span>
+                  <button
+                    className="counter-btn"
+                    onClick={() => updateAdults(roomIndex, 1)}
+                    disabled={room.adults >= 6}
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              {/* Çocuk satırı */}
+              <div className="guest-row">
+                <div className="guest-label">
+                  <strong>👶 Çocuk</strong>
+                  <small>0-17 yaş arası</small>
+                </div>
+                <div className="guest-counter">
+                  <button
+                    className="counter-btn"
+                    onClick={() => updateChildren(roomIndex, -1)}
+                    disabled={room.children <= 0}
+                  >
+                    -
+                  </button>
+                  <span className="counter-num">{room.children}</span>
+                  <button
+                    className="counter-btn"
+                    onClick={() => updateChildren(roomIndex, 1)}
+                    disabled={room.children >= 4}
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              {/* Çocuk yaşları - sağ tarafta kompakt */}
+              {renderChildrenRow(room, roomIndex)}
+            </div>
+          ))}
+        </div>
 
         {/* Advanced Options Toggle */}
         <div className="advanced-toggle">
@@ -378,7 +520,10 @@ function SearchForm() {
             className="toggle-btn"
             disabled={isLoading}
           >
-            {showAdvanced ? '▲ Gelişmiş Seçenekleri Gizle' : '▼ Gelişmiş Seçenekler'}
+            <span className="toggle-icon">
+              {showAdvanced ? '▲' : '▼'}
+            </span>
+            {showAdvanced ? 'Gelişmiş Seçenekleri Gizle' : 'Gelişmiş Seçenekler'}
           </button>
         </div>
 
@@ -387,7 +532,7 @@ function SearchForm() {
           <div className="advanced-options">
             <div className="advanced-row">
               <div className="input-group-small">
-                <label>Para Birimi</label>
+                <label>💰 Para Birimi</label>
                 <select
                   name="currency"
                   value={searchData.currency}
@@ -404,7 +549,7 @@ function SearchForm() {
               </div>
 
               <div className="input-group-small">
-                <label>Uyruk</label>
+                <label>🌍 Uyruk</label>
                 <select
                   name="nationality"
                   value={searchData.nationality}
