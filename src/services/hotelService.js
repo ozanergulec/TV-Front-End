@@ -114,6 +114,41 @@ class HotelService {
     }
   }
 
+  // YENİ LOOKUP SERVICE METHODLARI
+  async getCurrencies() {
+    try {
+      const response = await apiService.request('/Lookup/currencies', {
+        method: 'GET'
+      });
+      console.log('💱 Currencies response:', response);
+      
+      if (response && response.body && response.body.currencies) {
+        return response.body.currencies;
+      }
+      return [];
+    } catch (error) {
+      console.error('Get currencies failed:', error);
+      throw error;
+    }
+  }
+
+  async getNationalities() {
+    try {
+      const response = await apiService.request('/Lookup/nationalities', {
+        method: 'GET'
+      });
+      console.log('🌍 Nationalities response:', response);
+      
+      if (response && response.body && response.body.nationalities) {
+        return response.body.nationalities;
+      }
+      return [];
+    } catch (error) {
+      console.error('Get nationalities failed:', error);
+      throw error;
+    }
+  }
+
   // Gece sayısını hesapla
   calculateNights(checkIn, checkOut) {
     if (!checkIn || !checkOut) return 1;
