@@ -49,7 +49,7 @@ class HotelService {
     }
   }
 
-  // Fiyat arama - CHECK-IN DATES KONTROLÜ DÜZELTİLDİ
+  // Fiyat arama - ÇOK ODALI DESTEK EKLENDİ
   async priceSearch(searchData) {
     const nights = this.calculateNights(searchData.checkIn, searchData.checkOut);
     
@@ -75,6 +75,12 @@ class HotelService {
         type: 2  // 1 değil, 2 olmalı!
       }];
     }
+
+    // ÇOK ODALI ROOM CRITERIA OLUŞTUR
+    const roomCriteria = searchData.rooms.map(room => ({
+      adult: parseInt(room.adults),
+      childAges: room.children > 0 ? room.childAges : []
+    }));
     
     const request = {
       checkAllotment: true,
@@ -83,10 +89,7 @@ class HotelService {
       getOnlyBestOffers: true,
       productType: 2,
       arrivalLocations: arrivalLocations,
-      roomCriteria: [{
-        adult: parseInt(searchData.adults),
-        childAges: searchData.childAges.length > 0 ? searchData.childAges : []
-      }],
+      roomCriteria: roomCriteria, // Artık array olarak gönderiyor
       nationality: searchData.nationality,
       checkIn: searchData.checkIn,
       night: nights,
@@ -94,7 +97,12 @@ class HotelService {
       culture: "en-US"
     };
     
-    console.log('📤 Price search request:', JSON.stringify(request, null, 2));
+    console.log('📤 Çok odalı price search request:', JSON.stringify(request, null, 2));
+    console.log('🏠 Room Criteria Details:');
+    roomCriteria.forEach((room, index) => {
+      console.log(`  Oda ${index + 1}: ${room.adult} yetişkin, ${room.childAges.length} çocuk`, 
+                 room.childAges.length > 0 ? `(Yaşlar: ${room.childAges.join(', ')})` : '');
+    });
     
     try {
       const response = await apiService.post('/HotelProduct/price-search', request);
@@ -102,6 +110,41 @@ class HotelService {
       return response;
     } catch (error) {
       console.error('Price search failed:', error);
+      throw error;
+    }
+  }
+
+  // YENİ LOOKUP SERVICE METHODLARI
+  async getCurrencies() {
+    try {
+      const response = await apiService.request('/Lookup/currencies', {
+        method: 'GET'
+      });
+      console.log('💱 Currencies response:', response);
+      
+      if (response && response.body && response.body.currencies) {
+        return response.body.currencies;
+      }
+      return [];
+    } catch (error) {
+      console.error('Get currencies failed:', error);
+      throw error;
+    }
+  }
+
+  async getNationalities() {
+    try {
+      const response = await apiService.request('/Lookup/nationalities', {
+        method: 'GET'
+      });
+      console.log('🌍 Nationalities response:', response);
+      
+      if (response && response.body && response.body.nationalities) {
+        return response.body.nationalities;
+      }
+      return [];
+    } catch (error) {
+      console.error('Get nationalities failed:', error);
       throw error;
     }
   }

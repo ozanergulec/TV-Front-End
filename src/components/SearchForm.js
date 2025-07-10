@@ -1,44 +1,207 @@
 import React, { useState, useEffect, useRef } from 'react';
 import hotelService from '../services/hotelService';
+import '../components.css';
 
 function SearchForm() {
   const [searchData, setSearchData] = useState({
     destination: '',
-    destinationName: '', // Görüntülenecek isim
+    destinationName: '',
     checkIn: '',
     checkOut: '',
     currency: 'EUR',
     nationality: 'TR',
-    adults: 2,
-    children: 0,
-    childAges: []
+    rooms: [
+      {
+        adults: 2,
+        children: 0,
+        childAges: []
+      }
+    ]
   });
 
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showGuestDropdown, setShowGuestDropdown] = useState(false);
   
   // Autocomplete states
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
   
+  // YENİ DYNAMIC DATA STATES
+  const [currencies, setCurrencies] = useState([]);
+  const [nationalities, setNationalities] = useState([]);
+  const [loadingLookups, setLoadingLookups] = useState(true);
+  
+  // YENİ SEARCHABLE DROPDOWN STATES
+  const [currencySearch, setCurrencySearch] = useState('');
+  const [nationalitySearch, setNationalitySearch] = useState('');
+  const [showCurrencyDropdown, setShowCurrencyDropdown] = useState(false);
+  const [showNationalityDropdown, setShowNationalityDropdown] = useState(false);
+  const [filteredCurrencies, setFilteredCurrencies] = useState([]);
+  const [filteredNationalities, setFilteredNationalities] = useState([]);
+  
   const suggestionTimeoutRef = useRef(null);
   const dropdownRef = useRef(null);
+  const guestDropdownRef = useRef(null);
+  const currencyDropdownRef = useRef(null);
+  const nationalityDropdownRef = useRef(null);
 
-  const currencies = [
-    { code: 'EUR', name: '€' },
-    { code: 'GBP', name: '£' },
-    { code: 'USD', name: '$' },
-    { code: 'TRY', name: '₺' }
-  ];
+  // YENİ LOOKUP DATA ÇEKME EFFECT'İ
+  useEffect(() => {
+    const loadLookupData = async () => {
+      setLoadingLookups(true);
+      try {
+        console.log('🔄 Lookup verileri yükleniyor...');
+        
+        const [currenciesData, nationalitiesData] = await Promise.all([
+          hotelService.getCurrencies(),
+          hotelService.getNationalities()
+        ]);
+        
+        // Currencies mapping - sadece isim, icon yok
+        const mappedCurrencies = currenciesData.map(curr => ({
+          code: curr.code || curr.internationalCode,
+          name: curr.name || curr.code || curr.internationalCode,
+          fullName: curr.name
+        }));
+        
+        // Nationalities mapping - backend format to frontend format  
+        const mappedNationalities = nationalitiesData.map(nat => ({
+          code: nat.threeLetterCode || nat.id,
+          name: `${nat.name} (${nat.threeLetterCode || nat.id})`,
+          fullName: nat.name,
+          isdCode: nat.isdCode
+        }));
+        
+        setCurrencies(mappedCurrencies);
+        setNationalities(mappedNationalities);
+        setFilteredCurrencies(mappedCurrencies);
+        setFilteredNationalities(mappedNationalities);
+        
+        // İlk değerlerin display name'lerini set et
+        const defaultCurrency = mappedCurrencies.find(c => c.code === 'EUR');
+        const defaultNationality = mappedNationalities.find(n => n.code === 'TR');
+        
+        setCurrencySearch(defaultCurrency?.name || 'Euro');
+        setNationalitySearch(defaultNationality?.name || 'Türkiye (TR)');
+        
+        console.log('✅ Lookup verileri yüklendi:');
+        console.log('💱 Para birimleri:', mappedCurrencies.length);
+        console.log('🌍 Uyrukluk:', mappedNationalities.length);
+        
+      } catch (error) {
+        console.error('❌ Lookup verileri yüklenemedi:', error);
+        
+        // Fallback data - icon'sız temiz isimler
+        const fallbackCurrencies = [
+          { code: 'EUR', name: 'Euro', fullName: 'Euro' },
+          { code: 'GBP', name: 'British Pound', fullName: 'British Pound' },
+          { code: 'USD', name: 'US Dollar', fullName: 'US Dollar' },
+          { code: 'TRY', name: 'Turkish Lira', fullName: 'Turkish Lira' }
+        ];
+        
+        const fallbackNationalities = [
+          { code: 'TR', name: 'Türkiye (TR)', fullName: 'Türkiye' },
+          { code: 'DE', name: 'Almanya (DE)', fullName: 'Almanya' },
+          { code: 'GB', name: 'İngiltere (GB)', fullName: 'İngiltere' },
+          { code: 'US', name: 'Amerika (US)', fullName: 'Amerika' },
+          { code: 'FR', name: 'Fransa (FR)', fullName: 'Fransa' }
+        ];
+        
+        setCurrencies(fallbackCurrencies);
+        setNationalities(fallbackNationalities);
+        setFilteredCurrencies(fallbackCurrencies);
+        setFilteredNationalities(fallbackNationalities);
+        setCurrencySearch('Euro');
+        setNationalitySearch('Türkiye (TR)');
+      } finally {
+        setLoadingLookups(false);
+      }
+    };
 
-  const countries = [
-    { code: 'TR', name: 'TR' },
-    { code: 'DE', name: 'DE' },
-    { code: 'GB', name: 'GB' },
-    { code: 'US', name: 'US' },
-    { code: 'FR', name: 'FR' }
-  ];
+    loadLookupData();
+  }, []);
+
+  // Misafir özeti hesapla - sadece toplam
+  const getGuestSummary = () => {
+    const totalAdults = searchData.rooms.reduce((sum, room) => sum + room.adults, 0);
+    const totalChildren = searchData.rooms.reduce((sum, room) => sum + room.children, 0);
+    const totalGuests = totalAdults + totalChildren;
+    const roomCount = searchData.rooms.length;
+    
+    return `${totalGuests} Misafir, ${roomCount} Oda`;
+  };
+
+  // Oda yönetimi fonksiyonları
+  const addRoom = () => {
+    setSearchData(prev => ({
+      ...prev,
+      rooms: [...prev.rooms, { adults: 2, children: 0, childAges: [] }]
+    }));
+  };
+
+  const removeRoom = (roomIndex) => {
+    if (searchData.rooms.length > 1) {
+      setSearchData(prev => ({
+        ...prev,
+        rooms: prev.rooms.filter((_, index) => index !== roomIndex)
+      }));
+    }
+  };
+
+  // Yetişkin sayısı artır/azalt
+  const updateAdults = (roomIndex, increment) => {
+    setSearchData(prev => ({
+      ...prev,
+      rooms: prev.rooms.map((room, index) => {
+        if (index === roomIndex) {
+          const newAdults = room.adults + increment;
+          return {
+            ...room,
+            adults: Math.max(1, Math.min(6, newAdults)) // 1-6 arası sınırlama
+          };
+        }
+        return room;
+      })
+    }));
+  };
+
+  // Çocuk sayısı artır/azalt
+  const updateChildren = (roomIndex, increment) => {
+    setSearchData(prev => ({
+      ...prev,
+      rooms: prev.rooms.map((room, index) => {
+        if (index === roomIndex) {
+          const newChildren = room.children + increment;
+          const finalChildren = Math.max(0, Math.min(4, newChildren)); // 0-4 arası sınırlama
+          return {
+            ...room,
+            children: finalChildren,
+            childAges: finalChildren > 0 ? Array(finalChildren).fill(0) : []
+          };
+        }
+        return room;
+      })
+    }));
+  };
+
+  const updateChildAge = (roomIndex, childIndex, age) => {
+    setSearchData(prev => ({
+      ...prev,
+      rooms: prev.rooms.map((room, index) => {
+        if (index === roomIndex) {
+          return {
+            ...room,
+            childAges: room.childAges.map((currentAge, i) => 
+              i === childIndex ? parseInt(age) : currentAge
+            )
+          };
+        }
+        return room;
+      })
+    }));
+  };
 
   // Destinasyon input değişikliği
   const handleDestinationInputChange = async (e) => {
@@ -100,11 +263,64 @@ function SearchForm() {
     setSuggestions([]);
   };
 
-  // Dışarı tıklayınca dropdown'ı kapat
+  // Currency search filtering
+  const handleCurrencySearch = (e) => {
+    const value = e.target.value;
+    setCurrencySearch(value);
+    
+    const filtered = currencies.filter(currency =>
+      currency.name.toLowerCase().includes(value.toLowerCase()) ||
+      currency.code.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredCurrencies(filtered);
+  };
+
+  // Nationality search filtering
+  const handleNationalitySearch = (e) => {
+    const value = e.target.value;
+    setNationalitySearch(value);
+    
+    const filtered = nationalities.filter(nationality =>
+      nationality.name.toLowerCase().includes(value.toLowerCase()) ||
+      nationality.code.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredNationalities(filtered);
+  };
+
+  // Currency selection
+  const selectCurrency = (currency) => {
+    setSearchData(prev => ({
+      ...prev,
+      currency: currency.code
+    }));
+    setCurrencySearch(currency.name);
+    setShowCurrencyDropdown(false);
+  };
+
+  // Nationality selection
+  const selectNationality = (nationality) => {
+    setSearchData(prev => ({
+      ...prev,
+      nationality: nationality.code
+    }));
+    setNationalitySearch(nationality.name);
+    setShowNationalityDropdown(false);
+  };
+
+  // Dışarı tıklayınca dropdown'ları kapat
   useEffect(() => {
     const handleClickOutside = (event) => {
+      if (guestDropdownRef.current && !guestDropdownRef.current.contains(event.target)) {
+        setShowGuestDropdown(false);
+      }
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowSuggestions(false);
+      }
+      if (currencyDropdownRef.current && !currencyDropdownRef.current.contains(event.target)) {
+        setShowCurrencyDropdown(false);
+      }
+      if (nationalityDropdownRef.current && !nationalityDropdownRef.current.contains(event.target)) {
+        setShowNationalityDropdown(false);
       }
     };
     
@@ -117,23 +333,6 @@ function SearchForm() {
     setSearchData(prev => ({
       ...prev,
       [name]: value
-    }));
-  };
-
-  const handleChildrenChange = (count) => {
-    setSearchData(prev => ({
-      ...prev,
-      children: count,
-      childAges: count > 0 ? Array(count).fill(0) : []
-    }));
-  };
-
-  const handleChildAgeChange = (index, age) => {
-    setSearchData(prev => ({
-      ...prev,
-      childAges: prev.childAges.map((currentAge, i) => 
-        i === index ? parseInt(age) : currentAge
-      )
     }));
   };
 
@@ -150,15 +349,33 @@ function SearchForm() {
       return;
     }
 
+    // Çocuk yaşları validasyonu
+    for (let i = 0; i < searchData.rooms.length; i++) {
+      const room = searchData.rooms[i];
+      if (room.children > 0) {
+        const hasInvalidAge = room.childAges.some(age => age === 0);
+        if (hasInvalidAge) {
+          alert(`${i + 1}. odadaki çocuk yaşlarını belirtiniz`);
+          return;
+        }
+      }
+    }
+
     setIsLoading(true);
     
     try {
       console.log('🚀 =================');
-      console.log('🎯 TEST BAŞLADI');
+      console.log('🎯 ÇOK ODALI TEST BAŞLADI');
       console.log('📝 Seçilen Şehir:', searchData.destinationName);
       console.log('🆔 Şehir ID:', searchData.destination);
       console.log('📅 Tarih Aralığı:', `${searchData.checkIn} → ${searchData.checkOut}`);
-      console.log('👥 Misafir:', `${searchData.adults} yetişkin, ${searchData.children} çocuk`);
+      console.log('🏠 Oda Sayısı:', searchData.rooms.length);
+      
+      searchData.rooms.forEach((room, index) => {
+        console.log(`  📍 Oda ${index + 1}: ${room.adults} yetişkin, ${room.children} çocuk`, 
+                   room.children > 0 ? `(Yaşlar: ${room.childAges.join(', ')})` : '');
+      });
+      
       console.log('💰 Para Birimi:', searchData.currency);
       console.log('🌍 Uyruk:', searchData.nationality);
       
@@ -195,7 +412,8 @@ function SearchForm() {
           
           alert(`✅ BAŞARILI: ${result.body.hotels.length} otel bulundu!\n\n` +
                 `📍 ${searchData.destinationName}\n` +
-                `📅 ${searchData.checkIn} → ${searchData.checkOut}\n\n` +
+                `📅 ${searchData.checkIn} → ${searchData.checkOut}\n` +
+                `🏠 ${searchData.rooms.length} oda\n\n` +
                 `Console'u kontrol edin.`);
           
         } else {
@@ -210,7 +428,8 @@ function SearchForm() {
           
           alert(`⚠️ OTEL BULUNAMADI\n\n` +
                 `📍 ${searchData.destinationName}\n` +
-                `📅 ${searchData.checkIn} → ${searchData.checkOut}\n\n` +
+                `📅 ${searchData.checkIn} → ${searchData.checkOut}\n` +
+                `🏠 ${searchData.rooms.length} oda\n\n` +
                 `💡 Farklı tarih deneyin veya console'u kontrol edin.`);
         }
       } else {
@@ -230,199 +449,387 @@ function SearchForm() {
     }
   };
 
+  // Çocuk satırı render fonksiyonu - özel tasarım
+  const renderChildAges = (room, roomIndex) => {
+    if (room.children === 0) return null;
+    
+    return (
+      <div className="child-ages-row">
+        <span className="child-ages-label">Çocuk Yaşları:</span>
+        <div className="child-ages-selects">
+          {room.childAges.map((age, childIndex) => (
+            <select
+              key={childIndex}
+              className="age-select-small"
+              value={age}
+              onChange={(e) => updateChildAge(roomIndex, childIndex, e.target.value)}
+              style={{
+                padding: '8px 10px',
+                fontSize: '13px',
+                fontWeight: '500',
+                color: '#333',
+                backgroundColor: 'white',
+                border: '2px solid #0a825a',
+                borderRadius: '6px',
+                minWidth: '80px',
+                appearance: 'none',
+                backgroundImage: "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23374151' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e\")",
+                backgroundPosition: 'right 8px center',
+                backgroundRepeat: 'no-repeat',
+                backgroundSize: '12px',
+                paddingRight: '30px'
+              }}
+            >
+              <option 
+                value={0}
+                style={{
+                  padding: '6px 10px',
+                  backgroundColor: 'white',
+                  color: '#666',
+                  fontSize: '13px'
+                }}
+              >
+                Yaş Seçin
+              </option>
+              {[...Array(18)].map((_, i) => (
+                <option 
+                  key={i + 1} 
+                  value={i + 1}
+                  style={{
+                    padding: '6px 10px',
+                    backgroundColor: 'white',
+                    color: '#333',
+                    fontSize: '13px'
+                  }}
+                >
+                  {i + 1} yaş
+                </option>
+              ))}
+            </select>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className="compact-search-container">
-      <form className="compact-search-form" onSubmit={handleSearch}>
-        
-        {/* Main Search Row */}
-        <div className="search-main-row">
-          {/* Destinasyon Input + Dropdown */}
-          <div className="input-group destination-group" ref={dropdownRef}>
-            <div className="destination-input-wrapper">
-              <input
-                type="text"
-                value={searchData.destinationName}
-                onChange={handleDestinationInputChange}
-                placeholder="Şehir ara... (Antalya, İstanbul, Ankara)"
-                className="compact-input"
-                disabled={isLoading}
-                autoComplete="off"
-              />
-              
-              {/* Loading spinner */}
-              {loadingSuggestions && (
-                <div className="suggestion-loading">Aranıyor...</div>
-              )}
-              
-              {/* Dropdown suggestions */}
-              {showSuggestions && suggestions.length > 0 && (
-                <div className="suggestions-dropdown">
-                  {suggestions.map((item, index) => (
-                    <div 
-                      key={index}
-                      className="suggestion-item"
-                      onClick={() => selectDestination(item)}
-                    >
-                      <div className="suggestion-main">
-                        <span className="city-name">
-                          {item.city?.name || 'Unknown City'}
-                        </span>
-                        <span className="country-name">
-                          , {item.country?.name || 'Unknown Country'}
-                        </span>
-                      </div>
-                      {item.state?.name && (
-                        <div className="suggestion-sub">
-                          {item.state.name}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+    <div className="booking-search">
+      <form onSubmit={handleSearch}>
+        <div className="search-bar">
+          {/* Destinasyon */}
+          <div className="search-field destination-field" ref={dropdownRef}>
+            <label>Nereye</label>
+            <input
+              type="text"
+              value={searchData.destinationName}
+              onChange={handleDestinationInputChange}
+              placeholder="Şehir ara... (Antalya, İstanbul, Ankara)"
+            />
+            {/* Autocomplete dropdown */}
+            {loadingSuggestions && (
+              <div className="autocomplete-loading">Aranıyor...</div>
+            )}
+            {showSuggestions && suggestions.length > 0 && (
+              <div className="autocomplete-dropdown">
+                {suggestions.map((item, index) => (
+                  <div
+                    key={index}
+                    className="autocomplete-item"
+                    onClick={() => selectDestination(item)}
+                  >
+                    {item.city?.name || item.giataInfo?.destinationId}, {item.country?.name}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
-          <div className="input-group date-group">
+          {/* Giriş Tarihi */}
+          <div className="search-field date-field">
+            <label>Giriş</label>
             <input
               type="date"
               name="checkIn"
               value={searchData.checkIn}
               onChange={handleInputChange}
-              className="compact-input date-input"
-              required
-              disabled={isLoading}
             />
           </div>
 
-          <div className="input-group date-group">
+          {/* Çıkış Tarihi */}
+          <div className="search-field date-field">
+            <label>Çıkış</label>
             <input
               type="date"
               name="checkOut"
               value={searchData.checkOut}
               onChange={handleInputChange}
-              className="compact-input date-input"
-              required
-              disabled={isLoading}
             />
           </div>
 
-          <div className="input-group guest-group">
-            <select
-              name="adults"
-              value={searchData.adults}
-              onChange={handleInputChange}
-              className="compact-select"
-              disabled={isLoading}
+          {/* Misafirler - Özet Button */}
+          <div className="search-field guest-field" ref={guestDropdownRef}>
+            <label>Misafirler</label>
+            <div 
+              className="guest-selector"
+              onClick={() => setShowGuestDropdown(!showGuestDropdown)}
             >
-              {[1,2,3,4,5,6].map(num => (
-                <option key={num} value={num}>{num} Yetişkin</option>
-              ))}
-            </select>
+              <span>{getGuestSummary()}</span>
+              <span className="dropdown-arrow">▼</span>
+            </div>
+
+            {/* Guest Dropdown */}
+            {showGuestDropdown && (
+              <div className="guest-dropdown">
+                <div className="guest-dropdown-header">
+                  <h3>Misafirler</h3>
+                </div>
+
+                <div className="rooms-list">
+                  {searchData.rooms.map((room, roomIndex) => (
+                    <div key={roomIndex} className="room-item">
+                      {searchData.rooms.length > 1 && (
+                        <div className="room-header">
+                          <div className="room-title">{roomIndex + 1}. Oda</div>
+                          <button
+                            type="button"
+                            className="remove-room-link"
+                            onClick={() => removeRoom(roomIndex)}
+                          >
+                            Odayı Kaldır
+                          </button>
+                        </div>
+                      )}
+
+                      <div className="guest-row">
+                        <div className="guest-label">
+                          <strong>Yetişkin</strong>
+                          <small>18 yaş ve üzeri</small>
+                        </div>
+                        <div className="guest-counter">
+                          <button
+                            type="button"
+                            className="counter-btn"
+                            onClick={() => updateAdults(roomIndex, -1)}
+                            disabled={room.adults <= 1}
+                          >
+                            -
+                          </button>
+                          <span className="counter-num">{room.adults}</span>
+                          <button
+                            type="button"
+                            className="counter-btn"
+                            onClick={() => updateAdults(roomIndex, 1)}
+                            disabled={room.adults >= 6}
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="guest-row">
+                        <div className="guest-label">
+                          <strong>Çocuk</strong>
+                          <small>0-17 yaş</small>
+                        </div>
+                        <div className="guest-counter">
+                          <button
+                            type="button"
+                            className="counter-btn"
+                            onClick={() => updateChildren(roomIndex, -1)}
+                            disabled={room.children <= 0}
+                          >
+                            -
+                          </button>
+                          <span className="counter-num">{room.children}</span>
+                          <button
+                            type="button"
+                            className="counter-btn"
+                            onClick={() => updateChildren(roomIndex, 1)}
+                            disabled={room.children >= 4}
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+
+                      {renderChildAges(room, roomIndex)}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="add-room-section">
+                  <button
+                    type="button"
+                    className="add-room-link"
+                    onClick={addRoom}
+                    disabled={searchData.rooms.length >= 4}
+                  >
+                    Yeni Oda Ekle
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
-          <div className="input-group guest-group">
-            <select
-              value={searchData.children}
-              onChange={(e) => handleChildrenChange(parseInt(e.target.value))}
-              className="compact-select"
-              disabled={isLoading}
-            >
-              {[0,1,2,3,4].map(num => (
-                <option key={num} value={num}>
-                  {num === 0 ? 'Çocuk Yok' : `${num} Çocuk`}
-                </option>
-              ))}
-            </select>
-          </div>
-
+          {/* Ara Butonu */}
           <button 
             type="submit" 
-            className="compact-search-btn"
-            disabled={isLoading}
+            className="search-button"
+            disabled={isLoading || !searchData.destination || !searchData.checkIn || !searchData.checkOut}
           >
             {isLoading ? 'Aranıyor...' : 'Ara'}
           </button>
         </div>
 
-        {/* Child Ages - Ana formda */}
-        {searchData.children > 0 && (
-          <div className="child-ages-main">
-            <label className="child-ages-label">👶 Çocuk Yaşları:</label>
-            <div className="child-ages-row">
-              {searchData.childAges.map((age, index) => (
-                <select
-                  key={index}
-                  value={age}
-                  onChange={(e) => handleChildAgeChange(index, e.target.value)}
-                  className="age-select-main"
-                  disabled={isLoading}
-                >
-                  <option value={0}>Yaş Seçin</option>
-                  {Array.from({length: 17}, (_, i) => i + 1).map(childAge => (
-                    <option key={childAge} value={childAge}>
-                      {childAge} yaş
-                    </option>
-                  ))}
-                </select>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Advanced Options Toggle */}
-        <div className="advanced-toggle">
-          <button
-            type="button"
-            onClick={() => setShowAdvanced(!showAdvanced)}
-            className="toggle-btn"
-            disabled={isLoading}
-          >
-            {showAdvanced ? '▲ Gelişmiş Seçenekleri Gizle' : '▼ Gelişmiş Seçenekler'}
-          </button>
-        </div>
-
         {/* Advanced Options */}
+        <button
+          type="button"
+          className="advanced-toggle"
+          onClick={() => setShowAdvanced(!showAdvanced)}
+        >
+          Gelişmiş Seçenekler {showAdvanced ? '▲' : '▼'}
+        </button>
+
         {showAdvanced && (
           <div className="advanced-options">
-            <div className="advanced-row">
-              <div className="input-group-small">
+            <div className="advanced-grid">
+              {/* SEARCHABLE CURRENCY DROPDOWN */}
+              <div>
                 <label>Para Birimi</label>
-                <select
-                  name="currency"
-                  value={searchData.currency}
-                  onChange={handleInputChange}
-                  className="compact-select-small"
-                  disabled={isLoading}
-                >
-                  {currencies.map(currency => (
-                    <option key={currency.code} value={currency.code}>
-                      {currency.name} {currency.code}
-                    </option>
-                  ))}
-                </select>
+                <div className="searchable-dropdown" ref={currencyDropdownRef}>
+                  <input
+                    type="text"
+                    value={currencySearch}
+                    onChange={handleCurrencySearch}
+                    onFocus={() => setShowCurrencyDropdown(true)}
+                    placeholder={loadingLookups ? "Yükleniyor..." : "Para birimi ara..."}
+                    disabled={loadingLookups}
+                    style={{
+                      padding: '12px',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      color: loadingLookups ? '#999' : '#333',
+                      backgroundColor: loadingLookups ? '#f5f5f5' : 'white',
+                      border: '2px solid #0a825a',
+                      borderRadius: '6px',
+                      width: '100%',
+                      cursor: loadingLookups ? 'not-allowed' : 'text'
+                    }}
+                  />
+                  {showCurrencyDropdown && !loadingLookups && (
+                    <div className="dropdown-list" style={{
+                      position: 'absolute',
+                      top: '100%',
+                      left: 0,
+                      right: 0,
+                      backgroundColor: 'white',
+                      border: '2px solid #0a825a',
+                      borderTop: 'none',
+                      borderRadius: '0 0 6px 6px',
+                      maxHeight: '200px',
+                      overflowY: 'auto',
+                      zIndex: 1000,
+                      boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+                    }}>
+                      {filteredCurrencies.length > 0 ? (
+                        filteredCurrencies.map((currency) => (
+                          <div
+                            key={currency.code}
+                            className="dropdown-item"
+                            onClick={() => selectCurrency(currency)}
+                            style={{
+                              padding: '10px 12px',
+                              cursor: 'pointer',
+                              borderBottom: '1px solid #f0f0f0',
+                              fontSize: '14px',
+                              transition: 'background-color 0.2s'
+                            }}
+                            onMouseEnter={(e) => e.target.style.backgroundColor = '#f8f9fa'}
+                            onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
+                          >
+                            <strong>{currency.name}</strong>
+                            <small style={{ color: '#666', marginLeft: '8px' }}>({currency.code})</small>
+                          </div>
+                        ))
+                      ) : (
+                        <div style={{ padding: '10px 12px', color: '#999', fontSize: '14px' }}>
+                          Sonuç bulunamadı
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
 
-              <div className="input-group-small">
+              {/* SEARCHABLE NATIONALITY DROPDOWN */}
+              <div>
                 <label>Uyruk</label>
-                <select
-                  name="nationality"
-                  value={searchData.nationality}
-                  onChange={handleInputChange}
-                  className="compact-select-small"
-                  disabled={isLoading}
-                >
-                  {countries.map(country => (
-                    <option key={country.code} value={country.code}>
-                      {country.name}
-                    </option>
-                  ))}
-                </select>
+                <div className="searchable-dropdown" ref={nationalityDropdownRef}>
+                  <input
+                    type="text"
+                    value={nationalitySearch}
+                    onChange={handleNationalitySearch}
+                    onFocus={() => setShowNationalityDropdown(true)}
+                    placeholder={loadingLookups ? "Yükleniyor..." : "Ülke ara..."}
+                    disabled={loadingLookups}
+                    style={{
+                      padding: '12px',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      color: loadingLookups ? '#999' : '#333',
+                      backgroundColor: loadingLookups ? '#f5f5f5' : 'white',
+                      border: '2px solid #0a825a',
+                      borderRadius: '6px',
+                      width: '100%',
+                      cursor: loadingLookups ? 'not-allowed' : 'text'
+                    }}
+                  />
+                  {showNationalityDropdown && !loadingLookups && (
+                    <div className="dropdown-list" style={{
+                      position: 'absolute',
+                      top: '100%',
+                      left: 0,
+                      right: 0,
+                      backgroundColor: 'white',
+                      border: '2px solid #0a825a',
+                      borderTop: 'none',
+                      borderRadius: '0 0 6px 6px',
+                      maxHeight: '200px',
+                      overflowY: 'auto',
+                      zIndex: 1000,
+                      boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+                    }}>
+                      {filteredNationalities.length > 0 ? (
+                        filteredNationalities.map((nationality) => (
+                          <div
+                            key={nationality.code}
+                            className="dropdown-item"
+                            onClick={() => selectNationality(nationality)}
+                            style={{
+                              padding: '10px 12px',
+                              cursor: 'pointer',
+                              borderBottom: '1px solid #f0f0f0',
+                              fontSize: '14px',
+                              transition: 'background-color 0.2s'
+                            }}
+                            onMouseEnter={(e) => e.target.style.backgroundColor = '#f8f9fa'}
+                            onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
+                          >
+                            {nationality.name}
+                          </div>
+                        ))
+                      ) : (
+                        <div style={{ padding: '10px 12px', color: '#999', fontSize: '14px' }}>
+                          Sonuç bulunamadı
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
         )}
-
       </form>
     </div>
   );
