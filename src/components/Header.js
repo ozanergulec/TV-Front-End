@@ -9,12 +9,6 @@ function Header() {
           <span className="logo-icon">🏨</span>
           <span className="logo-text">Room for Sprint</span>
         </a>
-
-        {/* Login Button */}
-        <button className="login-btn">
-          <span className="btn-icon">👤</span>
-          <span className="btn-text">Giriş</span>
-        </button>
       </div>
     </header>
   );

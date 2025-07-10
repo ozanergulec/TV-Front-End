@@ -43,18 +43,18 @@ function SearchForm() {
   };
 
   const currencies = [
-    { code: 'EUR', name: '€' },
-    { code: 'GBP', name: '£' },
-    { code: 'USD', name: '$' },
-    { code: 'TRY', name: '₺' }
+    { code: 'EUR', name: '€ EUR' },
+    { code: 'GBP', name: '£ GBP' },
+    { code: 'USD', name: '$ USD' },
+    { code: 'TRY', name: '₺ TRY' }
   ];
 
   const countries = [
-    { code: 'TR', name: 'TR' },
-    { code: 'DE', name: 'DE' },
-    { code: 'GB', name: 'GB' },
-    { code: 'US', name: 'US' },
-    { code: 'FR', name: 'FR' }
+    { code: 'TR', name: 'Türkiye (TR)' },
+    { code: 'DE', name: 'Almanya (DE)' },
+    { code: 'GB', name: 'İngiltere (GB)' },
+    { code: 'US', name: 'Amerika (US)' },
+    { code: 'FR', name: 'Fransa (FR)' }
   ];
 
   // Oda yönetimi fonksiyonları
@@ -337,10 +337,47 @@ function SearchForm() {
               className="age-select-small"
               value={age}
               onChange={(e) => updateChildAge(roomIndex, childIndex, e.target.value)}
+              style={{
+                padding: '8px 10px',
+                fontSize: '13px',
+                fontWeight: '500',
+                color: '#333',
+                backgroundColor: 'white',
+                border: '2px solid #0a825a',
+                borderRadius: '6px',
+                minWidth: '80px',
+                appearance: 'none',
+                backgroundImage: "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23374151' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e\")",
+                backgroundPosition: 'right 8px center',
+                backgroundRepeat: 'no-repeat',
+                backgroundSize: '12px',
+                paddingRight: '30px'
+              }}
             >
-              <option value={0}>Yaş</option>
+              <option 
+                value={0}
+                style={{
+                  padding: '6px 10px',
+                  backgroundColor: 'white',
+                  color: '#666',
+                  fontSize: '13px'
+                }}
+              >
+                Yaş Seçin
+              </option>
               {[...Array(18)].map((_, i) => (
-                <option key={i} value={i}>{i}</option>
+                <option 
+                  key={i + 1} 
+                  value={i + 1}
+                  style={{
+                    padding: '6px 10px',
+                    backgroundColor: 'white',
+                    color: '#333',
+                    fontSize: '13px'
+                  }}
+                >
+                  {i + 1} yaş
+                </option>
               ))}
             </select>
           ))}
@@ -389,6 +426,20 @@ function SearchForm() {
               name="checkIn"
               value={searchData.checkIn}
               onChange={handleInputChange}
+              style={{
+                width: '100%',
+                height: '50px',
+                padding: '14px 45px 14px 18px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                color: '#333',
+                backgroundColor: 'white',
+                border: '2px solid transparent',
+                borderRadius: '8px',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                transition: 'all 0.3s ease'
+              }}
+              onClick={(e) => e.target.showPicker && e.target.showPicker()}
             />
           </div>
 
@@ -400,6 +451,20 @@ function SearchForm() {
               name="checkOut"
               value={searchData.checkOut}
               onChange={handleInputChange}
+              style={{
+                width: '100%',
+                height: '50px',
+                padding: '14px 45px 14px 18px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                color: '#333',
+                backgroundColor: 'white',
+                border: '2px solid transparent',
+                borderRadius: '8px',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                transition: 'all 0.3s ease'
+              }}
+              onClick={(e) => e.target.showPicker && e.target.showPicker()}
             />
           </div>
 
@@ -532,19 +597,63 @@ function SearchForm() {
             <div className="advanced-grid">
               <div>
                 <label>Para Birimi</label>
-                <select name="currency" value={searchData.currency} onChange={handleInputChange}>
+                <select 
+                  name="currency" 
+                  value={searchData.currency} 
+                  onChange={handleInputChange}
+                  style={{
+                    padding: '12px',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    color: '#333',
+                    backgroundColor: 'white',
+                    border: '2px solid #0a825a',
+                    borderRadius: '6px'
+                  }}
+                >
                   {currencies.map(currency => (
-                    <option key={currency.code} value={currency.code}>
-                      {currency.name} {currency.code}
+                    <option 
+                      key={currency.code} 
+                      value={currency.code}
+                      style={{
+                        padding: '8px',
+                        backgroundColor: 'white',
+                        color: '#333',
+                        fontSize: '14px'
+                      }}
+                    >
+                      {currency.name}
                     </option>
                   ))}
                 </select>
               </div>
               <div>
                 <label>Uyruk</label>
-                <select name="nationality" value={searchData.nationality} onChange={handleInputChange}>
+                <select 
+                  name="nationality" 
+                  value={searchData.nationality} 
+                  onChange={handleInputChange}
+                  style={{
+                    padding: '12px',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    color: '#333',
+                    backgroundColor: 'white',
+                    border: '2px solid #0a825a',
+                    borderRadius: '6px'
+                  }}
+                >
                   {countries.map(country => (
-                    <option key={country.code} value={country.code}>
+                    <option 
+                      key={country.code} 
+                      value={country.code}
+                      style={{
+                        padding: '8px',
+                        backgroundColor: 'white',
+                        color: '#333',
+                        fontSize: '14px'
+                      }}
+                    >
                       {country.name}
                     </option>
                   ))}
