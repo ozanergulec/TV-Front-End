@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import hotelService from '../services/hotelService';
-import '../components.css'; // ← Bu satırı ekledim
+import '../components.css';
 
 function SearchForm() {
   const [searchData, setSearchData] = useState({
     destination: '',
-    destinationName: '', // Görüntülenecek isim
+    destinationName: '',
     checkIn: '',
     checkOut: '',
     currency: 'EUR',
@@ -21,6 +21,7 @@ function SearchForm() {
 
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showGuestDropdown, setShowGuestDropdown] = useState(false);
   
   // Autocomplete states
   const [suggestions, setSuggestions] = useState([]);
@@ -29,6 +30,17 @@ function SearchForm() {
   
   const suggestionTimeoutRef = useRef(null);
   const dropdownRef = useRef(null);
+  const guestDropdownRef = useRef(null);
+
+  // Misafir özeti hesapla - sadece toplam
+  const getGuestSummary = () => {
+    const totalAdults = searchData.rooms.reduce((sum, room) => sum + room.adults, 0);
+    const totalChildren = searchData.rooms.reduce((sum, room) => sum + room.children, 0);
+    const totalGuests = totalAdults + totalChildren;
+    const roomCount = searchData.rooms.length;
+    
+    return `${totalGuests} Misafir, ${roomCount} Oda`;
+  };
 
   const currencies = [
     { code: 'EUR', name: '€' },
@@ -178,6 +190,9 @@ function SearchForm() {
   // Dışarı tıklayınca dropdown'ı kapat
   useEffect(() => {
     const handleClickOutside = (event) => {
+      if (guestDropdownRef.current && !guestDropdownRef.current.contains(event.target)) {
+        setShowGuestDropdown(false);
+      }
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowSuggestions(false);
       }
@@ -309,237 +324,215 @@ function SearchForm() {
   };
 
   // Çocuk satırı render fonksiyonu - özel tasarım
-  const renderChildrenRow = (room, roomIndex) => {
+  const renderChildAges = (room, roomIndex) => {
     if (room.children === 0) return null;
     
     return (
-      <div className="children-row">
-        <div className="children-left">
-          <span className="age-label">Çocuk Yaşları:</span>
-        </div>
-        <div className="children-right">
-          <div className="child-ages-inline">
-            {room.childAges.map((age, childIndex) => (
-              <select
-                key={childIndex}
-                className="age-select"
-                value={age}
-                onChange={(e) => updateChildAge(roomIndex, childIndex, e.target.value)}
-              >
-                <option value={0}>Yaş seç</option>
-                {[...Array(18)].map((_, i) => (
-                  <option key={i} value={i}>{i} yaş</option>
-                ))}
-              </select>
-            ))}
-          </div>
+      <div className="child-ages-row">
+        <span className="child-ages-label">Çocuk Yaşları:</span>
+        <div className="child-ages-selects">
+          {room.childAges.map((age, childIndex) => (
+            <select
+              key={childIndex}
+              className="age-select-small"
+              value={age}
+              onChange={(e) => updateChildAge(roomIndex, childIndex, e.target.value)}
+            >
+              <option value={0}>Yaş</option>
+              {[...Array(18)].map((_, i) => (
+                <option key={i} value={i}>{i}</option>
+              ))}
+            </select>
+          ))}
         </div>
       </div>
     );
   };
 
   return (
-    <div className="compact-search-container">
-      <form className="compact-search-form" onSubmit={handleSearch}>
-        
-        {/* Main Search Row */}
-        <div className="search-main-row">
-          {/* Destinasyon Input + Dropdown */}
-          <div className="input-group destination-group" ref={dropdownRef}>
-            <div className="destination-input-wrapper">
-              <input
-                type="text"
-                value={searchData.destinationName}
-                onChange={handleDestinationInputChange}
-                placeholder="Şehir ara... (Antalya, İstanbul, Ankara)"
-                className="compact-input"
-                disabled={isLoading}
-                autoComplete="off"
-              />
-              
-              {/* Loading spinner */}
-              {loadingSuggestions && (
-                <div className="suggestion-loading">Aranıyor...</div>
-              )}
-              
-              {/* Dropdown suggestions */}
-              {showSuggestions && suggestions.length > 0 && (
-                <div className="suggestions-dropdown">
-                  {suggestions.map((item, index) => (
-                    <div 
-                      key={index}
-                      className="suggestion-item"
-                      onClick={() => selectDestination(item)}
-                    >
-                      <div className="suggestion-main">
-                        <span className="city-name">
-                          {item.city?.name || 'Unknown City'}
-                        </span>
-                        <span className="country-name">
-                          , {item.country?.name || 'Unknown Country'}
-                        </span>
-                      </div>
-                      {item.state?.name && (
-                        <div className="suggestion-sub">
-                          {item.state.name}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+    <div className="booking-search">
+      <form onSubmit={handleSearch}>
+        <div className="search-bar">
+          {/* Destinasyon */}
+          <div className="search-field destination-field" ref={dropdownRef}>
+            <label>Nereye</label>
+            <input
+              type="text"
+              value={searchData.destinationName}
+              onChange={handleDestinationInputChange}
+              placeholder="Şehir ara... (Antalya, İstanbul, Ankara)"
+            />
+            {/* Autocomplete dropdown */}
+            {loadingSuggestions && (
+              <div className="autocomplete-loading">Aranıyor...</div>
+            )}
+            {showSuggestions && suggestions.length > 0 && (
+              <div className="autocomplete-dropdown">
+                {suggestions.map((item, index) => (
+                  <div
+                    key={index}
+                    className="autocomplete-item"
+                    onClick={() => selectDestination(item)}
+                  >
+                    {item.city?.name || item.giataInfo?.destinationId}, {item.country?.name}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
-          <div className="input-group date-group">
+          {/* Giriş Tarihi */}
+          <div className="search-field date-field">
+            <label>Giriş</label>
             <input
               type="date"
               name="checkIn"
               value={searchData.checkIn}
               onChange={handleInputChange}
-              className="compact-input date-input"
-              required
-              disabled={isLoading}
             />
           </div>
 
-          <div className="input-group date-group">
+          {/* Çıkış Tarihi */}
+          <div className="search-field date-field">
+            <label>Çıkış</label>
             <input
               type="date"
               name="checkOut"
               value={searchData.checkOut}
               onChange={handleInputChange}
-              className="compact-input date-input"
-              required
-              disabled={isLoading}
             />
           </div>
 
+          {/* Misafirler - Özet Button */}
+          <div className="search-field guest-field" ref={guestDropdownRef}>
+            <label>Misafirler</label>
+            <div 
+              className="guest-selector"
+              onClick={() => setShowGuestDropdown(!showGuestDropdown)}
+            >
+              <span>{getGuestSummary()}</span>
+              <span className="dropdown-arrow">▼</span>
+            </div>
+
+            {/* Guest Dropdown */}
+            {showGuestDropdown && (
+              <div className="guest-dropdown">
+                <div className="guest-dropdown-header">
+                  <h3>Misafirler</h3>
+                </div>
+
+                <div className="rooms-list">
+                  {searchData.rooms.map((room, roomIndex) => (
+                    <div key={roomIndex} className="room-item">
+                      {searchData.rooms.length > 1 && (
+                        <div className="room-header">
+                          <div className="room-title">{roomIndex + 1}. Oda</div>
+                          <button
+                            type="button"
+                            className="remove-room-link"
+                            onClick={() => removeRoom(roomIndex)}
+                          >
+                            Odayı Kaldır
+                          </button>
+                        </div>
+                      )}
+
+                      <div className="guest-row">
+                        <div className="guest-label">
+                          <strong>Yetişkin</strong>
+                          <small>18 yaş ve üzeri</small>
+                        </div>
+                        <div className="guest-counter">
+                          <button
+                            type="button"
+                            className="counter-btn"
+                            onClick={() => updateAdults(roomIndex, -1)}
+                            disabled={room.adults <= 1}
+                          >
+                            -
+                          </button>
+                          <span className="counter-num">{room.adults}</span>
+                          <button
+                            type="button"
+                            className="counter-btn"
+                            onClick={() => updateAdults(roomIndex, 1)}
+                            disabled={room.adults >= 6}
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="guest-row">
+                        <div className="guest-label">
+                          <strong>Çocuk</strong>
+                          <small>0-17 yaş</small>
+                        </div>
+                        <div className="guest-counter">
+                          <button
+                            type="button"
+                            className="counter-btn"
+                            onClick={() => updateChildren(roomIndex, -1)}
+                            disabled={room.children <= 0}
+                          >
+                            -
+                          </button>
+                          <span className="counter-num">{room.children}</span>
+                          <button
+                            type="button"
+                            className="counter-btn"
+                            onClick={() => updateChildren(roomIndex, 1)}
+                            disabled={room.children >= 4}
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+
+                      {renderChildAges(room, roomIndex)}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="add-room-section">
+                  <button
+                    type="button"
+                    className="add-room-link"
+                    onClick={addRoom}
+                    disabled={searchData.rooms.length >= 4}
+                  >
+                    Yeni Oda Ekle
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Ara Butonu */}
           <button 
             type="submit" 
-            className="compact-search-btn"
-            disabled={isLoading}
+            className="search-button"
+            disabled={isLoading || !searchData.destination || !searchData.checkIn || !searchData.checkOut}
           >
             {isLoading ? 'Aranıyor...' : 'Ara'}
           </button>
         </div>
 
-        {/* Rooms Section */}
-        <div className="rooms-section">
-          <div className="rooms-header">
-            <div className="rooms-title">
-              <span className="rooms-icon">🏨</span>
-              <h3>Odalar ({searchData.rooms.length})</h3>
-            </div>
-            <button
-              type="button"
-              onClick={addRoom}
-              className="add-room-btn"
-              disabled={isLoading || searchData.rooms.length >= 5}
-            >
-              <span className="btn-icon">+</span>
-              Oda Ekle
-            </button>
-          </div>
-
-          {searchData.rooms.map((room, roomIndex) => (
-            <div key={roomIndex} className="room-item">
-              <div className="room-header">
-                <div className="room-title">{roomIndex + 1}. Oda</div>
-                {searchData.rooms.length > 1 && (
-                  <button
-                    className="remove-room-link"
-                    onClick={() => removeRoom(roomIndex)}
-                  >
-                    Odayı Kaldır
-                  </button>
-                )}
-              </div>
-
-              {/* Yetişkin satırı */}
-              <div className="guest-row">
-                <div className="guest-label">
-                  <strong>👥 Yetişkin</strong>
-                  <small>18 yaş ve üzeri</small>
-                </div>
-                <div className="guest-counter">
-                  <button
-                    className="counter-btn"
-                    onClick={() => updateAdults(roomIndex, -1)}
-                    disabled={room.adults <= 1}
-                  >
-                    -
-                  </button>
-                  <span className="counter-num">{room.adults}</span>
-                  <button
-                    className="counter-btn"
-                    onClick={() => updateAdults(roomIndex, 1)}
-                    disabled={room.adults >= 6}
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-
-              {/* Çocuk satırı */}
-              <div className="guest-row">
-                <div className="guest-label">
-                  <strong>👶 Çocuk</strong>
-                  <small>0-17 yaş arası</small>
-                </div>
-                <div className="guest-counter">
-                  <button
-                    className="counter-btn"
-                    onClick={() => updateChildren(roomIndex, -1)}
-                    disabled={room.children <= 0}
-                  >
-                    -
-                  </button>
-                  <span className="counter-num">{room.children}</span>
-                  <button
-                    className="counter-btn"
-                    onClick={() => updateChildren(roomIndex, 1)}
-                    disabled={room.children >= 4}
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-
-              {/* Çocuk yaşları - sağ tarafta kompakt */}
-              {renderChildrenRow(room, roomIndex)}
-            </div>
-          ))}
-        </div>
-
-        {/* Advanced Options Toggle */}
-        <div className="advanced-toggle">
-          <button
-            type="button"
-            onClick={() => setShowAdvanced(!showAdvanced)}
-            className="toggle-btn"
-            disabled={isLoading}
-          >
-            <span className="toggle-icon">
-              {showAdvanced ? '▲' : '▼'}
-            </span>
-            {showAdvanced ? 'Gelişmiş Seçenekleri Gizle' : 'Gelişmiş Seçenekler'}
-          </button>
-        </div>
-
         {/* Advanced Options */}
+        <button
+          type="button"
+          className="advanced-toggle"
+          onClick={() => setShowAdvanced(!showAdvanced)}
+        >
+          Gelişmiş Seçenekler {showAdvanced ? '▲' : '▼'}
+        </button>
+
         {showAdvanced && (
           <div className="advanced-options">
-            <div className="advanced-row">
-              <div className="input-group-small">
-                <label>💰 Para Birimi</label>
-                <select
-                  name="currency"
-                  value={searchData.currency}
-                  onChange={handleInputChange}
-                  className="compact-select-small"
-                  disabled={isLoading}
-                >
+            <div className="advanced-grid">
+              <div>
+                <label>Para Birimi</label>
+                <select name="currency" value={searchData.currency} onChange={handleInputChange}>
                   {currencies.map(currency => (
                     <option key={currency.code} value={currency.code}>
                       {currency.name} {currency.code}
@@ -547,16 +540,9 @@ function SearchForm() {
                   ))}
                 </select>
               </div>
-
-              <div className="input-group-small">
-                <label>🌍 Uyruk</label>
-                <select
-                  name="nationality"
-                  value={searchData.nationality}
-                  onChange={handleInputChange}
-                  className="compact-select-small"
-                  disabled={isLoading}
-                >
+              <div>
+                <label>Uyruk</label>
+                <select name="nationality" value={searchData.nationality} onChange={handleInputChange}>
                   {countries.map(country => (
                     <option key={country.code} value={country.code}>
                       {country.name}
@@ -567,7 +553,6 @@ function SearchForm() {
             </div>
           </div>
         )}
-
       </form>
     </div>
   );
