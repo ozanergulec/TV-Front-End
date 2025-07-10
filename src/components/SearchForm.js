@@ -328,8 +328,61 @@ function SearchForm() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Helper functions
+  const getTodayDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = (today.getMonth() + 1).toString().padStart(2, '0');
+    const day = today.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const getMinCheckOutDate = () => {
+    if (!searchData.checkIn) return getTodayDate();
+    
+    const checkInDate = new Date(searchData.checkIn);
+    checkInDate.setDate(checkInDate.getDate() + 1);
+    
+    const year = checkInDate.getFullYear();
+    const month = (checkInDate.getMonth() + 1).toString().padStart(2, '0');
+    const day = checkInDate.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    
+    // Tarih validasyonu
+    if (name === 'checkIn') {
+      const today = getTodayDate();
+      if (value < today) {
+        alert('Giriş tarihi bugünden önceki bir tarih olamaz');
+        return;
+      }
+      
+      // Eğer check-out tarihi check-in'den önceyse, check-out'u temizle
+      if (searchData.checkOut && value >= searchData.checkOut) {
+        setSearchData(prev => ({
+          ...prev,
+          [name]: value,
+          checkOut: '' // Check-out'u temizle
+        }));
+        return;
+      }
+    }
+    
+    if (name === 'checkOut') {
+      if (!searchData.checkIn) {
+        alert('Önce giriş tarihini seçin');
+        return;
+      }
+      
+      if (value <= searchData.checkIn) {
+        alert('Çıkış tarihi giriş tarihinden sonra olmalıdır');
+        return;
+      }
+    }
+    
     setSearchData(prev => ({
       ...prev,
       [name]: value
@@ -552,6 +605,7 @@ function SearchForm() {
               name="checkIn"
               value={searchData.checkIn}
               onChange={handleInputChange}
+              min={getTodayDate()} // Bugünden önceki tarihleri engellle
             />
           </div>
 
@@ -563,6 +617,7 @@ function SearchForm() {
               name="checkOut"
               value={searchData.checkOut}
               onChange={handleInputChange}
+              min={getMinCheckOutDate()} // Check-in tarihinden sonra olmalı
             />
           </div>
 
