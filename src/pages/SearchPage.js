@@ -5,20 +5,15 @@ import PopularDestinations from '../components/PopularDestinations';
 function SearchPage() {
   const searchFormRef = useRef(null);
 
-  const handleDestinationSelect = (destination) => {
-    // İlerde SearchForm'daki input'u otomatik dolduracak
-    console.log('Seçilen destinasyon:', destination);
+  const handleDestinationSelect = async (destination) => {
+    console.log('🏙️ Popüler destinasyon seçildi:', destination);
     
-    // Sayfayı SearchForm'a scroll et
-    if (searchFormRef.current) {
-      searchFormRef.current.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'center'
-      });
+    // Scroll kısmını kaldırdık - sayfa yerinde duracak
+    
+    // SearchForm'daki method'u çağır
+    if (searchFormRef.current && searchFormRef.current.setDestinationFromCity) {
+      await searchFormRef.current.setDestinationFromCity(destination);
     }
-    
-    // TODO: SearchForm'daki destination input'una değeri set et
-    // Bu kısmı backend hazır olunca geliştireceğiz
   };
 
   return (
@@ -28,8 +23,8 @@ function SearchPage() {
         <p className="search-subtitle">Binlerce otel arasından size en uygun olanı seçin</p>
       </div>
       
-      <div className="search-container" ref={searchFormRef}>
-        <SearchForm />
+      <div className="search-container">
+        <SearchForm ref={searchFormRef} />
       </div>
 
       <PopularDestinations onDestinationSelect={handleDestinationSelect} />
