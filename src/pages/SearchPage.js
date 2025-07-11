@@ -3,19 +3,12 @@ import SearchForm from '../components/SearchForm';
 import PopularDestinations from '../components/PopularDestinations';
 
 function SearchPage() {
-  const searchFormRef = useRef(null);      // SearchForm component için
-  const searchContainerRef = useRef(null); // DOM scroll için
+  const searchFormRef = useRef(null);
 
   const handleDestinationSelect = async (destination) => {
     console.log('🏙️ Popüler destinasyon seçildi:', destination);
     
-    // Sayfayı SearchForm container'ına scroll et
-    if (searchContainerRef.current) {
-      searchContainerRef.current.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'center'
-      });
-    }
+    // Scroll kısmını kaldırdık - sayfa yerinde duracak
     
     // SearchForm'daki method'u çağır
     if (searchFormRef.current && searchFormRef.current.setDestinationFromCity) {
@@ -30,7 +23,7 @@ function SearchPage() {
         <p className="search-subtitle">Binlerce otel arasından size en uygun olanı seçin</p>
       </div>
       
-      <div className="search-container" ref={searchContainerRef}>
+      <div className="search-container">
         <SearchForm ref={searchFormRef} />
       </div>
 
