@@ -34,9 +34,15 @@ function PopularDestinations({ onDestinationSelect }) {
         },
         {
           id: 6,
-          name: 'Dörtyol',
+          name: 'Hatay',
           image: '/images/destinations/hatay.jpg',
           description: 'Hatay\'ın doğal güzellikleri'
+        },
+        {
+          id: 7,
+          name: 'Athens',
+          image: '/images/destinations/atina.jpg',
+          description: 'Yunanistan\'ın antik şehirleri ve doğa harikası'
         }
       ];
 

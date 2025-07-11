@@ -3,22 +3,24 @@ import SearchForm from '../components/SearchForm';
 import PopularDestinations from '../components/PopularDestinations';
 
 function SearchPage() {
-  const searchFormRef = useRef(null);
+  const searchFormRef = useRef(null);      // SearchForm component için
+  const searchContainerRef = useRef(null); // DOM scroll için
 
-  const handleDestinationSelect = (destination) => {
-    // İlerde SearchForm'daki input'u otomatik dolduracak
-    console.log('Seçilen destinasyon:', destination);
+  const handleDestinationSelect = async (destination) => {
+    console.log('🏙️ Popüler destinasyon seçildi:', destination);
     
-    // Sayfayı SearchForm'a scroll et
-    if (searchFormRef.current) {
-      searchFormRef.current.scrollIntoView({ 
+    // Sayfayı SearchForm container'ına scroll et
+    if (searchContainerRef.current) {
+      searchContainerRef.current.scrollIntoView({ 
         behavior: 'smooth',
         block: 'center'
       });
     }
     
-    // TODO: SearchForm'daki destination input'una değeri set et
-    // Bu kısmı backend hazır olunca geliştireceğiz
+    // SearchForm'daki method'u çağır
+    if (searchFormRef.current && searchFormRef.current.setDestinationFromCity) {
+      await searchFormRef.current.setDestinationFromCity(destination);
+    }
   };
 
   return (
@@ -28,8 +30,8 @@ function SearchPage() {
         <p className="search-subtitle">Binlerce otel arasından size en uygun olanı seçin</p>
       </div>
       
-      <div className="search-container" ref={searchFormRef}>
-        <SearchForm />
+      <div className="search-container" ref={searchContainerRef}>
+        <SearchForm ref={searchFormRef} />
       </div>
 
       <PopularDestinations onDestinationSelect={handleDestinationSelect} />

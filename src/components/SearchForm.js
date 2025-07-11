@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import hotelService from '../services/hotelService';
 import '../components.css';
 
-function SearchForm() {
+const SearchForm = forwardRef((props, ref) => {
   const [searchData, setSearchData] = useState({
     destination: '',
     destinationName: '',
@@ -46,6 +47,135 @@ function SearchForm() {
   const guestDropdownRef = useRef(null);
   const currencyDropdownRef = useRef(null);
   const nationalityDropdownRef = useRef(null);
+
+  const navigate = useNavigate();
+
+  // Parent component'a expose edilecek methodlar
+  useImperativeHandle(ref, () => ({
+    setDestinationFromCity: async (cityName) => {
+      try {
+        console.log('🏙️ Şehir seçildi:', cityName);
+        setLoadingSuggestions(true);
+        
+        // Autocomplete API'sinden ilk sonucu al
+        const result = await hotelService.getArrivalAutocomplete(cityName);
+        
+        if (result.header?.success && result.body?.items && result.body.items.length > 0) {
+          const firstResult = result.body.items[0];
+          
+          // İlk sonucu destinasyon olarak set et
+          let destinationId, displayName;
+          
+          if (firstResult.type === 1) {
+            // Lokasyon seçimi
+            destinationId = firstResult.city?.id || firstResult.giataInfo?.destinationId;
+            const cityName = firstResult.city?.name || 'Unknown';
+            const countryName = firstResult.country?.name || '';
+            displayName = countryName ? `${cityName}, ${countryName}` : cityName;
+          } else {
+            // Otel seçimi
+            destinationId = firstResult.hotel?.id || firstResult.giataInfo?.hotelId;
+            const hotelName = firstResult.hotel?.name || 'Unknown';
+            const cityName = firstResult.city?.name || '';
+            displayName = `${hotelName} (${cityName})`;
+          }
+          
+          // Güncellenmiş searchData objesi oluştur
+          const updatedSearchData = {
+            ...searchData,
+            destination: destinationId,
+            destinationName: displayName
+          };
+          
+          // State'i güncelle
+          setSearchData(updatedSearchData);
+          
+          console.log('✅ Destinasyon set edildi:', displayName, 'ID:', destinationId);
+          
+          // ✅ DİREKT OLARAK güncellenmiş data ile arama yap - setTimeout yok!
+          await handleAutoSearch(updatedSearchData);
+          
+        } else {
+          console.log('❌ Şehir için sonuç bulunamadı:', cityName);
+          alert('Bu şehir için otel bulunamadı');
+        }
+      } catch (error) {
+        console.error('❌ Şehir seçimi hatası:', error);
+        alert('Şehir seçiminde hata oluştu');
+      } finally {
+        setLoadingSuggestions(false);
+      }
+    }
+  }));
+
+  // Otomatik arama fonksiyonu - parametre olarak searchData alabilir
+  const handleAutoSearch = async (customSearchData = null) => {
+    // Eğer parametre olarak data gelmişse onu kullan, yoksa state'deki data'yı kullan
+    const currentSearchData = customSearchData || searchData;
+    
+    // Temel tarihler yoksa varsayılan tarihler ekle
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const dayAfterTomorrow = new Date(today);
+    dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 2);
+    
+    const checkInDate = currentSearchData.checkIn || tomorrow.toISOString().split('T')[0];
+    const checkOutDate = currentSearchData.checkOut || dayAfterTomorrow.toISOString().split('T')[0];
+    
+    // Final search parametrelerini oluştur
+    const searchParams = {
+      ...currentSearchData,
+      checkIn: checkInDate,
+      checkOut: checkOutDate
+    };
+    
+    // Tarihleri state'e de güncelle (eğer eksikse)
+    if (!currentSearchData.checkIn || !currentSearchData.checkOut) {
+      setSearchData(prev => ({
+        ...prev,
+        checkIn: checkInDate,
+        checkOut: checkOutDate
+      }));
+    }
+    
+    // Validasyon
+    if (!searchParams.destination) {
+      console.log('❌ Destinasyon eksik, arama yapılamıyor');
+      return;
+    }
+
+    setIsLoading(true);
+    
+    try {
+      console.log('🚀 Otomatik arama başlatılıyor...');
+      console.log('📝 Destinasyon:', searchParams.destinationName);
+      console.log('🆔 Destinasyon ID:', searchParams.destination);
+      console.log('📅 Tarih Aralığı:', `${checkInDate} → ${checkOutDate}`);
+      
+      const result = await hotelService.priceSearch(searchParams);
+      
+      if (result.header?.success) {
+        console.log('✅ Arama başarılı, results sayfasına yönlendiriliyor...');
+        
+        // Results sayfasına search data ile birlikte navigate et
+        navigate('/results', { 
+          state: { 
+            searchResults: result,
+            searchData: searchParams
+          } 
+        });
+      } else {
+        console.log('❌ Arama başarısız:', result);
+        alert('Bu bölgede otel bulunamadı');
+      }
+    } catch (error) {
+      console.error('❌ Arama hatası:', error);
+      alert('Arama sırasında hata oluştu');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // YENİ LOOKUP DATA ÇEKME EFFECT'İ
   useEffect(() => {
@@ -913,6 +1043,9 @@ function SearchForm() {
       </form>
     </div>
   );
-}
+});
+
+// Component display name for debugging
+SearchForm.displayName = 'SearchForm';
 
 export default SearchForm;
