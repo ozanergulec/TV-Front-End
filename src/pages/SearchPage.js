@@ -8,11 +8,10 @@ function SearchPage() {
   const handleDestinationSelect = async (destination) => {
     console.log('🏙️ Popüler destinasyon seçildi:', destination);
     
-    // Scroll kısmını kaldırdık - sayfa yerinde duracak
-    
-    // SearchForm'daki method'u çağır
+    // SearchForm'daki method'u çağır - shouldNavigate = true (varsayılan)
     if (searchFormRef.current && searchFormRef.current.setDestinationFromCity) {
-      await searchFormRef.current.setDestinationFromCity(destination);
+      await searchFormRef.current.setDestinationFromCity(destination, true);
+      // setDestinationFromCity artık direkt navigate edecek ve loading spinner gösterecek
     }
   };
 
