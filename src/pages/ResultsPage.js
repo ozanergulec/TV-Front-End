@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import HotelCard from '../components/HotelCard';
 import '../pages.css';
 
 function ResultsPage() {
@@ -15,118 +16,86 @@ function ResultsPage() {
   const [filteredHotels, setFilteredHotels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState('recommended');
-  
-  // Filter states
-  const [priceRange, setPriceRange] = useState({ min: 0, max: 10000 });
+  const [priceRange, setPriceRange] = useState({ min: 0, max: 2000 });
   const [selectedRating, setSelectedRating] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
 
-  // ✅ API'DEN GERÇEK OTEL FOTOĞRAFI ÇEK
+  // ✅ EXTRACT FUNCTIONS - DAHA TEMIZ
   const extractHotelImage = (hotel, index) => {
-    // 1. önce thumbnailFull (tam URL)
-    if (hotel.thumbnailFull && typeof hotel.thumbnailFull === 'string') {
-      console.log(`✅ Hotel ${index} using thumbnailFull:`, hotel.thumbnailFull);
+    if (hotel.thumbnailFull) {
+      console.log(`✅ Using thumbnailFull for hotel ${index}:`, hotel.thumbnailFull);
       return hotel.thumbnailFull;
     }
     
-    // 2. thumbnail (kısa path) varsa base URL ekle
-    if (hotel.thumbnail && typeof hotel.thumbnail === 'string') {
-      const baseUrl = 'https://prod-services.tourvisio.com/media';
-      const imageUrl = hotel.thumbnail.startsWith('/') ? 
-        baseUrl + hotel.thumbnail : 
-        baseUrl + '/' + hotel.thumbnail;
-      console.log(`✅ Hotel ${index} using thumbnail with base URL:`, imageUrl);
-      return imageUrl;
+    if (hotel.thumbnail) {
+      console.log(`✅ Using thumbnail for hotel ${index}:`, hotel.thumbnail);
+      return hotel.thumbnail;
     }
-
-    // 3. Diğer muhtemel field'lar
-    if (hotel.image && typeof hotel.image === 'string') {
-      console.log(`✅ Hotel ${index} using image:`, hotel.image);
+    
+    if (hotel.image) {
+      console.log(`✅ Using image for hotel ${index}:`, hotel.image);
       return hotel.image;
     }
-
-    // 4. Fallback - local image
-    const fallbackImages = [
-      '/images/destinations/istanbul.jpg',
-      '/images/destinations/antalya.jpg',
-      '/images/destinations/ankara.jpg',
-      '/images/destinations/izmir.jpg',
-      '/images/destinations/mugla.jpg',
-      '/images/destinations/hatay.jpg',
-      '/images/destinations/atina.jpg'
-    ];
-    const fallbackImage = fallbackImages[index % fallbackImages.length];
-    console.log(`⚠️ Hotel ${index} using fallback:`, fallbackImage);
-    return fallbackImage;
+    
+    console.log(`❌ No image found for hotel ${index}, using fallback`);
+    return '/images/destinations/istanbul.jpg';
   };
 
-  // ✅ FAĆİLİTİES'i AMENİTİES'e ÇEVİR
   const extractAmenities = (hotel) => {
-    if (Array.isArray(hotel.facilities) && hotel.facilities.length > 0) {
-      return hotel.facilities.map(facility => facility.name).filter(name => name);
+    if (hotel.facilities && Array.isArray(hotel.facilities)) {
+      return hotel.facilities.slice(0, 8).map(f => f.name || f).filter(Boolean);
     }
-    return ['WiFi', 'Klima', 'Otopark']; // fallback
+    return ['WiFi', 'Klima', 'Kahvaltı', 'Havuz'];
   };
 
-  // ✅ RATING'i STARS'dan AL
   const extractRating = (hotel) => {
-    // Önce rating varsa onu kullan
-    if (hotel.rating && parseFloat(hotel.rating) > 0) {
-      return parseFloat(hotel.rating);
+    if (hotel.rating && typeof hotel.rating === 'number') {
+      return Math.max(3.0, Math.min(5.0, hotel.rating));
     }
-    
-    // Rating yoksa stars'ı rating olarak kullan
-    if (hotel.stars && parseFloat(hotel.stars) > 0) {
-      return parseFloat(hotel.stars);
+    if (hotel.stars && typeof hotel.stars === 'number') {
+      return Math.max(3.0, Math.min(5.0, hotel.stars));
     }
-    
-    // Hiç bir şey yoksa random rating
-    return 4.0 + Math.random() * 1; // 4.0-5.0 arası
+    return 3.5 + Math.random() * 1.5;
   };
 
-  // ✅ GÜVENLİ STRING DÖNÜŞTÜRMESİ
   const safeString = (value) => {
-    if (!value) return '';
-    if (typeof value === 'string') return value;
-    if (typeof value === 'object' && value.text) return value.text;
-    if (typeof value === 'object' && value.name) return value.name;
-    if (typeof value === 'object' && value.value) return value.value;
-    return String(value);
+    if (value && typeof value === 'object' && value.text) {
+      return String(value.text);
+    }
+    return value ? String(value) : '';
   };
 
+  // ✅ PARSE HOTEL DATA - DAHA DÜZENLI
   useEffect(() => {
-    // Eğer search data yoksa ana sayfaya yönlendir
-    if (!searchResults || !searchData) {
-      console.log('❌ Search data bulunamadı, ana sayfaya yönlendiriliyor...');
-      navigate('/');
+    if (!searchResults) {
+      setLoading(false);
       return;
     }
 
-    console.log('📥 API Response Analysis:', searchResults);
-    setLoading(true);
-    
     try {
-      // API response'undan otelleri çıkar
-      if (searchResults.header?.success && searchResults.body?.hotels) {
-        const hotelData = searchResults.body.hotels.map((hotel, index) => {
-          console.log(`🏨 Hotel ${index + 1} - ${hotel.name}:`, hotel);
+      console.log('🏨 Full API Response:', searchResults);
+      
+      const hotelsData = searchResults?.body?.hotels || searchResults?.hotels || [];
+      console.log('🏨 Hotels array:', hotelsData);
+      
+      if (Array.isArray(hotelsData) && hotelsData.length > 0) {
+        const hotelData = hotelsData.map((hotel, index) => {
+          console.log(`🏨 Processing hotel ${index}:`, hotel);
           
           return {
             id: hotel.id || `hotel-${index}`,
             name: safeString(hotel.name) || `Otel ${index + 1}`,
-            location: safeString(hotel.location?.name || hotel.city?.name) || 'Şehir Merkezi',
-            rating: extractRating(hotel), // ✅ Stars veya rating'den al
-            stars: parseInt(hotel.stars) || 5, // ✅ Otel yıldızı
-            image: extractHotelImage(hotel, index), // ✅ API'den gerçek fotoğraf
+            location: safeString(hotel.location?.name) || safeString(hotel.city?.name) || 'Konum Bilgisi Yok',
+            rating: extractRating(hotel),
+            stars: hotel.stars || Math.floor(extractRating(hotel)),
+            image: extractHotelImage(hotel, index),
             price: parseFloat(hotel.offers?.[0]?.price?.amount) || 0,
             currency: safeString(hotel.offers?.[0]?.price?.currency) || safeString(searchData.currency) || 'EUR',
             originalPrice: parseFloat(hotel.offers?.[0]?.originalPrice?.amount) || null,
             description: safeString(hotel.description) || `${safeString(hotel.name)} size konforlu konaklama imkanı sunar. ${hotel.stars ? hotel.stars + ' yıldızlı' : 'Kaliteli'} otel deneyimi.`,
-            amenities: extractAmenities(hotel), // ✅ Facilities'den amenities yap
+            amenities: extractAmenities(hotel),
             offers: Array.isArray(hotel.offers) ? hotel.offers : [],
             distance: parseFloat(hotel.distance) || (Math.random() * 5 + 0.5),
-            
-            // ✅ Ekstra bilgiler
             address: safeString(hotel.address) || '',
             facilities: hotel.facilities || [],
             hotelCategory: hotel.hotelCategory || null
@@ -161,21 +130,18 @@ function ResultsPage() {
     setLoading(false);
   }, [searchResults, searchData, navigate]);
 
-  // Filtreleme ve sıralama
+  // ✅ FILTERING & SORTING
   useEffect(() => {
     let filtered = [...hotels];
 
-    // Fiyat filtresi
     filtered = filtered.filter(hotel => 
       hotel.price >= priceRange.min && hotel.price <= priceRange.max
     );
 
-    // Rating filtresi
     if (selectedRating > 0) {
       filtered = filtered.filter(hotel => hotel.rating >= selectedRating);
     }
 
-    // Sıralama
     switch (sortBy) {
       case 'price_low':
         filtered.sort((a, b) => a.price - b.price);
@@ -189,60 +155,51 @@ function ResultsPage() {
       case 'distance':
         filtered.sort((a, b) => a.distance - b.distance);
         break;
-      default: // recommended
-        // Keep original order
+      default:
         break;
     }
 
     setFilteredHotels(filtered);
   }, [hotels, priceRange, selectedRating, sortBy]);
 
+  // ✅ HELPER FUNCTIONS
   const formatDate = (dateString) => {
     if (!dateString) return '';
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('tr-TR', { 
-        day: 'numeric', 
-        month: 'long' 
-      });
-    } catch (error) {
-      return String(dateString);
-    }
+    const date = new Date(dateString);
+    return date.toLocaleDateString('tr-TR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
   };
 
   const calculateNights = () => {
     if (!searchData?.checkIn || !searchData?.checkOut) return 1;
-    try {
-      const start = new Date(searchData.checkIn);
-      const end = new Date(searchData.checkOut);
-      return Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60 * 24)));
-    } catch (error) {
-      return 1;
-    }
+    const checkIn = new Date(searchData.checkIn);
+    const checkOut = new Date(searchData.checkOut);
+    const diffTime = Math.abs(checkOut - checkIn);
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
   };
 
   const renderStars = (rating) => {
-    const stars = [];
-    const safeRating = parseFloat(rating) || 0;
-    const fullStars = Math.floor(safeRating);
-    const hasHalfStar = safeRating % 1 >= 0.5;
-
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(<span key={i} className="star filled">★</span>);
-    }
-
-    if (hasHalfStar) {
-      stars.push(<span key="half" className="star half">★</span>);
-    }
-
-    const emptyStars = 5 - Math.ceil(safeRating);
-    for (let i = 0; i < emptyStars; i++) {
-      stars.push(<span key={`empty-${i}`} className="star empty">☆</span>);
-    }
-
-    return stars;
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating - fullStars >= 0.5;
+    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+    
+    return (
+      <>
+        {[...Array(fullStars)].map((_, i) => (
+          <span key={`full-${i}`} className="star">★</span>
+        ))}
+        {hasHalfStar && <span className="star half">★</span>}
+        {[...Array(emptyStars)].map((_, i) => (
+          <span key={`empty-${i}`} className="star empty">★</span>
+        ))}
+      </>
+    );
   };
 
+  // ✅ LOADING STATE
   if (loading) {
     return (
       <div className="results-page">
@@ -254,6 +211,7 @@ function ResultsPage() {
     );
   }
 
+  // ✅ ERROR STATE
   if (!searchResults || !searchData) {
     return (
       <div className="results-page">
@@ -349,7 +307,7 @@ function ResultsPage() {
                   <span>
                     {rating === 0 ? 'Tümü' : (
                       <>
-                        {rating}+ {renderStars(rating)}
+                        {rating}+ <div className="stars">{renderStars(rating)}</div>
                       </>
                     )}
                   </span>
@@ -359,131 +317,47 @@ function ResultsPage() {
           </div>
         </div>
 
-        {/* Main Content */}
+        {/* Main Results */}
         <div className="results-main">
-          {/* Sort and Filter Bar */}
+          {/* Sort & Filter Bar */}
           <div className="sort-filter-bar">
             <div className="sort-options">
               <label>Sırala:</label>
-              <select 
-                value={sortBy} 
+              <select
+                value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 className="sort-select"
               >
                 <option value="recommended">Önerilen</option>
-                <option value="price_low">Fiyat (Düşük → Yüksek)</option>
-                <option value="price_high">Fiyat (Yüksek → Düşük)</option>
-                <option value="rating">Puan (Yüksek → Düşük)</option>
+                <option value="price_low">Fiyat (Düşük-Yüksek)</option>
+                <option value="price_high">Fiyat (Yüksek-Düşük)</option>
+                <option value="rating">Puan</option>
                 <option value="distance">Mesafe</option>
               </select>
             </div>
-            
             <button 
               className="mobile-filter-btn"
               onClick={() => setShowFilters(true)}
             >
-              Filtreler ({(selectedRating > 0 ? 1 : 0)})
+              Filtreler
             </button>
           </div>
 
-          {/* Hotels List */}
+          {/* ✅ TEMIZLENMIŞ HOTELS LIST */}
           <div className="hotels-list">
             {filteredHotels.length === 0 ? (
               <div className="no-results">
-                <h3>Bu kriterlere uygun otel bulunamadı</h3>
-                <p>Filtrelerinizi değiştirmeyi deneyin</p>
+                <h3>Arama kriterlerinize uygun otel bulunamadı</h3>
+                <p>Filtreleri değiştirerek tekrar deneyin</p>
               </div>
             ) : (
-              filteredHotels.map(hotel => (
-                <div key={hotel.id} className="hotel-card">
-                  <div className="hotel-image">
-                    <img 
-                      src={hotel.image} 
-                      alt={hotel.name}
-                      onError={(e) => {
-                        console.log('❌ Image failed to load:', e.target.src);
-                        e.target.src = '/images/destinations/istanbul.jpg';
-                      }}
-                      onLoad={() => {
-                        console.log('✅ Image loaded successfully:', hotel.image);
-                      }}
-                    />
-                    {hotel.originalPrice && hotel.originalPrice > hotel.price && (
-                      <div className="discount-badge">
-                        %{Math.round((1 - hotel.price / hotel.originalPrice) * 100)} İndirim
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="hotel-info">
-                    <div className="hotel-header">
-                      <h3 className="hotel-name">{hotel.name}</h3>
-                      <div className="hotel-rating">
-                        <div className="stars">
-                          {renderStars(hotel.rating)}
-                        </div>
-                        <span className="rating-number">({hotel.rating.toFixed(1)})</span>
-                      </div>
-                    </div>
-
-                    <p className="hotel-location">📍 {hotel.location}</p>
-                    
-                    {hotel.distance > 0 && (
-                      <p className="hotel-distance">🚗 Merkeze {hotel.distance.toFixed(1)} km</p>
-                    )}
-
-                    <p className="hotel-description">{hotel.description}</p>
-
-                    <div className="hotel-amenities">
-                      {hotel.amenities.slice(0, 4).map((amenity, index) => (
-                        <span key={index} className="amenity-tag">
-                          {amenity}
-                        </span>
-                      ))}
-                      {hotel.amenities.length > 4 && (
-                        <span className="amenity-more">
-                          +{hotel.amenities.length - 4} daha
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="hotel-pricing">
-                    <div className="price-info">
-                      {hotel.originalPrice && hotel.originalPrice > hotel.price && (
-                        <div className="original-price">
-                          {hotel.originalPrice.toFixed(0)} {hotel.currency}
-                        </div>
-                      )}
-                      <div className="current-price">
-                        <span className="amount">{hotel.price.toFixed(0)}</span>
-                        <span className="currency">{hotel.currency}</span>
-                      </div>
-                      <div className="price-detail">
-                        Toplam {nights} gece için
-                      </div>
-                    </div>
-
-                    <div className="booking-actions">
-                      <button 
-                        className="view-details-btn"
-                        onClick={() => navigate(`/hotel/${hotel.id}`, { 
-                          state: { hotel, searchData } 
-                        })}
-                      >
-                        Detayları Gör
-                      </button>
-                      <button 
-                        className="book-now-btn"
-                        onClick={() => navigate('/booking', { 
-                          state: { hotel, searchData } 
-                        })}
-                      >
-                        Rezervasyon Yap
-                      </button>
-                    </div>
-                  </div>
-                </div>
+              filteredHotels.map((hotel, index) => (
+                <HotelCard 
+                  key={hotel.id}
+                  hotel={hotel}
+                  nights={nights}
+                  searchData={searchData}
+                />
               ))
             )}
           </div>
