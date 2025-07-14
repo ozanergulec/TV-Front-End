@@ -54,7 +54,7 @@ const SearchForm = forwardRef((props, ref) => {
 
   // Parent component'a expose edilecek methodlar
   useImperativeHandle(ref, () => ({
-    setDestinationFromCity: async (cityName) => {
+    setDestinationFromCity: async (cityName, shouldNavigate = true) => {
       try {
         console.log('🏙️ Şehir seçildi:', cityName);
         setLoadingSuggestions(true);
@@ -94,16 +94,48 @@ const SearchForm = forwardRef((props, ref) => {
           
           console.log('✅ Destinasyon set edildi:', displayName, 'ID:', destinationId);
           
-          // ✅ DİREKT OLARAK güncellenmiş data ile arama yap - setTimeout yok!
-          await handleAutoSearch(updatedSearchData);
+          // ✅ shouldNavigate parametresine göre karar ver
+          if (shouldNavigate) {
+            // Eğer onSearchComplete prop'u varsa onu çağır (ResultsPage için)
+            if (onSearchComplete) {
+              await handleAutoSearch(updatedSearchData);
+            } else {
+              // HomePage/SearchPage'den çağrılıyor - direkt navigate et
+              // Temel tarihler yoksa varsayılan tarihler ekle
+              const today = new Date();
+              const tomorrow = new Date(today);
+              tomorrow.setDate(tomorrow.getDate() + 1);
+              const dayAfterTomorrow = new Date(today);
+              dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 2);
+              
+              const finalSearchData = {
+                ...updatedSearchData,
+                checkIn: updatedSearchData.checkIn || tomorrow.toISOString().split('T')[0],
+                checkOut: updatedSearchData.checkOut || dayAfterTomorrow.toISOString().split('T')[0]
+              };
+              
+              console.log('🚀 SearchPage\'den navigate ediliyor...');
+              navigate('/results', { 
+                state: { 
+                  searchData: finalSearchData,
+                  isLoading: true 
+                } 
+              });
+            }
+          }
+          
+          // Return the data for external handling if needed
+          return updatedSearchData;
           
         } else {
           console.log('❌ Şehir için sonuç bulunamadı:', cityName);
           alert('Bu şehir için otel bulunamadı');
+          return null;
         }
       } catch (error) {
         console.error('❌ Şehir seçimi hatası:', error);
         alert('Şehir seçiminde hata oluştu');
+        return null;
       } finally {
         setLoadingSuggestions(false);
       }
