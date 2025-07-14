@@ -4,7 +4,9 @@ import hotelService from '../services/hotelService';
 import '../components.css';
 
 const SearchForm = forwardRef((props, ref) => {
-  const [searchData, setSearchData] = useState({
+  const { onSearchComplete, initialData } = props;
+  
+  const [searchData, setSearchData] = useState(initialData || {
     destination: '',
     destinationName: '',
     checkIn: '',
@@ -156,15 +158,20 @@ const SearchForm = forwardRef((props, ref) => {
       const result = await hotelService.priceSearch(searchParams);
       
       if (result.header?.success) {
-        console.log('✅ Arama başarılı, results sayfasına yönlendiriliyor...');
+        console.log('✅ Arama başarılı');
         
-        // Results sayfasına search data ile birlikte navigate et
-        navigate('/results', { 
-          state: { 
-            searchResults: result,
-            searchData: searchParams
-          } 
-        });
+        // Eğer onSearchComplete prop'u varsa onu çağır (ResultsPage için)
+        if (onSearchComplete) {
+          onSearchComplete(searchParams);
+        } else {
+          // Yoksa navigate et (HomePage için)
+          navigate('/results', { 
+            state: { 
+              searchResults: result,
+              searchData: searchParams
+            } 
+          });
+        }
       } else {
         console.log('❌ Arama başarısız:', result);
         alert('Bu bölgede otel bulunamadı');
@@ -534,63 +541,87 @@ const SearchForm = forwardRef((props, ref) => {
   const handleSearch = async (e) => {
     e.preventDefault();
     
-    // Validasyon
+    // Basic validation
     if (!searchData.destination) {
       alert('Lütfen bir destinasyon seçin');
       return;
     }
+    
     if (!searchData.checkIn || !searchData.checkOut) {
-      alert('Lütfen check-in ve check-out tarihlerini seçin');
+      alert('Lütfen giriş ve çıkış tarihlerini seçin');
       return;
     }
-
-    // Çocuk yaşları validasyonu
-    for (let i = 0; i < searchData.rooms.length; i++) {
-      const room = searchData.rooms[i];
+    
+    // Check date validation
+    const checkIn = new Date(searchData.checkIn);
+    const checkOut = new Date(searchData.checkOut);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    if (checkIn < today) {
+      alert('Giriş tarihi bugünden önce olamaz');
+      return;
+    }
+    
+    if (checkOut <= checkIn) {
+      alert('Çıkış tarihi giriş tarihinden sonra olmalıdır');
+      return;
+    }
+    
+    // Check child ages
+    for (let room of searchData.rooms) {
       if (room.children > 0) {
-        const hasInvalidAge = room.childAges.some(age => age === 0);
-        if (hasInvalidAge) {
-          alert(`${i + 1}. odadaki çocuk yaşlarını belirtiniz`);
+        const invalidAges = room.childAges.filter(age => age === 0 || age === '');
+        if (invalidAges.length > 0) {
+          alert('Lütfen tüm çocukların yaşlarını seçin');
           return;
         }
       }
     }
-
+    
     setIsLoading(true);
     
     try {
-      console.log('🚀 Arama başlatılıyor...');
-      console.log('📝 Destinasyon:', searchData.destinationName);
-      console.log('🆔 Destinasyon ID:', searchData.destination);
-      console.log('📅 Tarih Aralığı:', `${searchData.checkIn} → ${searchData.checkOut}`);
+      console.log('🔍 Arama başlatılıyor...', searchData);
       
       const result = await hotelService.priceSearch(searchData);
       
-      console.log('📥 API Response:', result.header?.success);
-      
       if (result.header?.success) {
-        console.log('✅ Arama başarılı, results sayfasına yönlendiriliyor...');
+        console.log('✅ Arama başarılı, sonuçlar alındı');
         
-        // ✅ NAVIGATE EKLENDİ - Results sayfasına yönlendir
-        navigate('/results', { 
-          state: { 
-            searchResults: result,
-            searchData: searchData
-          } 
-        });
-        
+        // Eğer onSearchComplete prop'u varsa onu çağır (ResultsPage için)
+        if (onSearchComplete) {
+          onSearchComplete(searchData);
+        } else {
+          // Yoksa navigate et (HomePage için)
+          navigate('/results', { 
+            state: { 
+              searchResults: result,
+              searchData: searchData
+            } 
+          });
+        }
       } else {
         console.log('❌ Arama başarısız:', result);
         alert('Bu bölgede otel bulunamadı');
       }
-      
     } catch (error) {
       console.error('❌ Arama hatası:', error);
-      alert('Arama sırasında hata oluştu: ' + error.message);
+      alert('Arama sırasında hata oluştu');
     } finally {
       setIsLoading(false);
     }
   };
+
+  // initialData değiştiğinde searchData'yı güncelle
+  useEffect(() => {
+    if (initialData) {
+      setSearchData(prev => ({
+        ...prev,
+        ...initialData
+      }));
+    }
+  }, [initialData]);
 
   // Çocuk satırı render fonksiyonu - özel tasarım
   const renderChildAges = (room, roomIndex) => {

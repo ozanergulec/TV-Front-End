@@ -1,15 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import HotelCard from '../components/HotelCard';
+import SearchForm from '../components/SearchForm';
+import hotelService from '../services/hotelService';
 import '../pages.css';
 
 function ResultsPage() {
   const location = useLocation();
   const navigate = useNavigate();
+  const searchFormRef = useRef(null);
   
   // URL state'inden data al
-  const searchResults = location.state?.searchResults;
-  const searchData = location.state?.searchData;
+  const [searchResults, setSearchResults] = useState(location.state?.searchResults);
+  const [searchData, setSearchData] = useState(location.state?.searchData);
   
   // Component states
   const [hotels, setHotels] = useState([]);
@@ -19,6 +22,37 @@ function ResultsPage() {
   const [priceRange, setPriceRange] = useState({ min: 0, max: 2000 });
   const [selectedRating, setSelectedRating] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
+
+  // Yeni arama yapıldığında çağrılacak fonksiyon
+  const handleNewSearch = async (newSearchData) => {
+    setLoading(true);
+    try {
+      console.log('🔄 Yeni arama yapılıyor...', newSearchData);
+      
+      const result = await hotelService.priceSearch(newSearchData);
+      
+      if (result.header?.success) {
+        setSearchResults(result);
+        setSearchData(newSearchData);
+        
+        // URL state'ini güncelle (browser history için)
+        window.history.replaceState({
+          searchResults: result,
+          searchData: newSearchData
+        }, '', window.location.pathname);
+        
+        console.log('✅ Yeni arama tamamlandı');
+      } else {
+        console.log('❌ Arama başarısız:', result);
+        alert('Bu bölgede otel bulunamadı');
+      }
+    } catch (error) {
+      console.error('❌ Arama hatası:', error);
+      alert('Arama sırasında hata oluştu');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // ✅ EXTRACT FUNCTIONS - DAHA TEMIZ
   const extractHotelImage = (hotel, index) => {
@@ -90,7 +124,7 @@ function ResultsPage() {
             stars: hotel.stars || Math.floor(extractRating(hotel)),
             image: extractHotelImage(hotel, index),
             price: parseFloat(hotel.offers?.[0]?.price?.amount) || 0,
-            currency: safeString(hotel.offers?.[0]?.price?.currency) || safeString(searchData.currency) || 'EUR',
+            currency: safeString(hotel.offers?.[0]?.price?.currency) || safeString(searchData?.currency) || 'EUR',
             originalPrice: parseFloat(hotel.offers?.[0]?.originalPrice?.amount) || null,
             description: safeString(hotel.description) || `${safeString(hotel.name)} size konforlu konaklama imkanı sunar. ${hotel.stars ? hotel.stars + ' yıldızlı' : 'Kaliteli'} otel deneyimi.`,
             amenities: extractAmenities(hotel),
@@ -128,7 +162,7 @@ function ResultsPage() {
     }
     
     setLoading(false);
-  }, [searchResults, searchData, navigate]);
+  }, [searchResults, searchData]);
 
   // ✅ FILTERING & SORTING
   useEffect(() => {
@@ -161,6 +195,14 @@ function ResultsPage() {
 
     setFilteredHotels(filtered);
   }, [hotels, priceRange, selectedRating, sortBy]);
+
+  // SearchForm'a mevcut arama verilerini ayarla
+  useEffect(() => {
+    if (searchData && searchFormRef.current) {
+      // SearchForm'u mevcut arama verileri ile güncelle
+      // Bu, SearchForm'un internal state'ini set etmek için gerekli olabilir
+    }
+  }, [searchData]);
 
   // ✅ HELPER FUNCTIONS
   const formatDate = (dateString) => {
@@ -230,31 +272,19 @@ function ResultsPage() {
 
   return (
     <div className="results-page">
-      {/* Search Summary */}
-      <div className="search-summary">
-        <div className="summary-content">
-          <div className="summary-main">
-            <h1>{safeString(searchData.destinationName) || 'Destinasyon'}</h1>
-            <p className="search-details">
-              <span className="dates">
-                {formatDate(searchData.checkIn)} - {formatDate(searchData.checkOut)}
-              </span>
-              <span className="nights">{nights} gece</span>
-              <span className="guests">{totalGuests} misafir</span>
-              <span className="rooms">{searchData.rooms?.length || 1} oda</span>
-            </p>
-          </div>
-          <div className="summary-results">
-            <p className="results-count">
-              <strong>{filteredHotels.length}</strong> otel bulundu
-            </p>
-            <button 
-              className="modify-search-btn"
-              onClick={() => navigate('/', { state: searchData })}
-            >
-              Aramayı Değiştir
-            </button>
-          </div>
+      {/* Search Form Section */}
+      <div className="search-form-section" style={{ 
+        background: 'white', 
+        padding: '20px 0', 
+        borderBottom: '1px solid #e5e7eb',
+        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+      }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
+          <SearchForm 
+            ref={searchFormRef}
+            onSearchComplete={handleNewSearch}
+            initialData={searchData}
+          />
         </div>
       </div>
 
@@ -341,6 +371,17 @@ function ResultsPage() {
             >
               Filtreler
             </button>
+          </div>
+
+          {/* Results Count */}
+          <div style={{ 
+            padding: '20px 0 10px 0', 
+            fontSize: '16px', 
+            color: '#666',
+            borderBottom: '1px solid #e5e7eb',
+            marginBottom: '20px'
+          }}>
+            <strong>{filteredHotels.length}</strong> otel bulundu
           </div>
 
           {/* ✅ TEMIZLENMIŞ HOTELS LIST */}
