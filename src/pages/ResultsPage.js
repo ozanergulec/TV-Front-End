@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import HotelCard from '../components/HotelCard';
 import SearchForm from '../components/SearchForm';
+import HotelResultsFilters from '../components/HotelResultsFilters';
 import hotelService from '../services/hotelService';
 import '../pages.css';
 
@@ -223,23 +224,7 @@ function ResultsPage() {
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
   };
 
-  const renderStars = (rating) => {
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating - fullStars >= 0.5;
-    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-    
-    return (
-      <>
-        {[...Array(fullStars)].map((_, i) => (
-          <span key={`full-${i}`} className="star">★</span>
-        ))}
-        {hasHalfStar && <span className="star half">★</span>}
-        {[...Array(emptyStars)].map((_, i) => (
-          <span key={`empty-${i}`} className="star empty">★</span>
-        ))}
-      </>
-    );
-  };
+  // renderStars fonksiyonunu kaldır (artık HotelResultsFilters içinde)
 
   // ✅ LOADING STATE
   if (loading) {
@@ -290,62 +275,14 @@ function ResultsPage() {
 
       <div className="results-container">
         {/* Filters Sidebar */}
-        <div className={`filters-sidebar ${showFilters ? 'show' : ''}`}>
-          <div className="filters-header">
-            <h3>Filtreler</h3>
-            <button 
-              className="close-filters"
-              onClick={() => setShowFilters(false)}
-            >
-              ×
-            </button>
-          </div>
-
-          {/* Price Filter */}
-          <div className="filter-section">
-            <h4>Fiyat Aralığı (Gecelik)</h4>
-            <div className="price-inputs">
-              <input
-                type="number"
-                value={priceRange.min}
-                onChange={(e) => setPriceRange(prev => ({...prev, min: Number(e.target.value)}))}
-                placeholder="Min"
-              />
-              <span>-</span>
-              <input
-                type="number"
-                value={priceRange.max}
-                onChange={(e) => setPriceRange(prev => ({...prev, max: Number(e.target.value)}))}
-                placeholder="Max"
-              />
-            </div>
-          </div>
-
-          {/* Rating Filter */}
-          <div className="filter-section">
-            <h4>Minimum Puan</h4>
-            <div className="rating-filters">
-              {[0, 3, 3.5, 4, 4.5].map(rating => (
-                <label key={rating} className="rating-option">
-                  <input
-                    type="radio"
-                    name="rating"
-                    value={rating}
-                    checked={selectedRating === rating}
-                    onChange={(e) => setSelectedRating(Number(e.target.value))}
-                  />
-                  <span>
-                    {rating === 0 ? 'Tümü' : (
-                      <>
-                        {rating}+ <div className="stars">{renderStars(rating)}</div>
-                      </>
-                    )}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </div>
-        </div>
+        <HotelResultsFilters
+          showFilters={showFilters}
+          onClose={() => setShowFilters(false)}
+          priceRange={priceRange}
+          onPriceRangeChange={setPriceRange}
+          selectedRating={selectedRating}
+          onRatingChange={setSelectedRating}
+        />
 
         {/* Main Results */}
         <div className="results-main">

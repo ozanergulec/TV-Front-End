@@ -134,8 +134,10 @@
   padding: 24px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.08);
   position: sticky;
-  top: 24px;
+  top: 120px; /* Search form'un yüksekliğini hesaba katıyoruz */
   height: fit-content;
+  max-height: calc(100vh - 140px); /* Ekran yüksekliğini aşmasını önlüyoruz */
+  overflow-y: auto; /* İçerik çok uzunsa scroll ekleyelim */
   flex-shrink: 0;
 }
 
