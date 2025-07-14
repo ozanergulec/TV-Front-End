@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import HotelCard from '../components/HotelCard';
 import SearchForm from '../components/SearchForm';
 import HotelResultsFilters from '../components/HotelResultsFilters';
+import LoadingSpinner from '../components/LoadingSpinner';
 import hotelService from '../services/hotelService';
 import '../pages.css';
 
@@ -14,6 +15,7 @@ function ResultsPage() {
   // URL state'inden data al
   const [searchResults, setSearchResults] = useState(location.state?.searchResults);
   const [searchData, setSearchData] = useState(location.state?.searchData);
+  const [isInitialLoading, setIsInitialLoading] = useState(location.state?.isLoading || false);
   
   // Component states
   const [hotels, setHotels] = useState([]);
@@ -23,6 +25,34 @@ function ResultsPage() {
   const [priceRange, setPriceRange] = useState({ min: '', max: '' }); // Boş string yap
   const [selectedRating, setSelectedRating] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
+
+  // İlk yüklenme - eğer arama verisi varsa ama sonuç yoksa arama yap
+  useEffect(() => {
+    const performInitialSearch = async () => {
+      if (searchData && !searchResults && isInitialLoading) {
+        try {
+          console.log('🔍 İlk arama yapılıyor...', searchData);
+          
+          const result = await hotelService.priceSearch(searchData);
+          
+          if (result.header?.success) {
+            setSearchResults(result);
+            console.log('✅ İlk arama tamamlandı');
+          } else {
+            console.log('❌ Arama başarısız:', result);
+            alert('Bu bölgede otel bulunamadı');
+          }
+        } catch (error) {
+          console.error('❌ Arama hatası:', error);
+          alert('Arama sırasında hata oluştu');
+        } finally {
+          setIsInitialLoading(false);
+        }
+      }
+    };
+
+    performInitialSearch();
+  }, [searchData, searchResults, isInitialLoading]);
 
   // Yeni arama yapıldığında çağrılacak fonksiyon
   const handleNewSearch = async (newSearchData) => {
@@ -261,20 +291,39 @@ function ResultsPage() {
 
   // renderStars fonksiyonunu kaldır (artık HotelResultsFilters içinde)
 
-  // ✅ LOADING STATE
-  if (loading) {
+  // ✅ LOADING STATE - İlk yükleme için güzel spinner
+  if (isInitialLoading || (loading && !searchResults)) {
     return (
       <div className="results-page">
-        <div className="loading-container">
-          <div className="loading-spinner"></div>
-          <p>Oteller yükleniyor...</p>
+        {/* Search Form Section - Loading sırasında da göster */}
+        <div className="search-form-section" style={{ 
+          background: 'white', 
+          padding: '20px 0', 
+          borderBottom: '1px solid #e5e7eb',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+        }}>
+          <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
+            <SearchForm 
+              ref={searchFormRef}
+              onSearchComplete={handleNewSearch}
+              initialData={searchData}
+              externalLoading={true} // ✅ Loading state'ini geç
+            />
+          </div>
         </div>
+
+        {/* Loading Spinner */}
+        <LoadingSpinner 
+          message="Oteller aranıyor..."
+          submessage={searchData?.destinationName ? `${searchData.destinationName} için en iyi fiyatları buluyoruz` : "En uygun otelleri buluyoruz"}
+          variant="search"
+        />
       </div>
     );
   }
 
   // ✅ ERROR STATE
-  if (!searchResults || !searchData) {
+  if (!searchData) {
     return (
       <div className="results-page">
         <div className="error-container">
@@ -304,9 +353,26 @@ function ResultsPage() {
             ref={searchFormRef}
             onSearchComplete={handleNewSearch}
             initialData={searchData}
+            externalLoading={loading} // ✅ Loading state'ini geç
           />
         </div>
       </div>
+
+      {/* İkinci bir arama yapılırken mini loading */}
+      {loading && searchResults && (
+        <div style={{ 
+          textAlign: 'center', 
+          padding: '20px', 
+          background: '#f8f9fa', 
+          borderBottom: '1px solid #e5e7eb' 
+        }}>
+          <LoadingSpinner 
+            message="Sonuçlar güncelleniyor..."
+            size="small"
+            variant="search"
+          />
+        </div>
+      )}
 
       <div className="results-container">
         {/* Filters Sidebar */}

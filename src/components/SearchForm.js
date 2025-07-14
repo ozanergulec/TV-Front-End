@@ -4,7 +4,7 @@ import hotelService from '../services/hotelService';
 import '../components.css';
 
 const SearchForm = forwardRef((props, ref) => {
-  const { onSearchComplete, initialData } = props;
+  const { onSearchComplete, initialData, externalLoading = false } = props;
   
   const [searchData, setSearchData] = useState(initialData || {
     destination: '',
@@ -541,6 +541,11 @@ const SearchForm = forwardRef((props, ref) => {
   const handleSearch = async (e) => {
     e.preventDefault();
     
+    // ✅ External loading kontrolü ekle
+    if (externalLoading || isLoading) {
+      return;
+    }
+    
     // Basic validation
     if (!searchData.destination) {
       alert('Lütfen bir destinasyon seçin');
@@ -579,37 +584,19 @@ const SearchForm = forwardRef((props, ref) => {
       }
     }
     
-    setIsLoading(true);
+    console.log('🔍 Arama başlatılıyor...', searchData);
     
-    try {
-      console.log('🔍 Arama başlatılıyor...', searchData);
-      
-      const result = await hotelService.priceSearch(searchData);
-      
-      if (result.header?.success) {
-        console.log('✅ Arama başarılı, sonuçlar alındı');
-        
-        // Eğer onSearchComplete prop'u varsa onu çağır (ResultsPage için)
-        if (onSearchComplete) {
-          onSearchComplete(searchData);
-        } else {
-          // Yoksa navigate et (HomePage için)
-          navigate('/results', { 
-            state: { 
-              searchResults: result,
-              searchData: searchData
-            } 
-          });
-        }
-      } else {
-        console.log('❌ Arama başarısız:', result);
-        alert('Bu bölgede otel bulunamadı');
-      }
-    } catch (error) {
-      console.error('❌ Arama hatası:', error);
-      alert('Arama sırasında hata oluştu');
-    } finally {
-      setIsLoading(false);
+    // Eğer onSearchComplete prop'u varsa (ResultsPage'deyiz), orada handle et
+    if (onSearchComplete) {
+      onSearchComplete(searchData);
+    } else {
+      // HomePage'deyiz - HEMEN navigate et, loading ResultsPage'de gösterilecek
+      navigate('/results', { 
+        state: { 
+          searchData: searchData,
+          isLoading: true // Loading state'ini belirt
+        } 
+      });
     }
   };
 
@@ -685,6 +672,9 @@ const SearchForm = forwardRef((props, ref) => {
       </div>
     );
   };
+
+  // ✅ Loading state hesaplama - internal veya external loading
+  const isFormLoading = isLoading || externalLoading;
 
   return (
     <div className="booking-search">
@@ -864,9 +854,9 @@ const SearchForm = forwardRef((props, ref) => {
           <button 
             type="submit" 
             className="search-button"
-            disabled={isLoading || !searchData.destination || !searchData.checkIn || !searchData.checkOut}
+            disabled={isFormLoading || !searchData.destination || !searchData.checkIn || !searchData.checkOut}
           >
-            {isLoading ? 'Aranıyor...' : 'Ara'}
+            {isFormLoading ? 'Aranıyor...' : 'Ara'}
           </button>
         </div>
 
