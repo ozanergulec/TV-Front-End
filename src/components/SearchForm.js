@@ -559,88 +559,36 @@ const SearchForm = forwardRef((props, ref) => {
     setIsLoading(true);
     
     try {
-      console.log('🚀 =================');
-      console.log('🎯 ÇOK ODALI TEST BAŞLADI');
-      console.log('📝 Seçilen Şehir:', searchData.destinationName);
-      console.log('🆔 Şehir ID:', searchData.destination);
+      console.log('🚀 Arama başlatılıyor...');
+      console.log('📝 Destinasyon:', searchData.destinationName);
+      console.log('🆔 Destinasyon ID:', searchData.destination);
       console.log('📅 Tarih Aralığı:', `${searchData.checkIn} → ${searchData.checkOut}`);
-      console.log('🏠 Oda Sayısı:', searchData.rooms.length);
-      
-      searchData.rooms.forEach((room, index) => {
-        console.log(`  📍 Oda ${index + 1}: ${room.adults} yetişkin, ${room.children} çocuk`, 
-                   room.children > 0 ? `(Yaşlar: ${room.childAges.join(', ')})` : '');
-      });
-      
-      console.log('💰 Para Birimi:', searchData.currency);
-      console.log('🌍 Uyruk:', searchData.nationality);
       
       const result = await hotelService.priceSearch(searchData);
       
-      // Detaylı response analizi
-      console.log('📥 =================');
-      console.log('✅ API Response SUCCESS:', result.header?.success);
+      console.log('📥 API Response:', result.header?.success);
       
-      if (result.header?.messages?.length > 0) {
-        console.log('📢 API Messages:', result.header.messages);
-      }
-      
-      if (result.body) {
-        console.log('🏨 Toplam Otel Sayısı:', result.body.hotels?.length || 0);
-        console.log('🔍 Search ID:', result.body.searchId);
-        console.log('⏰ Expires On:', result.body.expiresOn);
+      if (result.header?.success) {
+        console.log('✅ Arama başarılı, results sayfasına yönlendiriliyor...');
         
-        if (result.body.hotels?.length > 0) {
-          console.log('🎯 İlk 3 Otel:');
-          result.body.hotels.slice(0, 3).forEach((hotel, index) => {
-            console.log(`  ${index + 1}. ${hotel.name} - ${hotel.location?.name} (${hotel.offers?.length || 0} teklif)`);
-          });
-          
-          // Fiyat analizi
-          const prices = result.body.hotels
-            .filter(h => h.offers?.length > 0)
-            .map(h => h.offers[0]?.price?.amount)
-            .filter(p => p);
-          
-          if (prices.length > 0) {
-            console.log('💰 Fiyat Aralığı:', `${Math.min(...prices)} - ${Math.max(...prices)} ${searchData.currency}`);
-          }
-          
-          alert(`✅ BAŞARILI: ${result.body.hotels.length} otel bulundu!\n\n` +
-                `📍 ${searchData.destinationName}\n` +
-                `📅 ${searchData.checkIn} → ${searchData.checkOut}\n` +
-                `🏠 ${searchData.rooms.length} oda\n\n` +
-                `Console'u kontrol edin.`);
-          
-        } else {
-          // Otel bulunamadı durumu
-          console.log('❌ =================');
-          console.log('⚠️ OTEL BULUNAMADI');
-          console.log('🔍 Olası Sebepler:');
-          console.log('   1. Seçilen tarihlerde müsait oda yok');
-          console.log('   2. Bu şehirde otel yok');
-          console.log('   3. Arama kriterleri çok spesifik');
-          console.log('   4. API geçici sorunu');
-          
-          alert(`⚠️ OTEL BULUNAMADI\n\n` +
-                `📍 ${searchData.destinationName}\n` +
-                `📅 ${searchData.checkIn} → ${searchData.checkOut}\n` +
-                `🏠 ${searchData.rooms.length} oda\n\n` +
-                `💡 Farklı tarih deneyin veya console'u kontrol edin.`);
-        }
+        // ✅ NAVIGATE EKLENDİ - Results sayfasına yönlendir
+        navigate('/results', { 
+          state: { 
+            searchResults: result,
+            searchData: searchData
+          } 
+        });
+        
       } else {
-        console.log('❌ Response body null');
-        alert('❌ API\'den veri gelmedi. Console\'u kontrol edin.');
+        console.log('❌ Arama başarısız:', result);
+        alert('Bu bölgede otel bulunamadı');
       }
       
     } catch (error) {
-      console.error('❌ =================');
-      console.error('💥 API HATASI:', error);
-      console.error('🔍 Hata Detayı:', error.message);
-      alert('❌ Arama sırasında hata:\n' + error.message);
+      console.error('❌ Arama hatası:', error);
+      alert('Arama sırasında hata oluştu: ' + error.message);
     } finally {
       setIsLoading(false);
-      console.log('🏁 Test Tamamlandı');
-      console.log('=================');
     }
   };
 
