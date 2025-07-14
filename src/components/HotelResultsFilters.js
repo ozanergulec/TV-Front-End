@@ -46,15 +46,15 @@ function HotelResultsFilters({
           <input
             type="number"
             value={priceRange.min}
-            onChange={(e) => onPriceRangeChange(prev => ({...prev, min: Number(e.target.value)}))}
-            placeholder="Min"
+            onChange={(e) => onPriceRangeChange(prev => ({...prev, min: e.target.value}))}
+            placeholder="Min fiyat"
           />
           <span>-</span>
           <input
             type="number"
             value={priceRange.max}
-            onChange={(e) => onPriceRangeChange(prev => ({...prev, max: Number(e.target.value)}))}
-            placeholder="Max"
+            onChange={(e) => onPriceRangeChange(prev => ({...prev, max: e.target.value}))}
+            placeholder="Max fiyat"
           />
         </div>
       </div>

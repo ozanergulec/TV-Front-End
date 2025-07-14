@@ -20,7 +20,7 @@ function ResultsPage() {
   const [filteredHotels, setFilteredHotels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState('recommended');
-  const [priceRange, setPriceRange] = useState({ min: 0, max: 2000 });
+  const [priceRange, setPriceRange] = useState({ min: '', max: '' }); // Boş string yap
   const [selectedRating, setSelectedRating] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
 
@@ -94,10 +94,39 @@ function ResultsPage() {
   };
 
   const safeString = (value) => {
-    if (value && typeof value === 'object' && value.text) {
-      return String(value.text);
+    // Null, undefined veya false değerler için boş string dön
+    if (!value) return '';
+    
+    // Eğer zaten string ise direkt dön
+    if (typeof value === 'string') return value;
+    
+    // Eğer number ise string'e çevir
+    if (typeof value === 'number') return String(value);
+    
+    // Eğer obje ise farklı property'leri dene
+    if (typeof value === 'object') {
+      // Önce text property'sini kontrol et
+      if (value.text && typeof value.text === 'string') return value.text;
+      
+      // name property'sini kontrol et
+      if (value.name && typeof value.name === 'string') return value.name;
+      
+      // value property'sini kontrol et
+      if (value.value && typeof value.value === 'string') return value.value;
+      
+      // displayName property'sini kontrol et
+      if (value.displayName && typeof value.displayName === 'string') return value.displayName;
+      
+      // title property'sini kontrol et
+      if (value.title && typeof value.title === 'string') return value.title;
+      
+      // Hiçbiri çalışmazsa boş string dön (obje render etme)
+      console.warn('🚫 Object property could not be extracted safely:', value);
+      return '';
     }
-    return value ? String(value) : '';
+    
+    // Diğer durumlar için boş string
+    return '';
   };
 
   // ✅ PARSE HOTEL DATA - DAHA DÜZENLI
@@ -120,14 +149,14 @@ function ResultsPage() {
           return {
             id: hotel.id || `hotel-${index}`,
             name: safeString(hotel.name) || `Otel ${index + 1}`,
-            location: safeString(hotel.location?.name) || safeString(hotel.city?.name) || 'Konum Bilgisi Yok',
+            location: safeString(hotel.location?.name) || safeString(hotel.location) || safeString(hotel.city?.name) || safeString(hotel.city) || '',
             rating: extractRating(hotel),
             stars: hotel.stars || Math.floor(extractRating(hotel)),
             image: extractHotelImage(hotel, index),
             price: parseFloat(hotel.offers?.[0]?.price?.amount) || 0,
             currency: safeString(hotel.offers?.[0]?.price?.currency) || safeString(searchData?.currency) || 'EUR',
             originalPrice: parseFloat(hotel.offers?.[0]?.originalPrice?.amount) || null,
-            description: safeString(hotel.description) || `${safeString(hotel.name)} size konforlu konaklama imkanı sunar. ${hotel.stars ? hotel.stars + ' yıldızlı' : 'Kaliteli'} otel deneyimi.`,
+            description: safeString(hotel.description) || (safeString(hotel.name) ? `${safeString(hotel.name)} size konforlu konaklama imkanı sunar. ${hotel.stars ? hotel.stars + ' yıldızlı' : 'Kaliteli'} otel deneyimi.` : 'Konforlu konaklama imkanı'),
             amenities: extractAmenities(hotel),
             offers: Array.isArray(hotel.offers) ? hotel.offers : [],
             distance: parseFloat(hotel.distance) || (Math.random() * 5 + 0.5),
@@ -141,16 +170,16 @@ function ResultsPage() {
         setHotels(hotelData);
         setFilteredHotels(hotelData);
         
-        // Fiyat aralığını ayarla
-        if (hotelData.length > 0) {
-          const prices = hotelData.map(h => h.price).filter(p => p > 0);
-          if (prices.length > 0) {
-            setPriceRange({
-              min: Math.floor(Math.min(...prices) * 0.8),
-              max: Math.ceil(Math.max(...prices) * 1.2)
-            });
-          }
-        }
+        // ❌ Fiyat aralığını otomatik ayarlama kısmını kaldır
+        // if (hotelData.length > 0) {
+        //   const prices = hotelData.map(h => h.price).filter(p => p > 0);
+        //   if (prices.length > 0) {
+        //     setPriceRange({
+        //       min: Math.floor(Math.min(...prices) * 0.8),
+        //       max: Math.ceil(Math.max(...prices) * 1.2)
+        //     });
+        //   }
+        // }
       } else {
         console.log('❌ No hotels found in response');
         setHotels([]);
@@ -169,9 +198,15 @@ function ResultsPage() {
   useEffect(() => {
     let filtered = [...hotels];
 
-    filtered = filtered.filter(hotel => 
-      hotel.price >= priceRange.min && hotel.price <= priceRange.max
-    );
+    // Fiyat filtresi - sadece değer girilmişse uygula
+    if (priceRange.min !== '' || priceRange.max !== '') {
+      const minPrice = priceRange.min === '' ? 0 : Number(priceRange.min);
+      const maxPrice = priceRange.max === '' ? Infinity : Number(priceRange.max);
+      
+      filtered = filtered.filter(hotel => 
+        hotel.price >= minPrice && hotel.price <= maxPrice
+      );
+    }
 
     if (selectedRating > 0) {
       filtered = filtered.filter(hotel => hotel.rating >= selectedRating);

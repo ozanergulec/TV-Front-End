@@ -4,6 +4,22 @@ import { useNavigate } from 'react-router-dom';
 const HotelCard = ({ hotel, nights, searchData }) => {
   const navigate = useNavigate();
 
+  // Güvenli string render fonksiyonu
+  const safeRender = (value, fallback = '') => {
+    if (!value || typeof value === 'object') return fallback;
+    return String(value);
+  };
+
+  // Her kelimenin ilk harfini büyük yapan fonksiyon
+  const capitalizeWords = (str) => {
+    if (!str) return '';
+    return str
+      .toLowerCase()
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
   const renderStars = (rating) => {
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating - fullStars >= 0.5;
@@ -27,7 +43,7 @@ const HotelCard = ({ hotel, nights, searchData }) => {
       <div className="hotel-image">
         <img 
           src={hotel.image} 
-          alt={hotel.name}
+          alt={safeRender(hotel.name, 'Hotel')}
           onError={(e) => {
             console.log('❌ Image failed to load:', e.target.src);
             e.target.src = '/images/destinations/istanbul.jpg';
@@ -45,7 +61,7 @@ const HotelCard = ({ hotel, nights, searchData }) => {
 
       <div className="hotel-info">
         <div className="hotel-header">
-          <h3 className="hotel-name">{hotel.name}</h3>
+          <h3 className="hotel-name">{capitalizeWords(safeRender(hotel.name, 'Hotel Adı'))}</h3>
           <div className="hotel-rating">
             <div className="stars">
               {renderStars(hotel.rating)}
@@ -54,21 +70,25 @@ const HotelCard = ({ hotel, nights, searchData }) => {
           </div>
         </div>
 
-        <p className="hotel-location">📍 {hotel.location}</p>
+        {safeRender(hotel.location) && (
+          <p className="hotel-location">📍 {safeRender(hotel.location)}</p>
+        )}
         
         {hotel.distance > 0 && (
           <p className="hotel-distance">🚗 Merkeze {hotel.distance.toFixed(1)} km</p>
         )}
 
-        <p className="hotel-description">{hotel.description}</p>
+        {safeRender(hotel.description) && (
+          <p className="hotel-description">{safeRender(hotel.description)}</p>
+        )}
 
         <div className="hotel-amenities">
-          {hotel.amenities.slice(0, 4).map((amenity, index) => (
+          {hotel.amenities && hotel.amenities.slice(0, 4).map((amenity, index) => (
             <span key={index} className="amenity-tag">
-              {amenity}
+              {safeRender(amenity)}
             </span>
           ))}
-          {hotel.amenities.length > 4 && (
+          {hotel.amenities && hotel.amenities.length > 4 && (
             <span className="amenity-more">
               +{hotel.amenities.length - 4} daha
             </span>
@@ -80,12 +100,12 @@ const HotelCard = ({ hotel, nights, searchData }) => {
         <div className="price-info">
           {hotel.originalPrice && hotel.originalPrice > hotel.price && (
             <div className="original-price">
-              {hotel.originalPrice.toFixed(0)} {hotel.currency}
+              {hotel.originalPrice.toFixed(0)} {safeRender(hotel.currency, 'EUR')}
             </div>
           )}
           <div className="current-price">
             <span className="amount">{hotel.price.toFixed(0)}</span>
-            <span className="currency">{hotel.currency}</span>
+            <span className="currency">{safeRender(hotel.currency, 'EUR')}</span>
           </div>
           <div className="price-detail">
             Toplam {nights} gece için
