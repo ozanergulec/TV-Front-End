@@ -312,9 +312,12 @@ html, body {
 }
 
 .logo-icon {
-  font-size: 2.5rem;
+  width: 70px;
+  height: 70px;
   margin-right: 0.75rem;
+  object-fit: contain;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+  background: transparent;
 }
 
 .logo-text {
@@ -421,6 +424,9 @@ html, body {
   }
   
   .logo-icon {
+    width: 56px;
+    height: 56px;
+    margin-right: 0.6rem;
     font-size: 2rem;
   }
   
