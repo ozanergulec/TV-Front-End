@@ -57,6 +57,11 @@ function ResultsPage() {
   // Yeni arama yapıldığında çağrılacak fonksiyon
   const handleNewSearch = async (newSearchData) => {
     setLoading(true);
+    
+    // ✅ Yeni arama başladığında eski otelleri temizle
+    setHotels([]);
+    setFilteredHotels([]);
+    
     try {
       console.log('🔄 Yeni arama yapılıyor...', newSearchData);
       
@@ -358,21 +363,7 @@ function ResultsPage() {
         </div>
       </div>
 
-      {/* İkinci bir arama yapılırken mini loading */}
-      {loading && searchResults && (
-        <div style={{ 
-          textAlign: 'center', 
-          padding: '20px', 
-          background: '#f8f9fa', 
-          borderBottom: '1px solid #e5e7eb' 
-        }}>
-          <LoadingSpinner 
-            message="Sonuçlar güncelleniyor..."
-            size="small"
-            variant="search"
-          />
-        </div>
-      )}
+      {/* ❌ ÜSTTEKİ LOADING SPINNER'I KALDIR */}
 
       <div className="results-container">
         {/* Filters Sidebar */}
@@ -411,35 +402,48 @@ function ResultsPage() {
             </button>
           </div>
 
-          {/* Results Count */}
-          <div style={{ 
-            padding: '20px 0 10px 0', 
-            fontSize: '16px', 
-            color: '#666',
-            borderBottom: '1px solid #e5e7eb',
-            marginBottom: '20px'
-          }}>
-            <strong>{filteredHotels.length}</strong> otel bulundu
-          </div>
+          {/* Results Count - Sadece loading değilse göster */}
+          {!loading && (
+            <div style={{ 
+              padding: '20px 0 10px 0', 
+              fontSize: '16px', 
+              color: '#666',
+              borderBottom: '1px solid #e5e7eb',
+              marginBottom: '20px'
+            }}>
+              <strong>{filteredHotels.length}</strong> otel bulundu
+            </div>
+          )}
 
-          {/* ✅ TEMIZLENMIŞ HOTELS LIST */}
-          <div className="hotels-list">
-            {filteredHotels.length === 0 ? (
-              <div className="no-results">
-                <h3>Arama kriterlerinize uygun otel bulunamadı</h3>
-                <p>Filtreleri değiştirerek tekrar deneyin</p>
-              </div>
-            ) : (
-              filteredHotels.map((hotel, index) => (
-                <HotelCard 
-                  key={hotel.id}
-                  hotel={hotel}
-                  nights={nights}
-                  searchData={searchData}
-                />
-              ))
-            )}
-          </div>
+          {/* ✅ LOADING STATE - Arama sırasında spinner göster */}
+          {loading ? (
+            <div style={{ padding: '40px 0' }}>
+              <LoadingSpinner 
+                message="Oteller aranıyor..."
+                submessage={searchData?.destinationName ? `${searchData.destinationName} için en iyi fiyatları buluyoruz` : "En uygun otelleri buluyoruz"}
+                variant="search"
+              />
+            </div>
+          ) : (
+            /* ✅ HOTELS LIST - Sadece loading bittikten sonra göster */
+            <div className="hotels-list">
+              {filteredHotels.length === 0 ? (
+                <div className="no-results">
+                  <h3>Arama kriterlerinize uygun otel bulunamadı</h3>
+                  <p>Filtreleri değiştirerek tekrar deneyin</p>
+                </div>
+              ) : (
+                filteredHotels.map((hotel, index) => (
+                  <HotelCard 
+                    key={hotel.id}
+                    hotel={hotel}
+                    nights={nights}
+                    searchData={searchData}
+                  />
+                ))
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

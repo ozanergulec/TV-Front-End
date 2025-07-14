@@ -678,3 +678,94 @@
     height: 140px; /* Çok küçük ekranlarda daha da küçük */
   }
 }
+
+/* Results Container - Sidebar Layout */
+.results-container {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  gap: 30px;
+}
+
+.results-sidebar {
+  width: 300px;
+  flex-shrink: 0;
+}
+
+.results-main {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Mobile'da sidebar gizle, filter button göster */
+@media (max-width: 768px) {
+  .results-sidebar {
+    display: none;
+  }
+}
+
+.sidebar-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.sidebar-card h3 {
+  margin: 0 0 15px 0;
+  color: #1f2937;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.summary-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.summary-item .icon {
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.filter-tags, .amenity-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-tag, .amenity-tag {
+  padding: 6px 12px;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-tag:hover {
+  background: #0a825a;
+  color: white;
+  border-color: #0a825a;
+}
+
+.recent-item {
+  display: flex;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.recent-item img {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  object-fit: cover;
+}
