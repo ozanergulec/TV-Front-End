@@ -1,0 +1,1673 @@
+/* =================== BAŞLIK DÜZELTMELERİ - EN ÜST =================== */
+/* Bu stilleri CSS'in en üstüne koyun */
+
+/* Ana başlıklar için kesin stil */
+h1, h2, h3, h4, h5, h6 {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  background: none !important;
+  text-decoration: none !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  word-spacing: normal !important;
+  white-space: normal !important;
+  color: inherit !important;
+  font-family: inherit !important;
+  font-style: normal !important;
+  font-variant: normal !important;
+  line-height: normal !important;
+  text-align: left !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  position: static !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: auto !important;
+  z-index: auto !important;
+  width: auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  max-width: none !important;
+  max-height: none !important;
+  overflow: visible !important;
+  clip: auto !important;
+  float: none !important;
+  clear: none !important;
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Content section başlıkları - FORCED */
+.content-section h2 {
+  font-size: 1.8rem !important;
+  font-weight: 600 !important;
+  color: #1a1a1a !important;
+  margin-bottom: 25px !important;
+  border-bottom: 2px solid #e9ecef !important;
+  padding-bottom: 15px !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  background: transparent !important;
+  text-decoration: none !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  line-height: 1.2 !important;
+  text-align: left !important;
+  position: static !important;
+  z-index: auto !important;
+  width: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  float: none !important;
+  clear: none !important;
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Sidebar başlıkları - FORCED */
+.info-card h3 {
+  font-size: 1.3rem !important;
+  font-weight: 600 !important;
+  color: #1a1a1a !important;
+  margin-bottom: 20px !important;
+  padding-bottom: 10px !important;
+  border-bottom: 1px solid #e1e5e9 !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  background: transparent !important;
+  text-decoration: none !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  line-height: 1.2 !important;
+  text-align: left !important;
+  position: static !important;
+  z-index: auto !important;
+  width: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  float: none !important;
+  clear: none !important;
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Facility başlıkları - FORCED */
+.facility-category h3 {
+  font-size: 1.2rem !important;
+  font-weight: 600 !important;
+  color: #1a1a1a !important;
+  margin-bottom: 20px !important;
+  padding-bottom: 15px !important;
+  border-bottom: 1px solid #e1e5e9 !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  background: transparent !important;
+  text-decoration: none !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  line-height: 1.2 !important;
+  text-align: left !important;
+  position: static !important;
+  z-index: auto !important;
+  width: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  float: none !important;
+  clear: none !important;
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Daha spesifik selector'lar */
+.hotel-detail-page .hotel-detail-container .hotel-content .main-content .content-section h2,
+.hotel-detail-page .content-section h2,
+.main-content .content-section h2 {
+  font-size: 1.8rem !important;
+  font-weight: 600 !important;
+  color: #1a1a1a !important;
+  margin-bottom: 25px !important;
+  border-bottom: 2px solid #e9ecef !important;
+  padding-bottom: 15px !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.hotel-detail-page .hotel-detail-container .hotel-content .sidebar-content .info-card h3,
+.hotel-detail-page .info-card h3,
+.sidebar-content .info-card h3 {
+  font-size: 1.3rem !important;
+  font-weight: 600 !important;
+  color: #1a1a1a !important;
+  margin-bottom: 20px !important;
+  padding-bottom: 10px !important;
+  border-bottom: 1px solid #e1e5e9 !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* =================== ORIJINAL STILLER =================== */
+/* Buraya mevcut CSS'inizin geri kalanını ekleyin */
+
+.hotel-detail-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  min-height: 100vh;
+  background: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.hotel-detail-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  border: 1px solid #e1e5e9;
+}
+
+/* Professional Header */
+.hotel-header {
+  padding: 40px 50px;
+  background: #fafbfc;
+  border-bottom: 1px solid #e1e5e9;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.hotel-title-section h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 12px 0;
+  letter-spacing: -0.5px;
+}
+
+.hotel-rating-location {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.rating-stars {
+  color: #ff6b35;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.location-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.location-icon {
+  color: #6c757d;
+  font-size: 1.2rem;
+}
+
+.location-text {
+  color: #495057;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.hotel-actions .book-now-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.hotel-actions .book-now-btn:hover {
+  background: #0056b3;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+/* Küçültülmüş Fotoğraf Galerisi */
+.photo-gallery {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2px;
+  height: 280px; /* 450px'ten 280px'e küçültüldü */
+  margin: 0;
+}
+
+.main-photo {
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+  background: #f8f9fa;
+}
+
+.main-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.main-photo:hover img {
+  transform: scale(1.02);
+}
+
+.photo-overlay {
+  position: absolute;
+  bottom: 15px; /* 20px'ten 15px'e küçültüldü */
+  left: 15px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.main-photo:hover .photo-overlay {
+  opacity: 1;
+}
+
+.view-all-photos {
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: none;
+  padding: 8px 16px; /* 12px 20px'ten küçültüldü */
+  border-radius: 4px;
+  font-size: 0.9rem; /* 1rem'den küçültüldü */
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.view-all-photos:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  height: 100%;
+}
+
+.grid-photo {
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+  background: #f8f9fa;
+}
+
+.grid-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.grid-photo:hover img {
+  transform: scale(1.05);
+}
+
+.more-photos-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem; /* 1rem'den küçültüldü */
+}
+
+/* Professional Content Layout */
+.hotel-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 60px; /* 50px'ten artırıldı */
+  padding: 50px;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 50px; /* 40px'ten artırıldı */
+}
+
+.content-section {
+  margin-bottom: 30px; /* Extra margin eklendi */
+}
+
+.description-container {
+  position: relative;
+  margin-bottom: 20px; /* Margin eklendi */
+}
+
+.description-wrapper {
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.description-wrapper.collapsed {
+  max-height: 150px;
+  position: relative;
+}
+
+.description-wrapper.collapsed::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+  background: linear-gradient(transparent, white);
+  pointer-events: none;
+}
+
+.description-text {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #495057;
+  text-align: justify;
+  margin: 0 0 20px 0; /* Bottom margin eklendi */
+}
+
+.show-more-btn {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  color: #007bff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 10px 20px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  display: inline-block;
+  margin-top: 15px;
+}
+
+.show-more-btn:hover {
+  background: #e9ecef;
+  border-color: #007bff;
+}
+
+/* Professional Facilities */
+.facilities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 40px; /* 30px'ten artırıldı */
+  margin-bottom: 30px; /* Margin eklendi */
+}
+
+.facility-category {
+  background: #fafbfc;
+  border: 1px solid #e1e5e9;
+  border-radius: 4px;
+  padding: 30px; /* 25px'ten artırıldı */
+}
+
+.facility-category h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 20px; /* 15px'ten artırıldı */
+  padding-bottom: 15px; /* 10px'ten artırıldı */
+  border-bottom: 1px solid #e1e5e9;
+}
+
+.facility-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 300px;
+  overflow: hidden;
+}
+
+.facility-item {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* 10px'ten artırıldı */
+  padding: 10px 0; /* 8px'ten artırıldı */
+  border-bottom: 1px solid #f1f3f4;
+}
+
+.facility-item:last-child {
+  border-bottom: none;
+}
+
+.facility-check {
+  color: #28a745;
+  font-weight: bold;
+  font-size: 0.9rem;
+  width: 16px;
+  flex-shrink: 0;
+}
+
+.facility-name {
+  flex: 1;
+  color: #495057;
+  font-size: 0.9rem;
+}
+
+.facility-price {
+  background: #ffc107;
+  color: #856404;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.show-more-facilities {
+  text-align: center;
+  margin-top: 25px; /* 20px'ten artırıldı */
+}
+
+.more-facilities-item {
+  display: flex;
+  justify-content: center;
+  padding: 15px 0; /* 10px'ten artırıldı */
+  border-top: 1px solid #e1e5e9;
+  margin-top: 15px; /* 10px'ten artırıldı */
+}
+
+.more-facilities-text {
+  color: #6c757d;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+.no-facilities-message {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 30px; /* 25px'ten artırıldı */
+  text-align: center;
+  margin-bottom: 20px; /* Margin eklendi */
+}
+
+.no-facilities-message p {
+  color: #6c757d;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* Professional Sidebar */
+.sidebar-content {
+  display: flex;
+  flex-direction: column;
+  gap: 40px; /* 30px'ten artırıldı */
+}
+
+.info-card {
+  background: #fafbfc;
+  border: 1px solid #e1e5e9;
+  border-radius: 4px;
+  padding: 30px; /* 25px'ten artırıldı */
+  margin-bottom: 10px; /* Extra margin eklendi */
+}
+
+.info-card h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 20px; /* 15px'ten artırıldı */
+  padding-bottom: 10px; /* Extra padding eklendi */
+  border-bottom: 1px solid #e1e5e9; /* Border eklendi */
+}
+
+.location-details .main-location {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 8px; /* 5px'ten artırıldı */
+}
+
+.location-details .city-country {
+  color: #6c757d;
+  margin-bottom: 20px; /* 15px'ten artırıldı */
+  font-size: 0.95rem;
+}
+
+.address-info {
+  padding-top: 20px; /* 15px'ten artırıldı */
+  border-top: 1px solid #e1e5e9;
+}
+
+.address-info p {
+  margin: 8px 0; /* 5px'ten artırıldı */
+  color: #495057;
+  font-size: 0.9rem;
+}
+
+.contact-details p {
+  margin: 15px 0; /* 10px'ten artırıldı */
+  color: #495057;
+  font-size: 0.9rem;
+}
+
+.contact-details strong {
+  color: #1a1a1a;
+  display: inline-block;
+  width: 80px;
+}
+
+.contact-details a {
+  color: #007bff;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.contact-details a:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+.themes-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.theme-badge {
+  background: #007bff;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 3px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Büyütülmüş ve İyileştirilmiş Lightbox */
+.lightbox-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+  padding: 0; /* Padding kaldırıldı */
+}
+
+.lightbox-content {
+  position: relative;
+  width: 100vw; /* Tam genişlik */
+  height: 100vh; /* Tam yükseklik */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 30px; /* Üst kısmında */
+  right: 30px; /* Sağ üstte */
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: white;
+  font-size: 3rem;
+  cursor: pointer;
+  z-index: 1001;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.lightbox-close:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.1);
+}
+
+.lightbox-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 120px; /* Butonlar için boşluk */
+}
+
+.lightbox-image img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+  /* Minimum boyut garantisi */
+  min-width: 50vw; /* En az viewport genişliğinin %50'si */
+  min-height: 50vh; /* En az viewport yüksekliğinin %50'si */
+}
+
+.lightbox-prev,
+.lightbox-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: white;
+  font-size: 3rem;
+  cursor: pointer;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 1001;
+}
+
+.lightbox-prev {
+  left: 30px; /* Sol kenardan daha yakın */
+}
+
+.lightbox-next {
+  right: 30px; /* Sağ kenardan daha yakın */
+}
+
+.lightbox-prev:hover,
+.lightbox-next:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.lightbox-info {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  color: white;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 20px 30px;
+  border-radius: 12px;
+  backdrop-filter: blur(15px);
+  z-index: 1001;
+}
+
+.lightbox-info h3 {
+  margin: 0 0 8px 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.lightbox-info p {
+  margin: 0;
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+/* Farklı fotoğraf boyutları için responsive davranış */
+@media (max-aspect-ratio: 1/1) {
+  /* Dikey (portrait) fotoğraflar için */
+  .lightbox-image img {
+    max-height: 85vh;
+    width: auto;
+    min-width: 40vw;
+  }
+}
+
+@media (min-aspect-ratio: 2/1) {
+  /* Çok geniş (landscape) fotoğraflar için */
+  .lightbox-image img {
+    max-width: 90vw;
+    height: auto;
+    min-height: 40vh;
+  }
+}
+
+/* Tablet responsive */
+@media (max-width: 1024px) {
+  .lightbox-image {
+    padding: 60px 80px;
+  }
+  
+  .lightbox-image img {
+    min-width: 60vw;
+    min-height: 40vh;
+  }
+  
+  .lightbox-prev,
+  .lightbox-next {
+    width: 60px;
+    height: 60px;
+    font-size: 2.5rem;
+  }
+  
+  .lightbox-prev {
+    left: 20px;
+  }
+  
+  .lightbox-next {
+    right: 20px;
+  }
+  
+  .lightbox-close {
+    top: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    font-size: 2.5rem;
+  }
+}
+
+/* Mobil responsive */
+@media (max-width: 768px) {
+  .lightbox-image {
+    padding: 40px 60px;
+  }
+  
+  .lightbox-image img {
+    min-width: 80vw;
+    min-height: 30vh;
+  }
+  
+  .lightbox-prev,
+  .lightbox-next {
+    width: 50px;
+    height: 50px;
+    font-size: 2rem;
+  }
+  
+  .lightbox-prev {
+    left: 15px;
+  }
+  
+  .lightbox-next {
+    right: 15px;
+  }
+  
+  .lightbox-close {
+    top: 15px;
+    right: 15px;
+    width: 45px;
+    height: 45px;
+    font-size: 2rem;
+  }
+  
+  .lightbox-info {
+    bottom: 20px;
+    padding: 15px 20px;
+  }
+  
+  .lightbox-info h3 {
+    font-size: 1.3rem;
+  }
+  
+  .lightbox-info p {
+    font-size: 1rem;
+  }
+}
+
+/* Çok küçük ekranlar */
+@media (max-width: 480px) {
+  .lightbox-image {
+    padding: 30px 40px;
+  }
+  
+  .lightbox-image img {
+    min-width: 90vw;
+    min-height: 25vh;
+  }
+  
+  .lightbox-prev,
+  .lightbox-next {
+    width: 45px;
+    height: 45px;
+    font-size: 1.8rem;
+  }
+  
+  .lightbox-prev {
+    left: 10px;
+  }
+  
+  .lightbox-next {
+    right: 10px;
+  }
+  
+  .lightbox-close {
+    top: 10px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    font-size: 1.8rem;
+  }
+  
+  .lightbox-info {
+    bottom: 15px;
+    padding: 12px 16px;
+  }
+  
+  .lightbox-info h3 {
+    font-size: 1.2rem;
+  }
+  
+  .lightbox-info p {
+    font-size: 0.9rem;
+  }
+}
+
+/* Fade-in animasyonu */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Error States */
+.error-message {
+  text-align: center;
+  padding: 60px;
+  color: #6c757d;
+}
+
+.error-message h2 {
+  color: #dc3545;
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+}
+
+.error-message button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.3s ease;
+}
+
+.error-message button:hover {
+  background: #0056b3;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .hotel-content {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  
+  .photo-gallery {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  
+  .photo-grid {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: 1fr;
+    height: 150px;
+  }
+  
+  .facilities-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .hotel-detail-page {
+    padding: 20px 10px;
+  }
+  
+  .hotel-header {
+    flex-direction: column;
+    gap: 20px;
+    padding: 30px;
+  }
+  
+  .hotel-title-section h1 {
+    font-size: 2rem;
+  }
+  
+  .hotel-rating-location {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .hotel-actions .book-now-btn {
+    width: 100%;
+  }
+  
+  .photo-gallery {
+    height: 250px;
+  }
+  
+  .photo-grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+  }
+  
+  .hotel-content {
+    padding: 30px;
+  }
+  
+  .content-section h2 {
+    font-size: 1.5rem;
+  }
+  
+  .info-card {
+    padding: 20px;
+  }
+}
+
+/* Kompakt facilities görünümü */
+.facilities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+  margin-bottom: 20px;
+}
+
+.facility-category {
+  background: #fafbfc;
+  border: 1px solid #e1e5e9;
+  border-radius: 4px;
+  padding: 20px;
+  height: fit-content;
+}
+
+.facility-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid #f1f3f4;
+  font-size: 0.85rem;
+}
+
+.facility-item:last-child {
+  border-bottom: none;
+}
+
+/* Facilities Modal */
+.facilities-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.facilities-modal-content {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  max-width: 90vw;
+  max-height: 90vh;
+  width: 800px;
+  display: flex;
+  flex-direction: column;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.facilities-modal-header {
+  padding: 25px 30px;
+  border-bottom: 1px solid #e1e5e9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fafbfc;
+  border-radius: 8px 8px 0 0;
+}
+
+.facilities-modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.facilities-modal-close {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.facilities-modal-close:hover {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.facilities-modal-body {
+  padding: 30px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.facilities-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+}
+
+.facilities-modal-category {
+  background: #fafbfc;
+  border: 1px solid #e1e5e9;
+  border-radius: 6px;
+  padding: 20px;
+}
+
+.facilities-modal-category h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e1e5e9;
+}
+
+.facilities-modal-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.facilities-modal-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f1f3f4;
+}
+
+.facilities-modal-item:last-child {
+  border-bottom: none;
+}
+
+.facilities-modal-check {
+  color: #28a745;
+  font-weight: bold;
+  font-size: 0.9rem;
+  width: 16px;
+  flex-shrink: 0;
+}
+
+.facilities-modal-name {
+  flex: 1;
+  color: #495057;
+  font-size: 0.9rem;
+}
+
+.facilities-modal-price {
+  background: #ffc107;
+  color: #856404;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.facilities-modal-footer {
+  padding: 20px 30px;
+  border-top: 1px solid #e1e5e9;
+  background: #fafbfc;
+  border-radius: 0 0 8px 8px;
+  text-align: center;
+}
+
+.facilities-modal-close-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.facilities-modal-close-btn:hover {
+  background: #0056b3;
+}
+
+/* Modal Responsive */
+@media (max-width: 768px) {
+  .facilities-modal-content {
+    width: 95vw;
+    max-height: 95vh;
+  }
+  
+  .facilities-modal-header {
+    padding: 20px;
+  }
+  
+  .facilities-modal-header h2 {
+    font-size: 1.3rem;
+  }
+  
+  .facilities-modal-body {
+    padding: 20px;
+  }
+  
+  .facilities-modal-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .facilities-modal-category {
+    padding: 15px;
+  }
+  
+  .facilities-modal-footer {
+    padding: 15px 20px;
+  }
+}
+
+/* Offers Section - Web Sitesi Görünümü */
+.offers-section {
+  margin-top: 40px;
+  padding: 25px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e9ecef;
+}
+
+.offers-section h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f8f9fa;
+}
+
+.offers-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.offer-card {
+  background: #fafbfc;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.offer-card:hover {
+  border-color: #2c5aa0;
+  box-shadow: 0 2px 8px rgba(44, 90, 160, 0.1);
+}
+
+.offer-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  align-items: center;
+  padding: 20px 25px;
+  background: white;
+  border-bottom: 1px solid #e9ecef;
+  gap: 20px;
+}
+
+.offer-dates {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.offer-dates .date-label {
+  font-size: 0.75rem;
+  color: #6c757d;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.offer-dates .date-value {
+  font-size: 0.9rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.nights {
+  font-size: 0.85rem;
+  color: #2c5aa0;
+  font-weight: 600;
+  background: #e8f2ff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-top: 4px;
+}
+
+.offer-status {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+
+.offer-price {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.price-amount {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #2c5aa0;
+  line-height: 1.2;
+}
+
+.price-total {
+  font-size: 0.75rem;
+  color: #6c757d;
+  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.offer-details {
+  padding: 20px 25px;
+  background: white;
+}
+
+.offer-rooms {
+  margin-bottom: 0;
+}
+
+.offer-rooms h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #495057;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.room-options-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.room-options-table th {
+  background: #f8f9fa;
+  padding: 12px 15px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #495057;
+  border-bottom: 2px solid #e9ecef;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.room-options-table td {
+  padding: 15px 15px;
+  border-bottom: 1px solid #f1f3f4;
+  vertical-align: top;
+}
+
+.room-options-table tr:hover {
+  background: #f8f9fa;
+}
+
+.room-name {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.room-board {
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin-top: 2px;
+}
+
+.room-price {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.old-price {
+  display: block;
+  text-decoration: line-through;
+  color: #dc3545;
+  font-size: 0.8rem;
+  margin-bottom: 2px;
+}
+
+.room-price-amount {
+  font-weight: 600;
+  color: #2c5aa0;
+  font-size: 0.9rem;
+}
+
+.availability-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+}
+
+.availability-badge.available {
+  background: #d4edda;
+  color: #155724;
+}
+
+.availability-badge.unavailable {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.refundable-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: #d1ecf1;
+  color: #0c5460;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+}
+
+.offer-actions {
+  padding: 20px 25px;
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 15px;
+}
+
+.offer-actions .offer-info {
+  font-size: 0.8rem;
+  color: #6c757d;
+  flex: 1;
+}
+
+.select-offer-btn {
+  background: linear-gradient(135deg, #2c5aa0 0%, #1e3d72 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 140px;
+}
+
+.select-offer-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #1e3d72 0%, #2c5aa0 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(44, 90, 160, 0.3);
+}
+
+.select-offer-btn:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+}
+
+.offers-loading,
+.offers-error,
+.no-offers {
+  text-align: center;
+  padding: 60px 40px;
+  color: #6c757d;
+}
+
+.offers-loading h3,
+.offers-error h3,
+.no-offers h3 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  color: #495057;
+}
+
+.retry-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: background 0.3s ease;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.8rem;
+}
+
+.retry-btn:hover {
+  background: #c82333;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .offer-header {
+    grid-template-columns: 1fr 1fr auto;
+    gap: 15px;
+  }
+  
+  .offer-status {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #e9ecef;
+  }
+}
+
+@media (max-width: 768px) {
+  .offers-section {
+    padding: 20px;
+  }
+  
+  .offer-header {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    text-align: center;
+  }
+  
+  .offer-price {
+    text-align: center;
+  }
+  
+  .room-options-table {
+    font-size: 0.85rem;
+  }
+  
+  .room-options-table th,
+  .room-options-table td {
+    padding: 10px 8px;
+  }
+  
+  .offer-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .offer-actions .offer-info {
+    text-align: center;
+  }
+}
+
+.view-offers-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.view-offers-btn:hover {
+  background: #0056b3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.view-offers-btn:active {
+  transform: translateY(0);
+}
+
+/* Responsive düzenlemeler */
+@media (max-width: 768px) {
+  .photo-gallery {
+    grid-template-columns: 1fr;
+    height: 250px; /* Mobilde daha küçük */
+  }
+  
+  .photo-grid {
+    display: none; /* Mobilde yan fotoğrafları gizle */
+  }
+  
+  .lightbox-image {
+    max-width: 98vw;
+    max-height: 85vh;
+  }
+  
+  .lightbox-prev,
+  .lightbox-next {
+    width: 50px;
+    height: 50px;
+    font-size: 2rem;
+  }
+  
+  .lightbox-prev {
+    left: 15px;
+  }
+  
+  .lightbox-next {
+    right: 15px;
+  }
+  
+  .lightbox-close {
+    top: -50px;
+    width: 45px;
+    height: 45px;
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hotel-content {
+    padding: 20px;
+    gap: 30px;
+  }
+  
+  .main-content {
+    gap: 25px;
+  }
+  
+  .hotel-content .main-content .content-section h2 {
+    font-size: 1.3rem !important;
+    font-weight: 600 !important;
+    color: #1a1a1a !important;
+    margin-bottom: 20px !important;
+    border-bottom: 2px solid #e9ecef !important;
+    padding-bottom: 12px !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  .facility-category {
+    padding: 15px;
+  }
+  
+  .info-card {
+    padding: 15px;
+  }
+}

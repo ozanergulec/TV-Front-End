@@ -1,0 +1,569 @@
+/* Hotel Offers Section - Web Sitesi Görünümü */
+.hotel-offers-section {
+    margin-top: 40px;
+    padding: 25px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e9ecef;
+  }
+  
+  .hotel-offers-section h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f8f9fa;
+  }
+  
+  .offers-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .offer-card {
+    background: #fafbfc;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+  
+  .offer-card:hover {
+    border-color: #2c5aa0;
+    box-shadow: 0 2px 8px rgba(44, 90, 160, 0.1);
+  }
+  
+  .offer-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    align-items: center;
+    padding: 20px 25px;
+    background: white;
+    border-bottom: 1px solid #e9ecef;
+    gap: 20px;
+  }
+  
+  .offer-dates {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .offer-dates .date-label {
+    font-size: 0.75rem;
+    color: #6c757d;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .offer-dates .date-value {
+    font-size: 0.9rem;
+    color: #333;
+    font-weight: 600;
+  }
+  
+  .nights {
+    font-size: 0.85rem;
+    color: #2c5aa0;
+    font-weight: 600;
+    background: #e8f2ff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-top: 4px;
+  }
+  
+  .offer-status {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+  }
+  
+  .offer-price {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  
+  .price-amount {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #2c5aa0;
+    line-height: 1.2;
+  }
+  
+  .price-total {
+    font-size: 0.75rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+  
+  .offer-details {
+    padding: 20px 25px;
+    background: white;
+  }
+  
+  .offer-rooms {
+    margin-bottom: 0;
+  }
+  
+  .offer-rooms h4 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  /* Table düzeltmeleri */
+.room-options-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  table-layout: fixed;
+}
+
+.room-options-table th {
+  background: #f8f9fa;
+  padding: 12px 15px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #495057;
+  border-bottom: 2px solid #e9ecef;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.room-options-table th:first-child {
+  width: 65%;
+}
+
+.room-options-table th:last-child {
+  width: 35%;
+  text-align: left; /* Pansiyon başlığını sola hizala */
+  padding-left: 20px; /* Soldan boşluk */
+}
+
+.room-options-table td {
+  padding: 15px 15px;
+  border-bottom: 1px solid #f1f3f4;
+  vertical-align: middle;
+  word-wrap: break-word;
+}
+
+.room-options-table tr:hover {
+  background: #f8f9fa;
+}
+
+.room-name {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+
+.room-board {
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin-top: 4px;
+  line-height: 1.2;
+}
+
+/* Pansiyon hücresi için özel stil - SOLDAN HIZALI */
+.room-options-table td:last-child {
+  text-align: left; /* Pansiyon içeriğini sola hizala */
+  padding-left: 20px; /* Sol kenardan uygun boşluk */
+  padding-right: 15px; /* Sağ kenardan normal boşluk */
+  vertical-align: middle;
+}
+
+.room-options-table td:last-child .room-board {
+  font-weight: 600;
+  color: #2c5aa0;
+  background: #e8f2ff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  display: inline-block;
+  font-size: 0.85rem;
+  text-align: center;
+  white-space: nowrap;
+  margin: 0;
+}
+
+.room-price {
+    text-align: right;
+    white-space: nowrap;
+  }
+  
+  .old-price {
+    display: block;
+    text-decoration: line-through;
+    color: #dc3545;
+    font-size: 0.8rem;
+    margin-bottom: 2px;
+  }
+  
+  .room-price-amount {
+    font-weight: 600;
+    color: #2c5aa0;
+    font-size: 0.9rem;
+  }
+  
+  .availability-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+  }
+  
+  .availability-badge.available {
+    background: #d4edda;
+    color: #155724;
+  }
+  
+  .availability-badge.unavailable {
+    background: #f8d7da;
+    color: #721c24;
+  }
+  
+  .refundable-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    background: #d1ecf1;
+    color: #0c5460;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+  }
+  
+  .offer-actions {
+    padding: 20px 25px;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .offer-actions .offer-info {
+    font-size: 0.8rem;
+    color: #6c757d;
+    flex: 1;
+  }
+  
+  .select-offer-btn {
+    background: linear-gradient(135deg, #2c5aa0 0%, #1e3d72 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    min-width: 140px;
+  }
+  
+  .select-offer-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #1e3d72 0%, #2c5aa0 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(44, 90, 160, 0.3);
+  }
+  
+  .select-offer-btn:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none;
+  }
+  
+  .offers-loading,
+  .offers-error,
+  .no-offers {
+    text-align: center;
+    padding: 60px 40px;
+    color: #6c757d;
+  }
+  
+  .offers-loading h3,
+  .offers-error h3,
+  .no-offers h3 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: #495057;
+  }
+  
+  .retry-btn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: background 0.3s ease;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.8rem;
+  }
+  
+  .retry-btn:hover {
+    background: #c82333;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .offer-header {
+      grid-template-columns: 1fr 1fr auto;
+      gap: 15px;
+    }
+    
+    .offer-status {
+      grid-column: 1 / -1;
+      flex-direction: row;
+      justify-content: center;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #e9ecef;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .hotel-offers-section {
+      padding: 20px;
+    }
+    
+    .offer-header {
+      grid-template-columns: 1fr;
+      gap: 15px;
+      text-align: center;
+    }
+    
+    .offer-price {
+      text-align: center;
+    }
+    
+    .room-options-table {
+      font-size: 0.85rem;
+    }
+    
+    .room-options-table th,
+    .room-options-table td {
+      padding: 10px 8px;
+    }
+    
+    .offer-actions {
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .offer-actions .offer-info {
+      text-align: center;
+    }
+  }
+
+.price-per-night {
+  font-size: 0.7rem;
+  color: #6c757d;
+  margin-top: 2px;
+}
+
+.room-quantity {
+  font-size: 0.75rem;
+  color: #007bff;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.room-total-price {
+  text-align: right;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.price-summary {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 2px solid #e9ecef;
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 6px;
+}
+
+.price-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.price-summary-row:last-child {
+  margin-bottom: 0;
+}
+
+.price-summary-row.per-night {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.price-label {
+  font-weight: 600;
+  color: #495057;
+}
+
+.price-value {
+  font-weight: 700;
+  color: #2c5aa0;
+  font-size: 1.1rem;
+}
+
+.price-summary-row.per-night .price-value {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+@media (max-width: 768px) {
+  .room-options-table {
+    font-size: 0.8rem;
+  }
+  
+  .room-options-table th,
+  .room-options-table td {
+    padding: 8px 6px;
+  }
+  
+  .price-summary {
+    padding: 12px;
+  }
+  
+  .price-summary-row {
+    font-size: 0.85rem;
+  }
+}
+
+.offer-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.details-btn {
+  background: white;
+  color: #2c5aa0;
+  border: 2px solid #2c5aa0;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.details-btn:hover {
+  background: #2c5aa0;
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* Responsive düzenlemeler */
+@media (max-width: 768px) {
+  .room-options-table {
+    font-size: 0.8rem;
+  }
+  
+  .room-options-table th,
+  .room-options-table td {
+    padding: 10px 12px;
+  }
+  
+  .room-options-table th:first-child {
+    width: 60%;
+  }
+  
+  .room-options-table th:last-child {
+    width: 40%;
+    text-align: left;
+    padding-left: 15px;
+  }
+  
+  .room-options-table td:last-child {
+    padding-left: 15px;
+    text-align: left;
+  }
+  
+  .room-name {
+    font-size: 0.85rem;
+  }
+  
+  .room-board {
+    font-size: 0.75rem;
+  }
+  
+  .room-options-table td:last-child .room-board {
+    font-size: 0.8rem;
+    padding: 6px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .room-options-table {
+    font-size: 0.75rem;
+  }
+  
+  .room-options-table th,
+  .room-options-table td {
+    padding: 8px 10px;
+  }
+  
+  .room-options-table th:first-child {
+    width: 55%;
+  }
+  
+  .room-options-table th:last-child {
+    width: 45%;
+    text-align: left;
+    padding-left: 12px;
+  }
+  
+  .room-options-table td:last-child {
+    padding-left: 12px;
+    text-align: left;
+  }
+  
+  .room-name {
+    font-size: 0.8rem;
+  }
+  
+  .room-board {
+    font-size: 0.7rem;
+  }
+  
+  .room-options-table td:last-child .room-board {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+  }
+}

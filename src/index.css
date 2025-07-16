@@ -290,9 +290,9 @@ html, body {
 .header-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1.5rem 2rem;
+  padding: 1.5rem 1rem 1.5rem 0; /* Sol padding tamamen kaldırıldı */
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
 }
 
@@ -305,6 +305,7 @@ html, body {
   font-weight: 700;
   font-size: 2rem;
   transition: transform 0.3s ease;
+  margin-left: -1rem; /* Daha fazla negatif margin */
 }
 
 .logo:hover {

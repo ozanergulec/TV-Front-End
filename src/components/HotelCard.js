@@ -116,7 +116,16 @@ const HotelCard = ({ hotel, nights, searchData }) => {
           <button 
             className="view-details-btn"
             onClick={() => navigate(`/hotel/${hotel.id}`, { 
-              state: { hotel, searchData } 
+              state: { 
+                hotel, 
+                searchData: {
+                  ...searchData,
+                  searchId: hotel.searchId, // Hotel'den gelen searchId
+                  offerId: hotel.offerId,   // Hotel'den gelen offerId
+                  checkIn: hotel.checkIn,
+                  nights: hotel.nights
+                }
+              } 
             })}
           >
             Detayları Gör
