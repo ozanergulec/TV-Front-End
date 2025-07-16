@@ -23,6 +23,7 @@ function HotelDetailPage() {
   const { hotel, searchData } = location.state || {};
 
   const [showAllFacilities, setShowAllFacilities] = useState(false);
+  const [showFullDescription, setShowFullDescription] = useState(false); // YENİ STATE
   
   useEffect(() => {
     const fetchHotelDetails = async () => {
@@ -107,6 +108,16 @@ function HotelDetailPage() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [lightboxOpen]);
+
+  // Açıklamayı kırpma fonksiyonu
+  const getTruncatedDescription = (text, maxLength = 300) => {
+    if (!text || text.length <= maxLength) return text;
+    
+    // Kelime sınırında kırp
+    const truncated = text.substr(0, maxLength);
+    const lastSpace = truncated.lastIndexOf(' ');
+    return truncated.substr(0, lastSpace) + '...';
+  };
 
   if (loading) {
     return (
@@ -215,10 +226,26 @@ function HotelDetailPage() {
         {/* Hotel Information Layout */}
         <div className="hotel-content">
           <div className="main-content">
-            {/* Hotel Description */}
+            {/* Advanced Description Section */}
             <div className="content-section">
               <h2>Açıklama</h2>
-              <p className="description-text">{formattedHotel.description}</p>
+              <div className="description-container">
+                <div className={`description-wrapper ${!showFullDescription ? 'collapsed' : ''}`}>
+                  <p className="description-text">
+                    {formattedHotel.description}
+                  </p>
+                </div>
+                
+                {/* Show More/Less Button */}
+                {formattedHotel.description && formattedHotel.description.length > 280 && (
+                  <button 
+                    className="show-more-description-btn"
+                    onClick={() => setShowFullDescription(!showFullDescription)}
+                  >
+                    {showFullDescription ? '▲ Daha Az Göster' : '▼ Devamını Gör'}
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Facilities */}
