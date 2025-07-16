@@ -62,40 +62,62 @@ class HotelDetailsService {
       return [];
     }
     
-    return offersResponse.body.offers.map(offer => ({
-      id: offer.offerId,
-      checkIn: offer.checkIn,
-      checkOut: offer.checkOut || this.calculateCheckOut(offer.checkIn, offer.night),
-      nights: offer.night,
-      price: {
-        amount: offer.price?.amount || 0,
-        currency: offer.price?.currency || 'EUR'
-      },
-      isAvailable: offer.isAvailable,
-      isRefundable: offer.isRefundable,
-      availability: offer.availability,
-      expiresOn: offer.expiresOn,
-      rooms: this.formatRooms(offer.rooms || []),
-      cancellationPolicies: offer.cancellationPolicies || [],
-      provider: offer.provider
-    }));
+    console.log('🔍 Formatting offers:', offersResponse.body.offers);
+    
+    return offersResponse.body.offers.map(offer => {
+      console.log('🔍 Processing offer:', offer);
+      console.log('🔍 Offer price:', offer.price);
+      console.log('🔍 Offer rooms:', offer.rooms);
+      
+      const formaturedOffer = {
+        id: offer.offerId,
+        checkIn: offer.checkIn,
+        checkOut: offer.checkOut || this.calculateCheckOut(offer.checkIn, offer.night),
+        nights: offer.night,
+        price: {
+          amount: offer.price?.amount || 0,
+          currency: offer.price?.currency || 'EUR'
+        },
+        isAvailable: offer.isAvailable,
+        isRefundable: offer.isRefundable,
+        availability: offer.availability,
+        expiresOn: offer.expiresOn,
+        rooms: this.formatRooms(offer.rooms || []),
+        cancellationPolicies: offer.cancellationPolicies || [],
+        provider: offer.provider
+      };
+      
+      console.log('🔍 Formatted offer:', formaturedOffer);
+      return formaturedOffer;
+    });
   }
 
   // Odaları formatla
   formatRooms(rooms) {
-    return rooms.map(room => ({
-      id: room.roomId,
-      name: room.roomName,
-      accommodation: room.accomName,
-      boardType: room.boardName,
-      price: {
-        amount: room.price?.amount || 0,
-        currency: room.price?.currency || 'EUR',
-        oldAmount: room.price?.oldAmount || null
-      },
-      allotment: room.allotment,
-      travellers: room.travellers || []
-    }));
+    console.log('🔍 Formatting rooms:', rooms);
+    
+    return rooms.map(room => {
+      console.log('🔍 Processing room:', room);
+      console.log('🔍 Room price:', room.price);
+      
+      const formattedRoom = {
+        id: room.roomId,
+        name: room.roomName,
+        accommodation: room.accomName,
+        boardType: room.boardName,
+        price: {
+          amount: room.price?.amount || 0,
+          currency: room.price?.currency || 'EUR',
+          oldAmount: room.price?.oldAmount || null
+        },
+        allotment: room.allotment,
+        travellers: room.travellers || [],
+        partNo: room.partNo || 1
+      };
+      
+      console.log('🔍 Formatted room:', formattedRoom);
+      return formattedRoom;
+    });
   }
 
   // Check-out tarihini hesapla

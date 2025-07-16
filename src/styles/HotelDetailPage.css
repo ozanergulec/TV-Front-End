@@ -880,98 +880,206 @@
   }
 }
 
-/* Offers Section */
+/* Offers Section - Web Sitesi Görünümü */
 .offers-section {
   margin-top: 40px;
-  padding: 30px;
-  background: #f8f9fa;
-  border-radius: 16px;
+  padding: 25px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e9ecef;
 }
 
 .offers-section h2 {
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   font-weight: 600;
   color: #1a1a1a;
-  margin-bottom: 20px;
-  text-align: center;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f8f9fa;
 }
 
 .offers-container {
-  display: grid;
-  gap: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
 .offer-card {
-  background: white;
-  border-radius: 12px;
-  padding: 25px;
-  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+  background: #fafbfc;
   border: 1px solid #e9ecef;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 8px;
+  padding: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
 }
 
 .offer-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
+  border-color: #2c5aa0;
+  box-shadow: 0 2px 8px rgba(44, 90, 160, 0.1);
 }
 
 .offer-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  align-items: center;
+  padding: 20px 25px;
+  background: white;
   border-bottom: 1px solid #e9ecef;
+  gap: 20px;
 }
 
 .offer-dates {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
 }
 
-.offer-dates span {
+.offer-dates .date-label {
+  font-size: 0.75rem;
+  color: #6c757d;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.offer-dates .date-value {
   font-size: 0.9rem;
-  color: #666;
+  color: #333;
+  font-weight: 600;
 }
 
 .nights {
-  font-weight: 600;
-  color: #2c5aa0;
-}
-
-.offer-price {
-  text-align: right;
-}
-
-.price-amount {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: #2c5aa0;
-  display: block;
-}
-
-.price-total {
   font-size: 0.85rem;
-  color: #666;
-}
-
-.offer-details {
-  margin-bottom: 20px;
+  color: #2c5aa0;
+  font-weight: 600;
+  background: #e8f2ff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-top: 4px;
 }
 
 .offer-status {
   display: flex;
-  gap: 10px;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+
+.offer-price {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.price-amount {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #2c5aa0;
+  line-height: 1.2;
+}
+
+.price-total {
+  font-size: 0.75rem;
+  color: #6c757d;
+  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.offer-details {
+  padding: 20px 25px;
+  background: white;
+}
+
+.offer-rooms {
+  margin-bottom: 0;
+}
+
+.offer-rooms h4 {
+  font-size: 1rem;
+  font-weight: 600;
   margin-bottom: 15px;
+  color: #495057;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.offer-rooms h4:before {
+  content: "🛏️";
+  font-size: 0.9rem;
+}
+
+.room-options-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.room-options-table th {
+  background: #f8f9fa;
+  padding: 12px 15px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #495057;
+  border-bottom: 2px solid #e9ecef;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.room-options-table td {
+  padding: 15px 15px;
+  border-bottom: 1px solid #f1f3f4;
+  vertical-align: top;
+}
+
+.room-options-table tr:hover {
+  background: #f8f9fa;
+}
+
+.room-name {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.room-board {
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin-top: 2px;
+}
+
+.room-price {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.old-price {
+  display: block;
+  text-decoration: line-through;
+  color: #dc3545;
+  font-size: 0.8rem;
+  margin-bottom: 2px;
+}
+
+.room-price-amount {
+  font-weight: 600;
+  color: #2c5aa0;
+  font-size: 0.9rem;
 }
 
 .availability-badge {
-  padding: 4px 12px;
+  padding: 6px 12px;
   border-radius: 20px;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   font-weight: 600;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
 }
 
 .availability-badge.available {
@@ -985,139 +1093,143 @@
 }
 
 .refundable-badge {
-  padding: 4px 12px;
+  padding: 6px 12px;
   border-radius: 20px;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   font-weight: 600;
   background: #d1ecf1;
   color: #0c5460;
-}
-
-.offer-rooms h4 {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 10px;
-  color: #333;
-}
-
-.room-option {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.room-option:last-child {
-  border-bottom: none;
-}
-
-.room-info {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.room-name {
-  font-weight: 600;
-  color: #333;
-}
-
-.room-board {
-  font-size: 0.85rem;
-  color: #666;
-}
-
-.room-price {
-  text-align: right;
-}
-
-.old-price {
-  display: block;
-  text-decoration: line-through;
-  color: #999;
-  font-size: 0.85rem;
-}
-
-.room-price-amount {
-  font-weight: 600;
-  color: #2c5aa0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
 }
 
 .offer-actions {
-  text-align: center;
-  padding-top: 15px;
+  padding: 20px 25px;
+  background: #f8f9fa;
   border-top: 1px solid #e9ecef;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 15px;
+}
+
+.offer-actions .offer-info {
+  font-size: 0.8rem;
+  color: #6c757d;
+  flex: 1;
 }
 
 .select-offer-btn {
   background: linear-gradient(135deg, #2c5aa0 0%, #1e3d72 100%);
   color: white;
   border: none;
-  padding: 12px 30px;
-  border-radius: 8px;
+  padding: 12px 24px;
+  border-radius: 6px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 1rem;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 140px;
 }
 
 .select-offer-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(44, 90, 160, 0.3);
+  background: linear-gradient(135deg, #1e3d72 0%, #2c5aa0 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(44, 90, 160, 0.3);
 }
 
 .select-offer-btn:disabled {
   background: #6c757d;
   cursor: not-allowed;
   opacity: 0.6;
+  transform: none;
 }
 
 .offers-loading,
 .offers-error,
 .no-offers {
   text-align: center;
-  padding: 40px;
-  color: #666;
+  padding: 60px 40px;
+  color: #6c757d;
+}
+
+.offers-loading h3,
+.offers-error h3,
+.no-offers h3 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  color: #495057;
 }
 
 .retry-btn {
   background: #dc3545;
   color: white;
   border: none;
-  padding: 8px 20px;
+  padding: 10px 20px;
   border-radius: 6px;
   cursor: pointer;
-  margin-top: 10px;
+  margin-top: 15px;
   transition: background 0.3s ease;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.8rem;
 }
 
 .retry-btn:hover {
   background: #c82333;
 }
 
-/* Mobile Responsive */
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .offer-header {
+    grid-template-columns: 1fr 1fr auto;
+    gap: 15px;
+  }
+  
+  .offer-status {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #e9ecef;
+  }
+}
+
 @media (max-width: 768px) {
   .offers-section {
     padding: 20px;
   }
   
   .offer-header {
-    flex-direction: column;
+    grid-template-columns: 1fr;
     gap: 15px;
+    text-align: center;
   }
   
   .offer-price {
-    text-align: left;
+    text-align: center;
   }
   
-  .room-option {
+  .room-options-table {
+    font-size: 0.85rem;
+  }
+  
+  .room-options-table th,
+  .room-options-table td {
+    padding: 10px 8px;
+  }
+  
+  .offer-actions {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
+    gap: 10px;
   }
   
-  .room-price {
-    text-align: left;
+  .offer-actions .offer-info {
+    text-align: center;
   }
 }
