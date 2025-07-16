@@ -1,3 +1,169 @@
+/* =================== BAŞLIK DÜZELTMELERİ - EN ÜST =================== */
+/* Bu stilleri CSS'in en üstüne koyun */
+
+/* Ana başlıklar için kesin stil */
+h1, h2, h3, h4, h5, h6 {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  background: none !important;
+  text-decoration: none !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  word-spacing: normal !important;
+  white-space: normal !important;
+  color: inherit !important;
+  font-family: inherit !important;
+  font-style: normal !important;
+  font-variant: normal !important;
+  line-height: normal !important;
+  text-align: left !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  position: static !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: auto !important;
+  z-index: auto !important;
+  width: auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  max-width: none !important;
+  max-height: none !important;
+  overflow: visible !important;
+  clip: auto !important;
+  float: none !important;
+  clear: none !important;
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Content section başlıkları - FORCED */
+.content-section h2 {
+  font-size: 1.8rem !important;
+  font-weight: 600 !important;
+  color: #1a1a1a !important;
+  margin-bottom: 25px !important;
+  border-bottom: 2px solid #e9ecef !important;
+  padding-bottom: 15px !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  background: transparent !important;
+  text-decoration: none !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  line-height: 1.2 !important;
+  text-align: left !important;
+  position: static !important;
+  z-index: auto !important;
+  width: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  float: none !important;
+  clear: none !important;
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Sidebar başlıkları - FORCED */
+.info-card h3 {
+  font-size: 1.3rem !important;
+  font-weight: 600 !important;
+  color: #1a1a1a !important;
+  margin-bottom: 20px !important;
+  padding-bottom: 10px !important;
+  border-bottom: 1px solid #e1e5e9 !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  background: transparent !important;
+  text-decoration: none !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  line-height: 1.2 !important;
+  text-align: left !important;
+  position: static !important;
+  z-index: auto !important;
+  width: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  float: none !important;
+  clear: none !important;
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Facility başlıkları - FORCED */
+.facility-category h3 {
+  font-size: 1.2rem !important;
+  font-weight: 600 !important;
+  color: #1a1a1a !important;
+  margin-bottom: 20px !important;
+  padding-bottom: 15px !important;
+  border-bottom: 1px solid #e1e5e9 !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  background: transparent !important;
+  text-decoration: none !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  line-height: 1.2 !important;
+  text-align: left !important;
+  position: static !important;
+  z-index: auto !important;
+  width: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  float: none !important;
+  clear: none !important;
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Daha spesifik selector'lar */
+.hotel-detail-page .hotel-detail-container .hotel-content .main-content .content-section h2,
+.hotel-detail-page .content-section h2,
+.main-content .content-section h2 {
+  font-size: 1.8rem !important;
+  font-weight: 600 !important;
+  color: #1a1a1a !important;
+  margin-bottom: 25px !important;
+  border-bottom: 2px solid #e9ecef !important;
+  padding-bottom: 15px !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.hotel-detail-page .hotel-detail-container .hotel-content .sidebar-content .info-card h3,
+.hotel-detail-page .info-card h3,
+.sidebar-content .info-card h3 {
+  font-size: 1.3rem !important;
+  font-weight: 600 !important;
+  color: #1a1a1a !important;
+  margin-bottom: 20px !important;
+  padding-bottom: 10px !important;
+  border-bottom: 1px solid #e1e5e9 !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* =================== ORIJINAL STILLER =================== */
+/* Buraya mevcut CSS'inizin geri kalanını ekleyin */
+
 .hotel-detail-page {
   max-width: 1200px;
   margin: 0 auto;
@@ -82,12 +248,12 @@
   box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
 }
 
-/* Professional Photo Gallery */
+/* Küçültülmüş Fotoğraf Galerisi */
 .photo-gallery {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 2px;
-  height: 450px;
+  height: 280px; /* 450px'ten 280px'e küçültüldü */
   margin: 0;
 }
 
@@ -111,8 +277,8 @@
 
 .photo-overlay {
   position: absolute;
-  bottom: 20px;
-  left: 20px;
+  bottom: 15px; /* 20px'ten 15px'e küçültüldü */
+  left: 15px;
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -122,21 +288,27 @@
 }
 
 .view-all-photos {
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.7);
   color: white;
   border: none;
-  padding: 10px 20px;
+  padding: 8px 16px; /* 12px 20px'ten küçültüldü */
   border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.9rem; /* 1rem'den küçültüldü */
   font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.view-all-photos:hover {
+  background: rgba(0, 0, 0, 0.8);
 }
 
 .photo-grid {
   display: grid;
-  grid-template-rows: repeat(2, 1fr);
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr 1fr;
   gap: 2px;
+  height: 100%;
 }
 
 .grid-photo {
@@ -159,44 +331,37 @@
 
 .more-photos-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 1.1rem;
   font-weight: 600;
+  font-size: 0.9rem; /* 1rem'den küçültüldü */
 }
 
 /* Professional Content Layout */
 .hotel-content {
   display: grid;
   grid-template-columns: 2fr 1fr;
-  gap: 50px;
+  gap: 60px; /* 50px'ten artırıldı */
   padding: 50px;
 }
 
 .main-content {
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 50px; /* 40px'ten artırıldı */
 }
 
-.content-section h2 {
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: #1a1a1a;
-  margin-bottom: 20px;
-  border-bottom: 2px solid #e9ecef;
-  padding-bottom: 10px;
+.content-section {
+  margin-bottom: 30px; /* Extra margin eklendi */
 }
 
 .description-container {
   position: relative;
+  margin-bottom: 20px; /* Margin eklendi */
 }
 
 .description-wrapper {
@@ -225,7 +390,7 @@
   line-height: 1.7;
   color: #495057;
   text-align: justify;
-  margin: 0;
+  margin: 0 0 20px 0; /* Bottom margin eklendi */
 }
 
 .show-more-btn {
@@ -251,22 +416,23 @@
 .facilities-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 30px;
+  gap: 40px; /* 30px'ten artırıldı */
+  margin-bottom: 30px; /* Margin eklendi */
 }
 
 .facility-category {
   background: #fafbfc;
   border: 1px solid #e1e5e9;
   border-radius: 4px;
-  padding: 25px;
+  padding: 30px; /* 25px'ten artırıldı */
 }
 
 .facility-category h3 {
   font-size: 1.2rem;
   font-weight: 600;
   color: #1a1a1a;
-  margin-bottom: 15px;
-  padding-bottom: 10px;
+  margin-bottom: 20px; /* 15px'ten artırıldı */
+  padding-bottom: 15px; /* 10px'ten artırıldı */
   border-bottom: 1px solid #e1e5e9;
 }
 
@@ -274,15 +440,15 @@
   list-style: none;
   padding: 0;
   margin: 0;
-  max-height: 300px; /* Maksimum yükseklik sınırı */
+  max-height: 300px;
   overflow: hidden;
 }
 
 .facility-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 0;
+  gap: 12px; /* 10px'ten artırıldı */
+  padding: 10px 0; /* 8px'ten artırıldı */
   border-bottom: 1px solid #f1f3f4;
 }
 
@@ -315,15 +481,30 @@
 
 .show-more-facilities {
   text-align: center;
-  margin-top: 25px;
+  margin-top: 25px; /* 20px'ten artırıldı */
+}
+
+.more-facilities-item {
+  display: flex;
+  justify-content: center;
+  padding: 15px 0; /* 10px'ten artırıldı */
+  border-top: 1px solid #e1e5e9;
+  margin-top: 15px; /* 10px'ten artırıldı */
+}
+
+.more-facilities-text {
+  color: #6c757d;
+  font-size: 0.9rem;
+  font-style: italic;
 }
 
 .no-facilities-message {
   background: #f8f9fa;
-  border: 1px solid #e9ecef;
+  border: 1px solid #dee2e6;
   border-radius: 4px;
-  padding: 30px;
+  padding: 30px; /* 25px'ten artırıldı */
   text-align: center;
+  margin-bottom: 20px; /* Margin eklendi */
 }
 
 .no-facilities-message p {
@@ -336,49 +517,52 @@
 .sidebar-content {
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 40px; /* 30px'ten artırıldı */
 }
 
 .info-card {
   background: #fafbfc;
   border: 1px solid #e1e5e9;
   border-radius: 4px;
-  padding: 25px;
+  padding: 30px; /* 25px'ten artırıldı */
+  margin-bottom: 10px; /* Extra margin eklendi */
 }
 
 .info-card h3 {
   font-size: 1.3rem;
   font-weight: 600;
   color: #1a1a1a;
-  margin-bottom: 15px;
+  margin-bottom: 20px; /* 15px'ten artırıldı */
+  padding-bottom: 10px; /* Extra padding eklendi */
+  border-bottom: 1px solid #e1e5e9; /* Border eklendi */
 }
 
 .location-details .main-location {
   font-size: 1.1rem;
   font-weight: 600;
   color: #1a1a1a;
-  margin-bottom: 5px;
+  margin-bottom: 8px; /* 5px'ten artırıldı */
 }
 
 .location-details .city-country {
   color: #6c757d;
-  margin-bottom: 15px;
+  margin-bottom: 20px; /* 15px'ten artırıldı */
   font-size: 0.95rem;
 }
 
 .address-info {
-  padding-top: 15px;
+  padding-top: 20px; /* 15px'ten artırıldı */
   border-top: 1px solid #e1e5e9;
 }
 
 .address-info p {
-  margin: 5px 0;
+  margin: 8px 0; /* 5px'ten artırıldı */
   color: #495057;
   font-size: 0.9rem;
 }
 
 .contact-details p {
-  margin: 10px 0;
+  margin: 15px 0; /* 10px'ten artırıldı */
   color: #495057;
   font-size: 0.9rem;
 }
@@ -417,7 +601,7 @@
   letter-spacing: 0.5px;
 }
 
-/* Lightbox - Professional Style */
+/* Büyütülmüş ve İyileştirilmiş Lightbox */
 .lightbox-overlay {
   position: fixed;
   top: 0;
@@ -430,53 +614,63 @@
   justify-content: center;
   z-index: 1000;
   animation: fadeIn 0.3s ease;
+  padding: 0; /* Padding kaldırıldı */
 }
 
 .lightbox-content {
   position: relative;
-  max-width: 90vw;
-  max-height: 90vh;
+  width: 100vw; /* Tam genişlik */
+  height: 100vh; /* Tam yükseklik */
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 
 .lightbox-close {
   position: absolute;
-  top: -50px;
-  right: 0;
-  background: none;
+  top: 30px; /* Üst kısmında */
+  right: 30px; /* Sağ üstte */
+  background: rgba(255, 255, 255, 0.15);
   border: none;
   color: white;
-  font-size: 2rem;
+  font-size: 3rem;
   cursor: pointer;
   z-index: 1001;
-  width: 40px;
-  height: 40px;
+  width: 60px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .lightbox-close:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.1);
 }
 
 .lightbox-image {
-  max-width: 80vw;
-  max-height: 70vh;
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 80px 120px; /* Butonlar için boşluk */
 }
 
 .lightbox-image img {
   max-width: 100%;
   max-height: 100%;
+  width: auto;
+  height: auto;
   object-fit: contain;
-  border-radius: 4px;
+  border-radius: 8px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+  /* Minimum boyut garantisi */
+  min-width: 50vw; /* En az viewport genişliğinin %50'si */
+  min-height: 50vh; /* En az viewport yüksekliğinin %50'si */
 }
 
 .lightbox-prev,
@@ -484,48 +678,219 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.15);
   border: none;
   color: white;
-  font-size: 2rem;
+  font-size: 3rem;
   cursor: pointer;
-  width: 50px;
-  height: 50px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
+  z-index: 1001;
 }
 
 .lightbox-prev {
-  left: 20px;
+  left: 30px; /* Sol kenardan daha yakın */
 }
 
 .lightbox-next {
-  right: 20px;
+  right: 30px; /* Sağ kenardan daha yakın */
 }
 
 .lightbox-prev:hover,
 .lightbox-next:hover {
   background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-50%) scale(1.1);
 }
 
 .lightbox-info {
-  margin-top: 20px;
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
   text-align: center;
   color: white;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 20px 30px;
+  border-radius: 12px;
+  backdrop-filter: blur(15px);
+  z-index: 1001;
 }
 
 .lightbox-info h3 {
-  margin: 0 0 5px 0;
-  font-size: 1.2rem;
+  margin: 0 0 8px 0;
+  font-size: 1.5rem;
+  font-weight: 600;
 }
 
 .lightbox-info p {
   margin: 0;
-  font-size: 0.9rem;
-  opacity: 0.8;
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+/* Farklı fotoğraf boyutları için responsive davranış */
+@media (max-aspect-ratio: 1/1) {
+  /* Dikey (portrait) fotoğraflar için */
+  .lightbox-image img {
+    max-height: 85vh;
+    width: auto;
+    min-width: 40vw;
+  }
+}
+
+@media (min-aspect-ratio: 2/1) {
+  /* Çok geniş (landscape) fotoğraflar için */
+  .lightbox-image img {
+    max-width: 90vw;
+    height: auto;
+    min-height: 40vh;
+  }
+}
+
+/* Tablet responsive */
+@media (max-width: 1024px) {
+  .lightbox-image {
+    padding: 60px 80px;
+  }
+  
+  .lightbox-image img {
+    min-width: 60vw;
+    min-height: 40vh;
+  }
+  
+  .lightbox-prev,
+  .lightbox-next {
+    width: 60px;
+    height: 60px;
+    font-size: 2.5rem;
+  }
+  
+  .lightbox-prev {
+    left: 20px;
+  }
+  
+  .lightbox-next {
+    right: 20px;
+  }
+  
+  .lightbox-close {
+    top: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    font-size: 2.5rem;
+  }
+}
+
+/* Mobil responsive */
+@media (max-width: 768px) {
+  .lightbox-image {
+    padding: 40px 60px;
+  }
+  
+  .lightbox-image img {
+    min-width: 80vw;
+    min-height: 30vh;
+  }
+  
+  .lightbox-prev,
+  .lightbox-next {
+    width: 50px;
+    height: 50px;
+    font-size: 2rem;
+  }
+  
+  .lightbox-prev {
+    left: 15px;
+  }
+  
+  .lightbox-next {
+    right: 15px;
+  }
+  
+  .lightbox-close {
+    top: 15px;
+    right: 15px;
+    width: 45px;
+    height: 45px;
+    font-size: 2rem;
+  }
+  
+  .lightbox-info {
+    bottom: 20px;
+    padding: 15px 20px;
+  }
+  
+  .lightbox-info h3 {
+    font-size: 1.3rem;
+  }
+  
+  .lightbox-info p {
+    font-size: 1rem;
+  }
+}
+
+/* Çok küçük ekranlar */
+@media (max-width: 480px) {
+  .lightbox-image {
+    padding: 30px 40px;
+  }
+  
+  .lightbox-image img {
+    min-width: 90vw;
+    min-height: 25vh;
+  }
+  
+  .lightbox-prev,
+  .lightbox-next {
+    width: 45px;
+    height: 45px;
+    font-size: 1.8rem;
+  }
+  
+  .lightbox-prev {
+    left: 10px;
+  }
+  
+  .lightbox-next {
+    right: 10px;
+  }
+  
+  .lightbox-close {
+    top: 10px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    font-size: 1.8rem;
+  }
+  
+  .lightbox-info {
+    bottom: 15px;
+    padding: 12px 16px;
+  }
+  
+  .lightbox-info h3 {
+    font-size: 1.2rem;
+  }
+  
+  .lightbox-info p {
+    font-size: 0.9rem;
+  }
+}
+
+/* Fade-in animasyonu */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* Error States */
@@ -631,22 +996,6 @@
   .info-card {
     padding: 20px;
   }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.more-facilities-item {
-  padding: 8px 0;
-  border-bottom: 1px solid #f1f3f4;
-}
-
-.more-facilities-text {
-  color: #6c757d;
-  font-style: italic;
-  font-size: 0.85rem;
 }
 
 /* Kompakt facilities görünümü */
@@ -1008,11 +1357,6 @@
   gap: 8px;
 }
 
-.offer-rooms h4:before {
-  content: "🛏️";
-  font-size: 0.9rem;
-}
-
 .room-options-table {
   width: 100%;
   border-collapse: collapse;
@@ -1231,5 +1575,99 @@
   
   .offer-actions .offer-info {
     text-align: center;
+  }
+}
+
+.view-offers-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.view-offers-btn:hover {
+  background: #0056b3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.view-offers-btn:active {
+  transform: translateY(0);
+}
+
+/* Responsive düzenlemeler */
+@media (max-width: 768px) {
+  .photo-gallery {
+    grid-template-columns: 1fr;
+    height: 250px; /* Mobilde daha küçük */
+  }
+  
+  .photo-grid {
+    display: none; /* Mobilde yan fotoğrafları gizle */
+  }
+  
+  .lightbox-image {
+    max-width: 98vw;
+    max-height: 85vh;
+  }
+  
+  .lightbox-prev,
+  .lightbox-next {
+    width: 50px;
+    height: 50px;
+    font-size: 2rem;
+  }
+  
+  .lightbox-prev {
+    left: 15px;
+  }
+  
+  .lightbox-next {
+    right: 15px;
+  }
+  
+  .lightbox-close {
+    top: -50px;
+    width: 45px;
+    height: 45px;
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hotel-content {
+    padding: 20px;
+    gap: 30px;
+  }
+  
+  .main-content {
+    gap: 25px;
+  }
+  
+  .hotel-content .main-content .content-section h2 {
+    font-size: 1.3rem !important;
+    font-weight: 600 !important;
+    color: #1a1a1a !important;
+    margin-bottom: 20px !important;
+    border-bottom: 2px solid #e9ecef !important;
+    padding-bottom: 12px !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  .facility-category {
+    padding: 15px;
+  }
+  
+  .info-card {
+    padding: 15px;
   }
 }

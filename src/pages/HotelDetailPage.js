@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import hotelDetailsService from '../services/hotelDetailsService';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -9,6 +9,9 @@ function HotelDetailPage() {
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
+  
+  // Teklifler kısmına scroll için ref
+  const offersRef = useRef(null);
   
   const [hotelDetails, setHotelDetails] = useState(null);
   const [formattedHotel, setFormattedHotel] = useState(null);
@@ -72,6 +75,21 @@ function HotelDetailPage() {
       fetchHotelDetails();
     }
   }, [id]);
+
+  // Sayfa mount olduğunda en yukarıya git
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  // Teklifleri gör fonksiyonu - sayfayı teklifler kısmına kaydırır
+  const scrollToOffers = () => {
+    if (offersRef.current) {
+      offersRef.current.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
 
   const handleBooking = () => {
     navigate('/booking', { 
@@ -182,11 +200,10 @@ function HotelDetailPage() {
           </div>
           <div className="hotel-actions">
             <button 
-              className="book-now-btn"
-              onClick={handleBooking}
-              disabled={!hotel && !searchData}
+              className="view-offers-btn"
+              onClick={scrollToOffers}
             >
-              Rezervasyon Yap
+              Teklifleri Gör
             </button>
           </div>
         </div>
@@ -348,12 +365,14 @@ function HotelDetailPage() {
           </div>
         </div>
 
-        {/* Offers Component */}
-        <HotelOffers 
-          hotelId={id}
-          searchData={searchData}
-          hotel={hotel}
-        />
+        {/* Offers Component - Ref ekledik */}
+        <div ref={offersRef}>
+          <HotelOffers 
+            hotelId={id}
+            searchData={searchData}
+            hotel={hotel}
+          />
+        </div>
 
         {/* Lightbox */}
         {lightboxOpen && (

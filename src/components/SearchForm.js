@@ -27,7 +27,73 @@ const SearchForm = forwardRef((props, ref) => {
   // Parent component'a expose edilecek methodlar
   useImperativeHandle(ref, () => ({
     setDestinationFromCity: async (cityName, shouldNavigate = true) => {
-      // Implementation...
+      try {
+        setIsLoading(true);
+        console.log('🏙️ Şehir adından destination bulunuyor:', cityName);
+        
+        // API'den şehir adına göre destination ara
+        const result = await hotelService.getArrivalAutocomplete(cityName);
+        
+        if (result.header?.success && result.body?.items && result.body.items.length > 0) {
+          // İlk şehir sonucunu al (type === 1)
+          const cityItem = result.body.items.find(item => item.type === 1);
+          
+          if (cityItem) {
+            const destinationId = cityItem.city?.id || cityItem.giataInfo?.destinationId;
+            const cityDisplayName = cityItem.city?.name || cityName;
+            const countryName = cityItem.country?.name || '';
+            const displayName = countryName ? `${cityDisplayName}, ${countryName}` : cityDisplayName;
+            
+            // SearchData'yı güncelle
+            setSearchData(prev => ({
+              ...prev,
+              destination: destinationId,
+              destinationName: displayName
+            }));
+            
+            console.log('✅ Destination bulundu:', { destinationId, displayName });
+            
+            // Eğer shouldNavigate true ise ve diğer gerekli alanlar doluysa search başlat
+            if (shouldNavigate) {
+              // Default tarihler set et (bugünden itibaren 2 gün)
+              const today = new Date();
+              const tomorrow = new Date(today);
+              tomorrow.setDate(tomorrow.getDate() + 1);
+              const dayAfterTomorrow = new Date(today);
+              dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 2);
+              
+              const updatedSearchData = {
+                ...searchData,
+                destination: destinationId,
+                destinationName: displayName,
+                checkIn: tomorrow.toISOString().split('T')[0],
+                checkOut: dayAfterTomorrow.toISOString().split('T')[0]
+              };
+              
+              console.log('🔍 Otomatik arama başlatılıyor...', updatedSearchData);
+              
+              // Navigate to results page
+              navigate('/results', { 
+                state: { 
+                  searchData: updatedSearchData,
+                  isLoading: true 
+                } 
+              });
+            }
+          } else {
+            console.error('❌ Şehir bulunamadı:', cityName);
+            alert('Seçilen şehir bulunamadı');
+          }
+        } else {
+          console.error('❌ Şehir arama sonucu bulunamadı:', cityName);
+          alert('Seçilen şehir bulunamadı');
+        }
+      } catch (error) {
+        console.error('❌ Şehir arama hatası:', error);
+        alert('Şehir arama sırasında bir hata oluştu');
+      } finally {
+        setIsLoading(false);
+      }
     }
   }));
 

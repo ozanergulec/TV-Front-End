@@ -1,4 +1,5 @@
 /* Simplified Web-Style Modal */
+/* Modal overlay - prevent background scrolling */
 .offer-details-modal-overlay {
   position: fixed;
   top: 0;
@@ -11,6 +12,9 @@
   justify-content: center;
   z-index: 1000;
   padding: 20px;
+  /* Prevent scroll on touch devices */
+  touch-action: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 .offer-details-modal {
@@ -23,6 +27,8 @@
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
+  /* Enable scrolling inside modal */
+  touch-action: auto;
 }
 
 .modal-header {
@@ -66,6 +72,8 @@
   flex: 1;
   overflow-y: auto;
   padding: 24px;
+  /* Better scrolling on mobile */
+  -webkit-overflow-scrolling: touch;
 }
 
 .offer-details-content {

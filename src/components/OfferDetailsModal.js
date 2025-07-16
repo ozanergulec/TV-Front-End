@@ -49,6 +49,30 @@ function OfferDetailsModal({ isOpen, onClose, offerId, currency = "EUR" }) {
     }
   }, [isOpen]);
 
+  // Body scroll'unu control et
+  useEffect(() => {
+    if (isOpen) {
+      // Modal açıldığında body scroll'unu disable et
+      document.body.style.overflow = 'hidden';
+      document.body.style.paddingRight = '0px'; // Scrollbar padding'i kaldır
+      
+      // Bir de html element'ini de disable et (bazı browser'lar için)
+      document.documentElement.style.overflow = 'hidden';
+    } else {
+      // Modal kapandığında body scroll'unu enable et
+      document.body.style.overflow = 'auto';
+      document.body.style.paddingRight = '';
+      document.documentElement.style.overflow = 'auto';
+    }
+
+    // Cleanup function - component unmount olduğunda scroll'u restore et
+    return () => {
+      document.body.style.overflow = 'auto';
+      document.body.style.paddingRight = '';
+      document.documentElement.style.overflow = 'auto';
+    };
+  }, [isOpen]);
+
   // ESC tuşu ile modal'ı kapat
   useEffect(() => {
     const handleEscape = (e) => {
@@ -57,8 +81,10 @@ function OfferDetailsModal({ isOpen, onClose, offerId, currency = "EUR" }) {
       }
     };
 
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+      return () => document.removeEventListener('keydown', handleEscape);
+    }
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;

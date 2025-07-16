@@ -183,6 +183,20 @@ function ResultsPage() {
         const hotelData = hotelsData.map((hotel, index) => {
           console.log(`🏨 Processing hotel ${index}:`, hotel);
           
+          // Deterministik mesafe hesaplama fonksiyonu
+          const getDeterministicDistance = (hotelId, index) => {
+            if (!hotelId) return 2.5; // Varsayılan mesafe
+            
+            // Hotel ID'sinden basit bir hash üret
+            let hash = 0;
+            const idStr = String(hotelId);
+            for (let i = 0; i < idStr.length; i++) {
+              hash = ((hash << 5) - hash + idStr.charCodeAt(i)) & 0xffffffff;
+            }
+            // 0.5 ile 5.0 km arasında deterministik bir değer
+            return Math.abs(hash % 45) / 10 + 0.5;
+          };
+          
           return {
             id: hotel.id || `hotel-${index}`,
             name: safeString(hotel.name) || `Otel ${index + 1}`,
@@ -196,7 +210,7 @@ function ResultsPage() {
             description: safeString(hotel.description) || (safeString(hotel.name) ? `${safeString(hotel.name)} size konforlu konaklama imkanı sunar. ${hotel.stars ? hotel.stars + ' yıldızlı' : 'Kaliteli'} otel deneyimi.` : 'Konforlu konaklama imkanı'),
             amenities: extractAmenities(hotel),
             offers: Array.isArray(hotel.offers) ? hotel.offers : [],
-            distance: parseFloat(hotel.distance) || (Math.random() * 5 + 0.5),
+            distance: parseFloat(hotel.distance) || getDeterministicDistance(hotel.id, index),
             address: safeString(hotel.address) || '',
             facilities: hotel.facilities || [],
             hotelCategory: hotel.hotelCategory || null,
