@@ -14,9 +14,16 @@ function HotelDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
+  // Fotoğraf galerisi için state'ler
+  const [selectedImage, setSelectedImage] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [allImages, setAllImages] = useState([]);
+  
   // HotelCard'dan gelen state verileri
   const { hotel, searchData } = location.state || {};
 
+  const [showAllFacilities, setShowAllFacilities] = useState(false);
+  
   useEffect(() => {
     const fetchHotelDetails = async () => {
       try {
@@ -25,7 +32,6 @@ function HotelDetailPage() {
         
         console.log('🔍 Fetching hotel details for ID:', id);
         
-        // Backend API'den hotel detaylarını al
         const response = await hotelDetailsService.getProductInfo(id);
         
         if (response?.header?.success && response?.body?.hotel) {
@@ -34,7 +40,18 @@ function HotelDetailPage() {
           
           console.log('✅ Raw hotel data:', rawHotel);
           console.log('✅ Formatted hotel data:', formatted);
+          console.log('🏨 Facilities count:', formatted.facilities.length);
+          console.log('🔧 Facilities data:', formatted.facilities);
           
+          const images = [
+            { url: formatted.media.mainImage, alt: `${formatted.name} - Ana Fotoğraf` },
+            ...formatted.media.galleryImages.map((img, index) => ({
+              url: img.urlFull,
+              alt: `${formatted.name} - Galeri ${index + 1}`
+            }))
+          ];
+          
+          setAllImages(images);
           setHotelDetails(rawHotel);
           setFormattedHotel(formatted);
         } else {
@@ -59,6 +76,37 @@ function HotelDetailPage() {
       state: { hotel: hotel || hotelDetails, searchData } 
     });
   };
+
+  const openLightbox = (index) => {
+    setSelectedImage(index);
+    setLightboxOpen(true);
+  };
+
+  const closeLightbox = () => {
+    setLightboxOpen(false);
+  };
+
+  const nextImage = () => {
+    setSelectedImage((prev) => (prev + 1) % allImages.length);
+  };
+
+  const prevImage = () => {
+    setSelectedImage((prev) => (prev - 1 + allImages.length) % allImages.length);
+  };
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (lightboxOpen) {
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft') prevImage();
+        if (e.key === 'ArrowRight') nextImage();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [lightboxOpen]);
 
   if (loading) {
     return (
@@ -99,177 +147,20 @@ function HotelDetailPage() {
       <div className="hotel-detail-container">
         {/* Hotel Header */}
         <div className="hotel-header">
-          <h1>{formattedHotel.name}</h1>
-          <div className="hotel-meta">
-            <span className="category-badge">
-              {hotelDetailsService.getCategoryStars(formattedHotel.categoryCode)} 
-              {formattedHotel.category !== 'Kategori Belirtilmemiş' && 
-                ` (${formattedHotel.category})`
-              }
-            </span>
-            <span className="provider-badge">
-              Provider: {formattedHotel.provider}
-            </span>
-          </div>
-        </div>
-
-        {/* Hotel Images */}
-        <div className="hotel-images">
-          <div className="main-image">
-            <img 
-              src={formattedHotel.media.mainImage} 
-              alt={formattedHotel.name}
-              onError={(e) => {
-                e.target.src = '/images/destinations/istanbul.jpg';
-              }}
-            />
-          </div>
-          
-          {formattedHotel.media.galleryImages.length > 0 && (
-            <div className="image-gallery">
-              {formattedHotel.media.galleryImages.map((image, index) => (
-                <div key={index} className="gallery-image">
-                  <img 
-                    src={image.urlFull} 
-                    alt={`${formattedHotel.name} - ${index + 2}`}
-                    onError={(e) => {
-                      e.target.src = '/images/destinations/istanbul.jpg';
-                    }}
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Hotel Info */}
-        <div className="hotel-info-section">
-          {/* Location Info */}
-          <div className="info-card">
-            <h3>
-              <span className="icon">📍</span>
-              Konum
-            </h3>
-            <div className="location-info">
-              <p className="main-location">{formattedHotel.location.name}</p>
-              <p>{formattedHotel.location.city}, {formattedHotel.location.country}</p>
-              
-              {formattedHotel.address.fullAddress !== 'Adres bilgisi mevcut değil' && (
-                <div className="address-section">
-                  <p><strong>Adres:</strong></p>
-                  <p>{formattedHotel.address.fullAddress}</p>
-                </div>
-              )}
-              
-              {/* Koordinatlar varsa göster */}
-              {formattedHotel.coordinates.lat && formattedHotel.coordinates.lng && (
-                <div className="coordinates-section">
-                  <p><strong>Koordinatlar:</strong></p>
-                  <p>Enlem: {formattedHotel.coordinates.lat}</p>
-                  <p>Boylam: {formattedHotel.coordinates.lng}</p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Contact Info */}
-          <div className="info-card">
-            <h3>
-              <span className="icon">📞</span>
-              İletişim
-            </h3>
-            <div className="contact-info">
-              <p><strong>Telefon:</strong> {formattedHotel.contact.phone}</p>
-              <p><strong>Faks:</strong> {formattedHotel.contact.fax}</p>
-              {formattedHotel.contact.website && (
-                <p><strong>Web:</strong> 
-                  <a href={formattedHotel.contact.website} target="_blank" rel="noopener noreferrer">
-                    {formattedHotel.contact.website}
-                  </a>
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* Hotel Description */}
-          <div className="info-card">
-            <h3>
-              <span className="icon">📝</span>
-              Açıklama
-            </h3>
-            <p className="description-text">{formattedHotel.description}</p>
-          </div>
-
-          {/* Hotel ID Info */}
-          <div className="info-card">
-            <h3>
-              <span className="icon">🔍</span>
-              Otel Bilgileri
-            </h3>
-            <div className="hotel-info">
-              <p><strong>Otel ID:</strong> {formattedHotel.id}</p>
-              <p><strong>Kategori Kodu:</strong> {formattedHotel.categoryCode}</p>
-              <p><strong>Provider:</strong> {formattedHotel.provider}</p>
-            </div>
-          </div>
-
-          {/* Themes - Sadece varsa göster */}
-          {formattedHotel.themes.length > 0 && (
-            <div className="info-card themes-section">
-              <h3>
-                <span className="icon">🎨</span>
-                Otel Temaları
-              </h3>
-              <div className="themes-list">
-                {formattedHotel.themes.map((theme, index) => (
-                  <span key={index} className="theme-tag">
-                    {theme.name}
-                  </span>
-                ))}
+          <div className="hotel-title-section">
+            <h1>{formattedHotel.name}</h1>
+            <div className="hotel-rating-location">
+              <div className="rating-stars">
+                {hotelDetailsService.getCategoryStars(formattedHotel.categoryCode)}
+              </div>
+              <div className="location-info">
+                <span className="location-text">
+                  📍 {formattedHotel.location.name}, {formattedHotel.location.city}
+                </span>
               </div>
             </div>
-          )}
-
-          {/* Facilities - Sadece varsa göster */}
-          {formattedHotel.facilities.length > 0 && (
-            <div className="info-card facilities-section">
-              <h3>
-                <span className="icon">🏨</span>
-                Otel Olanakları
-              </h3>
-              {formattedHotel.facilities.map((category, index) => (
-                <div key={index} className="facility-category">
-                  <h4>{category.name}</h4>
-                  <div className="facilities-grid">
-                    {category.facilities.map((facility, facilityIndex) => (
-                      <div key={facilityIndex} className="facility-item">
-                        <span className="facility-name">{facility.name}</span>
-                        {facility.isPriced && (
-                          <span className="priced-badge">Ücretli</span>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Eğer hiç facilities yoksa bilgi ver */}
-          {formattedHotel.facilities.length === 0 && (
-            <div className="info-card">
-              <h3>
-                <span className="icon">🏨</span>
-                Otel Olanakları
-              </h3>
-              <p className="no-facilities">Bu otel için olanak bilgisi mevcut değil</p>
-            </div>
-          )}
-        </div>
-
-        {/* Booking Section */}
-        <div className="booking-section">
-          <div className="booking-actions">
+          </div>
+          <div className="hotel-actions">
             <button 
               className="book-now-btn"
               onClick={handleBooking}
@@ -277,14 +168,194 @@ function HotelDetailPage() {
             >
               Rezervasyon Yap
             </button>
-            <button 
-              className="back-btn"
-              onClick={() => navigate(-1)}
-            >
-              Geri Dön
-            </button>
           </div>
         </div>
+
+        {/* Modern Photo Gallery */}
+        <div className="modern-photo-gallery">
+          <div className="main-photo" onClick={() => openLightbox(0)}>
+            <img 
+              src={allImages[0]?.url || '/images/destinations/istanbul.jpg'} 
+              alt={allImages[0]?.alt || formattedHotel.name}
+              onError={(e) => {
+                e.target.src = '/images/destinations/istanbul.jpg';
+              }}
+            />
+            <div className="photo-overlay">
+              <button className="view-all-photos">
+                📷 Tüm Fotoğrafları Gör ({allImages.length})
+              </button>
+            </div>
+          </div>
+          
+          <div className="photo-grid">
+            {allImages.slice(1, 5).map((image, index) => (
+              <div 
+                key={index + 1} 
+                className="grid-photo"
+                onClick={() => openLightbox(index + 1)}
+              >
+                <img 
+                  src={image.url} 
+                  alt={image.alt}
+                  onError={(e) => {
+                    e.target.src = '/images/destinations/istanbul.jpg';
+                  }}
+                />
+                {index === 3 && allImages.length > 5 && (
+                  <div className="more-photos-overlay">
+                    <span>+{allImages.length - 5} Fotoğraf</span>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Hotel Information Layout */}
+        <div className="hotel-content">
+          <div className="main-content">
+            {/* Hotel Description */}
+            <div className="content-section">
+              <h2>Açıklama</h2>
+              <p className="description-text">{formattedHotel.description}</p>
+            </div>
+
+            {/* Facilities */}
+            {formattedHotel.facilities.length > 0 && (
+              <div className="content-section">
+                <h2>Otel Olanakları</h2>
+                <div className="facilities-container">
+                  {(showAllFacilities 
+                    ? formattedHotel.facilities 
+                    : formattedHotel.facilities.slice(0, 3)
+                  ).map((category, index) => (
+                    <div key={index} className="facility-group">
+                      <h3>{category.name}</h3>
+                      <div className="facility-items">
+                        {category.facilities.map((facility, facilityIndex) => (
+                          <div key={facilityIndex} className="facility-item">
+                            <span className="facility-icon">✓</span>
+                            <span className="facility-name">{facility.name}</span>
+                            {facility.isPriced && (
+                              <span className="facility-price">Ücretli</span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Show More/Less Button */}
+                {formattedHotel.facilities.length > 3 && (
+                  <div className="show-more-facilities">
+                    <button 
+                      className="show-more-btn"
+                      onClick={() => setShowAllFacilities(!showAllFacilities)}
+                    >
+                      {showAllFacilities 
+                        ? "Daha Az Göster" 
+                        : `Daha Fazla Göster (${formattedHotel.facilities.length - 3} kategori daha)`
+                      }
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* No Facilities Message */}
+            {formattedHotel.facilities.length === 0 && (
+              <div className="content-section">
+                <h2>Otel Olanakları</h2>
+                <div className="no-facilities-card">
+                  <div className="no-facilities-icon">🏨</div>
+                  <h3>Olanak Bilgisi Mevcut Değil</h3>
+                  <p>Bu otel için detaylı olanak bilgisi henüz eklenmemiş. Daha fazla bilgi için otel ile iletişime geçebilirsiniz.</p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="sidebar-content">
+            {/* Location Card */}
+            <div className="info-card">
+              <h3>📍 Konum</h3>
+              <div className="location-details">
+                <p className="main-location">{formattedHotel.location.name}</p>
+                <p className="city-country">{formattedHotel.location.city}, {formattedHotel.location.country}</p>
+                
+                {formattedHotel.address.fullAddress !== 'Adres bilgisi mevcut değil' && (
+                  <div className="address-info">
+                    <p><strong>Adres:</strong></p>
+                    <p>{formattedHotel.address.fullAddress}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Contact Card */}
+            <div className="info-card">
+              <h3>📞 İletişim</h3>
+              <div className="contact-details">
+                <p><strong>Telefon:</strong> {formattedHotel.contact.phone}</p>
+                <p><strong>Faks:</strong> {formattedHotel.contact.fax}</p>
+                {formattedHotel.contact.website && (
+                  <p><strong>Web:</strong> 
+                    <a href={formattedHotel.contact.website} target="_blank" rel="noopener noreferrer">
+                      {formattedHotel.contact.website}
+                    </a>
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Themes */}
+            {formattedHotel.themes.length > 0 && (
+              <div className="info-card">
+                <h3>🎨 Otel Temaları</h3>
+                <div className="themes-container">
+                  {formattedHotel.themes.map((theme, index) => (
+                    <span key={index} className="theme-badge">
+                      {theme.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Lightbox */}
+        {lightboxOpen && (
+          <div className="lightbox-overlay" onClick={closeLightbox}>
+            <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
+              <button className="lightbox-close" onClick={closeLightbox}>×</button>
+              
+              <div className="lightbox-image">
+                <img 
+                  src={allImages[selectedImage]?.url} 
+                  alt={allImages[selectedImage]?.alt}
+                  onError={(e) => {
+                    e.target.src = '/images/destinations/istanbul.jpg';
+                  }}
+                />
+              </div>
+              
+              {allImages.length > 1 && (
+                <>
+                  <button className="lightbox-prev" onClick={prevImage}>‹</button>
+                  <button className="lightbox-next" onClick={nextImage}>›</button>
+                  
+                  <div className="lightbox-info">
+                    <h3>{formattedHotel.name}</h3>
+                    <p>{selectedImage + 1} / {allImages.length}</p>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

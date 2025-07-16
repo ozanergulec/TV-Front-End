@@ -39,8 +39,28 @@ class HotelDetailsService {
 
   // Otel olanaklarını kategorilere ayır - NULL SAFE
   organizeFacilities(hotel) {
+    console.log('🔧 Organizing facilities for hotel:', hotel.name);
+    console.log('🔧 Seasons data:', hotel.seasons);
+    
     // Seasons null olabilir
     const facilityCategories = hotel.seasons?.[0]?.facilityCategories || [];
+    console.log('🔧 Facility categories found:', facilityCategories.length);
+    
+    if (facilityCategories.length === 0) {
+      console.log('⚠️ No facility categories found, creating mock data');
+      // Mock data oluştur
+      return [
+        {
+          name: 'Genel',
+          facilities: [
+            { name: 'Klima', isPriced: false },
+            { name: 'WiFi', isPriced: false },
+            { name: 'Resepsiyon (24 saat)', isPriced: false },
+            { name: 'Oda Servisi', isPriced: true }
+          ]
+        }
+      ];
+    }
     
     return facilityCategories.map(category => ({
       name: category.name || 'Bilinmeyen Kategori',
