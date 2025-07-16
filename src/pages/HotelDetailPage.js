@@ -19,19 +19,21 @@ function HotelDetailPage() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [allImages, setAllImages] = useState([]);
   
+  // Content states
+  const [showAllFacilities, setShowAllFacilities] = useState(false);
+  const [showFullDescription, setShowFullDescription] = useState(false);
+  const [showFacilitiesModal, setShowFacilitiesModal] = useState(false); // YENİ STATE
+  
   // HotelCard'dan gelen state verileri
   const { hotel, searchData } = location.state || {};
 
-  const [showAllFacilities, setShowAllFacilities] = useState(false);
-  const [showFullDescription, setShowFullDescription] = useState(false); // YENİ STATE
-  
   useEffect(() => {
     const fetchHotelDetails = async () => {
       try {
         setLoading(true);
         setError(null);
         
-        console.log('🔍 Fetching hotel details for ID:', id);
+        console.log('Otel detayları alınıyor, ID:', id);
         
         const response = await hotelDetailsService.getProductInfo(id);
         
@@ -39,10 +41,8 @@ function HotelDetailPage() {
           const rawHotel = response.body.hotel;
           const formatted = hotelDetailsService.formatHotelInfo(rawHotel);
           
-          console.log('✅ Raw hotel data:', rawHotel);
-          console.log('✅ Formatted hotel data:', formatted);
-          console.log('🏨 Facilities count:', formatted.facilities.length);
-          console.log('🔧 Facilities data:', formatted.facilities);
+          console.log('Ham otel verisi:', rawHotel);
+          console.log('Formatlanmış otel verisi:', formatted);
           
           const images = [
             { url: formatted.media.mainImage, alt: `${formatted.name} - Ana Fotoğraf` },
@@ -56,12 +56,12 @@ function HotelDetailPage() {
           setHotelDetails(rawHotel);
           setFormattedHotel(formatted);
         } else {
-          console.error('❌ Invalid response structure:', response);
-          setError('Hotel detayları bulunamadı');
+          console.error('Geçersiz yanıt yapısı:', response);
+          setError('Otel detayları bulunamadı');
         }
       } catch (err) {
-        console.error('❌ Hotel detayları alınırken hata:', err);
-        setError('Hotel detayları yüklenirken bir hata oluştu: ' + err.message);
+        console.error('Otel detaylarını alırken hata:', err);
+        setError('Otel detayları yüklenirken bir hata oluştu: ' + err.message);
       } finally {
         setLoading(false);
       }
@@ -95,6 +95,15 @@ function HotelDetailPage() {
     setSelectedImage((prev) => (prev - 1 + allImages.length) % allImages.length);
   };
 
+  // Açıklamayı kırpma fonksiyonu
+  const getTruncatedDescription = (text, maxLength = 300) => {
+    if (!text || text.length <= maxLength) return text;
+    
+    const truncated = text.substr(0, maxLength);
+    const lastSpace = truncated.lastIndexOf(' ');
+    return truncated.substr(0, lastSpace) + '...';
+  };
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -109,14 +118,12 @@ function HotelDetailPage() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [lightboxOpen]);
 
-  // Açıklamayı kırpma fonksiyonu
-  const getTruncatedDescription = (text, maxLength = 300) => {
-    if (!text || text.length <= maxLength) return text;
-    
-    // Kelime sınırında kırp
-    const truncated = text.substr(0, maxLength);
-    const lastSpace = truncated.lastIndexOf(' ');
-    return truncated.substr(0, lastSpace) + '...';
+  const openFacilitiesModal = () => {
+    setShowFacilitiesModal(true);
+  };
+
+  const closeFacilitiesModal = () => {
+    setShowFacilitiesModal(false);
   };
 
   if (loading) {
@@ -145,8 +152,8 @@ function HotelDetailPage() {
     return (
       <div className="hotel-detail-page">
         <div className="error-message">
-          <h2>Hotel Bulunamadı</h2>
-          <p>Aradığınız hotel bulunamadı.</p>
+          <h2>Otel Bulunamadı</h2>
+          <p>Aradığınız otel bulunamadı.</p>
           <button onClick={() => navigate(-1)}>Geri Dön</button>
         </div>
       </div>
@@ -156,7 +163,7 @@ function HotelDetailPage() {
   return (
     <div className="hotel-detail-page">
       <div className="hotel-detail-container">
-        {/* Hotel Header */}
+        {/* Profesyonel Başlık */}
         <div className="hotel-header">
           <div className="hotel-title-section">
             <h1>{formattedHotel.name}</h1>
@@ -165,8 +172,9 @@ function HotelDetailPage() {
                 {hotelDetailsService.getCategoryStars(formattedHotel.categoryCode)}
               </div>
               <div className="location-info">
+                <span className="location-icon">•</span>
                 <span className="location-text">
-                  📍 {formattedHotel.location.name}, {formattedHotel.location.city}
+                  {formattedHotel.location.name}, {formattedHotel.location.city}
                 </span>
               </div>
             </div>
@@ -182,8 +190,8 @@ function HotelDetailPage() {
           </div>
         </div>
 
-        {/* Modern Photo Gallery */}
-        <div className="modern-photo-gallery">
+        {/* Profesyonel Fotoğraf Galerisi */}
+        <div className="photo-gallery">
           <div className="main-photo" onClick={() => openLightbox(0)}>
             <img 
               src={allImages[0]?.url || '/images/destinations/istanbul.jpg'} 
@@ -194,7 +202,7 @@ function HotelDetailPage() {
             />
             <div className="photo-overlay">
               <button className="view-all-photos">
-                📷 Tüm Fotoğrafları Gör ({allImages.length})
+                Tüm Fotoğrafları Gör ({allImages.length})
               </button>
             </div>
           </div>
@@ -215,7 +223,7 @@ function HotelDetailPage() {
                 />
                 {index === 3 && allImages.length > 5 && (
                   <div className="more-photos-overlay">
-                    <span>+{allImages.length - 5} Fotoğraf</span>
+                    <span>+{allImages.length - 5} fotoğraf daha</span>
                   </div>
                 )}
               </div>
@@ -223,91 +231,94 @@ function HotelDetailPage() {
           </div>
         </div>
 
-        {/* Hotel Information Layout */}
+        {/* Profesyonel İçerik Düzeni */}
         <div className="hotel-content">
           <div className="main-content">
-            {/* Advanced Description Section */}
+            {/* Açıklama Bölümü */}
             <div className="content-section">
-              <h2>Açıklama</h2>
+              <h2>Bu Otel Hakkında</h2>
               <div className="description-container">
                 <div className={`description-wrapper ${!showFullDescription ? 'collapsed' : ''}`}>
                   <p className="description-text">
-                    {formattedHotel.description}
+                    {showFullDescription 
+                      ? formattedHotel.description 
+                      : getTruncatedDescription(formattedHotel.description, 280)
+                    }
                   </p>
                 </div>
                 
-                {/* Show More/Less Button */}
                 {formattedHotel.description && formattedHotel.description.length > 280 && (
                   <button 
-                    className="show-more-description-btn"
+                    className="show-more-btn"
                     onClick={() => setShowFullDescription(!showFullDescription)}
                   >
-                    {showFullDescription ? '▲ Daha Az Göster' : '▼ Devamını Gör'}
+                    {showFullDescription ? 'Daha Az Göster' : 'Devamını Oku'}
                   </button>
                 )}
               </div>
             </div>
 
-            {/* Facilities */}
+            {/* Olanaklar Bölümü - Kompakt Versiyon */}
             {formattedHotel.facilities.length > 0 && (
               <div className="content-section">
                 <h2>Otel Olanakları</h2>
-                <div className="facilities-container">
-                  {(showAllFacilities 
-                    ? formattedHotel.facilities 
-                    : formattedHotel.facilities.slice(0, 3)
-                  ).map((category, index) => (
-                    <div key={index} className="facility-group">
+                <div className="facilities-grid">
+                  {formattedHotel.facilities.slice(0, 2).map((category, index) => (
+                    <div key={index} className="facility-category">
                       <h3>{category.name}</h3>
-                      <div className="facility-items">
-                        {category.facilities.map((facility, facilityIndex) => (
-                          <div key={facilityIndex} className="facility-item">
-                            <span className="facility-icon">✓</span>
+                      <ul className="facility-list">
+                        {category.facilities.slice(0, 6).map((facility, facilityIndex) => (
+                          <li key={facilityIndex} className="facility-item">
+                            <span className="facility-check">✓</span>
                             <span className="facility-name">{facility.name}</span>
                             {facility.isPriced && (
                               <span className="facility-price">Ücretli</span>
                             )}
-                          </div>
+                          </li>
                         ))}
-                      </div>
+                        {/* Kategori içinde daha fazla item varsa göster */}
+                        {category.facilities.length > 6 && (
+                          <li className="more-facilities-item">
+                            <span className="more-facilities-text">
+                              +{category.facilities.length - 6} olanak daha
+                            </span>
+                          </li>
+                        )}
+                      </ul>
                     </div>
                   ))}
                 </div>
                 
-                {/* Show More/Less Button */}
-                {formattedHotel.facilities.length > 3 && (
+                {/* Daha fazla kategori veya item varsa göster */}
+                {(formattedHotel.facilities.length > 2 || 
+                  formattedHotel.facilities.some(cat => cat.facilities.length > 6)) && (
                   <div className="show-more-facilities">
                     <button 
                       className="show-more-btn"
-                      onClick={() => setShowAllFacilities(!showAllFacilities)}
+                      onClick={openFacilitiesModal}
                     >
-                      {showAllFacilities 
-                        ? "Daha Az Göster" 
-                        : `Daha Fazla Göster (${formattedHotel.facilities.length - 3} kategori daha)`
-                      }
+                      Tüm Olanakları Göster
                     </button>
                   </div>
                 )}
               </div>
             )}
 
-            {/* No Facilities Message */}
+            {/* Olanak Bilgisi Yok Mesajı */}
             {formattedHotel.facilities.length === 0 && (
               <div className="content-section">
                 <h2>Otel Olanakları</h2>
-                <div className="no-facilities-card">
-                  <div className="no-facilities-icon">🏨</div>
-                  <h3>Olanak Bilgisi Mevcut Değil</h3>
-                  <p>Bu otel için detaylı olanak bilgisi henüz eklenmemiş. Daha fazla bilgi için otel ile iletişime geçebilirsiniz.</p>
+                <div className="no-facilities-message">
+                  <p>Bu otel için olanak bilgisi mevcut değil. Daha fazla bilgi için lütfen otel ile direkt iletişime geçin.</p>
                 </div>
               </div>
             )}
           </div>
 
           <div className="sidebar-content">
-            {/* Location Card */}
+            {/* Konum Kartı */}
             <div className="info-card">
-              <h3>📍 Konum</h3>
+              <h3>Konum</h3>
               <div className="location-details">
                 <p className="main-location">{formattedHotel.location.name}</p>
                 <p className="city-country">{formattedHotel.location.city}, {formattedHotel.location.country}</p>
@@ -321,26 +332,27 @@ function HotelDetailPage() {
               </div>
             </div>
 
-            {/* Contact Card */}
+            {/* İletişim Kartı */}
             <div className="info-card">
-              <h3>📞 İletişim</h3>
+              <h3>İletişim Bilgileri</h3>
               <div className="contact-details">
                 <p><strong>Telefon:</strong> {formattedHotel.contact.phone}</p>
                 <p><strong>Faks:</strong> {formattedHotel.contact.fax}</p>
                 {formattedHotel.contact.website && (
-                  <p><strong>Web:</strong> 
+                  <p><strong>Website:</strong> 
                     <a href={formattedHotel.contact.website} target="_blank" rel="noopener noreferrer">
-                      {formattedHotel.contact.website}
+                      Web Sitesini Ziyaret Et
                     </a>
                   </p>
                 )}
               </div>
             </div>
 
-            {/* Themes */}
+            {/* Temalar kısmı kaldırıldı */}
+            {/* 
             {formattedHotel.themes.length > 0 && (
               <div className="info-card">
-                <h3>🎨 Otel Temaları</h3>
+                <h3>Otel Tipleri</h3>
                 <div className="themes-container">
                   {formattedHotel.themes.map((theme, index) => (
                     <span key={index} className="theme-badge">
@@ -350,6 +362,7 @@ function HotelDetailPage() {
                 </div>
               </div>
             )}
+            */}
           </div>
         </div>
 
@@ -380,6 +393,45 @@ function HotelDetailPage() {
                   </div>
                 </>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* Facilities Modal */}
+        {showFacilitiesModal && (
+          <div className="facilities-modal-overlay" onClick={closeFacilitiesModal}>
+            <div className="facilities-modal-content" onClick={(e) => e.stopPropagation()}>
+              <div className="facilities-modal-header">
+                <h2>Tüm Otel Olanakları</h2>
+                <button className="facilities-modal-close" onClick={closeFacilitiesModal}>×</button>
+              </div>
+              
+              <div className="facilities-modal-body">
+                <div className="facilities-modal-grid">
+                  {formattedHotel.facilities.map((category, index) => (
+                    <div key={index} className="facilities-modal-category">
+                      <h3>{category.name}</h3>
+                      <ul className="facilities-modal-list">
+                        {category.facilities.map((facility, facilityIndex) => (
+                          <li key={facilityIndex} className="facilities-modal-item">
+                            <span className="facilities-modal-check">✓</span>
+                            <span className="facilities-modal-name">{facility.name}</span>
+                            {facility.isPriced && (
+                              <span className="facilities-modal-price">Ücretli</span>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="facilities-modal-footer">
+                <button className="facilities-modal-close-btn" onClick={closeFacilitiesModal}>
+                  Kapat
+                </button>
+              </div>
             </div>
           </div>
         )}
