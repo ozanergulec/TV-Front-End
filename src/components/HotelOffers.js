@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import hotelDetailsService from '../services/hotelDetailsService';
 import LoadingSpinner from './LoadingSpinner';
+import OfferDetailsModal from './OfferDetailsModal';
 import '../styles/HotelOffers.css';
 
 function HotelOffers({ hotelId, searchData, hotel }) {
@@ -10,6 +11,10 @@ function HotelOffers({ hotelId, searchData, hotel }) {
   const [offers, setOffers] = useState([]);
   const [offersLoading, setOffersLoading] = useState(false);
   const [offersError, setOffersError] = useState(null);
+  
+  // Modal states
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedOfferId, setSelectedOfferId] = useState(null);
 
   // Offers fetch function
   const fetchOffers = async () => {
@@ -146,7 +151,6 @@ function HotelOffers({ hotelId, searchData, hotel }) {
                     <tr>
                       <th>Oda Tipi</th>
                       <th>Pansiyon</th>
-                      <th>Fiyat</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -158,18 +162,6 @@ function HotelOffers({ hotelId, searchData, hotel }) {
                         </td>
                         <td>
                           <span className="room-board">{room.boardType}</span>
-                        </td>
-                        <td>
-                          <div className="room-price">
-                            {room.price.oldAmount && room.price.oldAmount > room.price.amount && (
-                              <span className="old-price">
-                                {room.price.oldAmount.toFixed(0)} {room.price.currency}
-                              </span>
-                            )}
-                            <span className="room-price-amount">
-                              {room.price.amount.toFixed(0)} {room.price.currency}
-                            </span>
-                          </div>
                         </td>
                       </tr>
                     ))}
@@ -187,15 +179,23 @@ function HotelOffers({ hotelId, searchData, hotel }) {
                   Geçerlilik: {new Date(offer.expiresOn).toLocaleDateString('tr-TR')}
                 </span>
               </div>
-              <button 
-                className="select-offer-btn"
-                onClick={() => navigate('/booking', { 
-                  state: { hotel, searchData, selectedOffer: offer } 
-                })}
-                disabled={!offer.isAvailable}
-              >
-                Bu Teklifi Seç
-              </button>
+              <div className="offer-buttons">
+                <button 
+                  className="details-btn"
+                  onClick={() => openDetailsModal(offer.id)}
+                >
+                  Detayları Gör
+                </button>
+                <button 
+                  className="select-offer-btn"
+                  onClick={() => navigate('/booking', { 
+                    state: { hotel, searchData, selectedOffer: offer } 
+                  })}
+                  disabled={!offer.isAvailable}
+                >
+                  Bu Teklifi Seç
+                </button>
+              </div>
             </div>
           </div>
         ))}
@@ -203,10 +203,30 @@ function HotelOffers({ hotelId, searchData, hotel }) {
     );
   };
 
+  // Modal açma fonksiyonu
+  const openDetailsModal = (offerId) => {
+    setSelectedOfferId(offerId);
+    setIsModalOpen(true);
+  };
+
+  // Modal kapatma fonksiyonu
+  const closeDetailsModal = () => {
+    setIsModalOpen(false);
+    setSelectedOfferId(null);
+  };
+
   return (
     <div className="hotel-offers-section">
       <h2>Mevcut Teklifler</h2>
       {renderOffers()}
+      
+      {/* Offer Details Modal */}
+      <OfferDetailsModal 
+        isOpen={isModalOpen}
+        onClose={closeDetailsModal}
+        offerId={selectedOfferId}
+        currency={searchData?.currency || 'EUR'}
+      />
     </div>
   );
 }

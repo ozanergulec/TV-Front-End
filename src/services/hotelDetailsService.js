@@ -69,7 +69,7 @@ class HotelDetailsService {
       console.log('🔍 Offer price:', offer.price);
       console.log('🔍 Offer rooms:', offer.rooms);
       
-      const formaturedOffer = {
+      const formattedOffer = {
         id: offer.offerId,
         checkIn: offer.checkIn,
         checkOut: offer.checkOut || this.calculateCheckOut(offer.checkIn, offer.night),
@@ -87,8 +87,8 @@ class HotelDetailsService {
         provider: offer.provider
       };
       
-      console.log('🔍 Formatted offer:', formaturedOffer);
-      return formaturedOffer;
+      console.log('�� Formatted offer:', formattedOffer);
+      return formattedOffer;
     });
   }
 
@@ -273,6 +273,72 @@ class HotelDetailsService {
   getCategoryStars(categoryCode) {
     const stars = parseInt(categoryCode) || 0;
     return stars > 0 ? '★'.repeat(Math.min(stars, 5)) : 'Kategori Belirtilmemiş';
+  }
+
+  // Teklif detaylarını al
+  async getOfferDetails(offerIds, currency = "EUR") {
+    const request = {
+      offerIds: Array.isArray(offerIds) ? offerIds : [offerIds],
+      currency: currency,
+      getProductInfo: true
+    };
+    
+    try {
+      console.log('🔍 Getting offer details for IDs:', offerIds);
+      console.log('📤 GetOfferDetails Request:', JSON.stringify(request, null, 2));
+      const response = await apiService.post('/GetOfferDetails/GetOfferDetails', request);
+      console.log('📥 GetOfferDetails Response:', JSON.stringify(response, null, 2));
+      return response;
+    } catch (error) {
+      console.error('❌ Get offer details failed:', error);
+      throw error;
+    }
+  }
+
+  // Teklif detaylarını formatla
+  formatOfferDetails(detailsResponse) {
+    console.log('🔍 formatOfferDetails called with:', detailsResponse);
+    
+    if (!detailsResponse?.body?.offerDetails) {
+      console.log('❌ No offerDetails found in response');
+      return null;
+    }
+    
+    console.log('🔍 offerDetails array:', detailsResponse.body.offerDetails);
+    
+    const detail = detailsResponse.body.offerDetails[0]; // İlk detayı al
+    
+    if (!detail) {
+      console.log('❌ No detail found in offerDetails array');
+      return null;
+    }
+    
+    console.log('🔍 Processing detail:', detail);
+    
+    const formatted = {
+      id: detail.offerId,
+      expiresOn: detail.expiresOn,
+      checkIn: detail.checkIn,
+      checkOut: detail.checkOut,
+      isSpecial: detail.isSpecial,
+      isAvailable: detail.isAvailable,
+      availability: detail.availability,
+      isRefundable: detail.isRefundable,
+      price: {
+        amount: detail.price?.amount || 0,
+        currency: detail.price?.currency || 'EUR',
+        oldAmount: detail.price?.oldAmount || null,
+        percent: detail.price?.percent || 0
+      },
+      hotels: detail.hotels || [],
+      cancellationPolicies: detail.cancellationPolicies || [],
+      priceBreakdowns: detail.priceBreakdowns || [],
+      provider: detail.provider,
+      reservableInfo: detail.reservableInfo
+    };
+    
+    console.log('✅ Formatted offer details:', formatted);
+    return formatted;
   }
 }
 
