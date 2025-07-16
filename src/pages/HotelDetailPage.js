@@ -14,6 +14,11 @@ function HotelDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
+  // Offers için yeni state'ler
+  const [offers, setOffers] = useState([]);
+  const [offersLoading, setOffersLoading] = useState(false);
+  const [offersError, setOffersError] = useState(null);
+  
   // Fotoğraf galerisi için state'ler
   const [selectedImage, setSelectedImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -22,7 +27,7 @@ function HotelDetailPage() {
   // Content states
   const [showAllFacilities, setShowAllFacilities] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
-  const [showFacilitiesModal, setShowFacilitiesModal] = useState(false); // YENİ STATE
+  const [showFacilitiesModal, setShowFacilitiesModal] = useState(false);
   
   // HotelCard'dan gelen state verileri
   const { hotel, searchData } = location.state || {};
@@ -71,6 +76,56 @@ function HotelDetailPage() {
       fetchHotelDetails();
     }
   }, [id]);
+
+  // Offers fetch function
+  const fetchOffers = async () => {
+    try {
+      setOffersLoading(true);
+      setOffersError(null);
+      
+      console.log('🔍 Fetching offers...');
+      console.log('Hotel ID:', id);
+      console.log('Search Data:', searchData);
+      console.log('Search ID:', searchData?.searchId);
+      console.log('Offer ID:', searchData?.offerId);
+      
+      // Gerekli bilgileri kontrol et
+      if (!searchData?.searchId) {
+        throw new Error('searchId bulunamadı. Lütfen arama sayfasından tekrar deneyin.');
+      }
+      
+      if (!id) {
+        throw new Error('Hotel ID bulunamadı.');
+      }
+      
+      const response = await hotelDetailsService.getOffers(id, searchData);
+      
+      if (response?.header?.success && response?.body?.offers) {
+        const formattedOffers = hotelDetailsService.formatOffers(response);
+        console.log('✅ Formatlanmış teklifler:', formattedOffers);
+        setOffers(formattedOffers);
+      } else {
+        console.error('❌ Teklifler alınamadı:', response);
+        console.error('Response Header:', response?.header);
+        console.error('Response Messages:', response?.header?.messages);
+        
+        const errorMessage = response?.header?.messages?.[0]?.message || 'Bu otel için teklifler bulunamadı';
+        setOffersError(errorMessage);
+      }
+    } catch (err) {
+      console.error('❌ Teklifleri alırken hata:', err);
+      setOffersError(err.message || 'Teklifler yüklenirken bir hata oluştu');
+    } finally {
+      setOffersLoading(false);
+    }
+  };
+
+  // Offers'ı fetch et (hotel detayları yüklendikten sonra)
+  useEffect(() => {
+    if (formattedHotel && searchData) {
+      fetchOffers();
+    }
+  }, [formattedHotel, searchData]);
 
   const handleBooking = () => {
     navigate('/booking', { 
@@ -124,6 +179,107 @@ function HotelDetailPage() {
 
   const closeFacilitiesModal = () => {
     setShowFacilitiesModal(false);
+  };
+
+  // Offers render function
+  const renderOffers = () => {
+    if (offersLoading) {
+      return (
+        <div className="offers-loading">
+          <LoadingSpinner message="Teklifler yükleniyor..." />
+        </div>
+      );
+    }
+
+    if (offersError) {
+      return (
+        <div className="offers-error">
+          <p>{offersError}</p>
+          <button onClick={fetchOffers} className="retry-btn">
+            Tekrar Dene
+          </button>
+        </div>
+      );
+    }
+
+    if (offers.length === 0) {
+      return (
+        <div className="no-offers">
+          <p>Bu otel için uygun teklif bulunamadı.</p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="offers-container">
+        {offers.map((offer) => (
+          <div key={offer.id} className="offer-card">
+            <div className="offer-header">
+              <div className="offer-dates">
+                <span className="check-in">
+                  Giriş: {new Date(offer.checkIn).toLocaleDateString('tr-TR')}
+                </span>
+                <span className="check-out">
+                  Çıkış: {new Date(offer.checkOut).toLocaleDateString('tr-TR')}
+                </span>
+                <span className="nights">{offer.nights} Gece</span>
+              </div>
+              <div className="offer-price">
+                <span className="price-amount">
+                  {offer.price.amount.toFixed(0)} {offer.price.currency}
+                </span>
+                <span className="price-total">Toplam Fiyat</span>
+              </div>
+            </div>
+            
+            <div className="offer-details">
+              <div className="offer-status">
+                <span className={`availability-badge ${offer.isAvailable ? 'available' : 'unavailable'}`}>
+                  {offer.isAvailable ? 'Müsait' : 'Dolu'}
+                </span>
+                {offer.isRefundable && (
+                  <span className="refundable-badge">İade Edilebilir</span>
+                )}
+              </div>
+              
+              <div className="offer-rooms">
+                <h4>Oda Seçenekleri</h4>
+                {offer.rooms.map((room, index) => (
+                  <div key={index} className="room-option">
+                    <div className="room-info">
+                      <span className="room-name">{room.name}</span>
+                      <span className="room-board">{room.boardType}</span>
+                    </div>
+                    <div className="room-price">
+                      {room.price.oldAmount && (
+                        <span className="old-price">
+                          {room.price.oldAmount.toFixed(0)} {room.price.currency}
+                        </span>
+                      )}
+                      <span className="room-price-amount">
+                        {room.price.amount.toFixed(0)} {room.price.currency}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <div className="offer-actions">
+              <button 
+                className="select-offer-btn"
+                onClick={() => navigate('/booking', { 
+                  state: { hotel, searchData, selectedOffer: offer } 
+                })}
+                disabled={!offer.isAvailable}
+              >
+                Bu Teklifi Seç
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
   };
 
   if (loading) {
@@ -364,6 +520,12 @@ function HotelDetailPage() {
             )}
             */}
           </div>
+        </div>
+
+        {/* Offers Bölümü - Content sections'tan sonra ekle */}
+        <div className="offers-section">
+          <h2>Mevcut Teklifler</h2>
+          {renderOffers()}
         </div>
 
         {/* Lightbox */}

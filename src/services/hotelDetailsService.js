@@ -22,6 +22,93 @@ class HotelDetailsService {
     }
   }
 
+  // Otel tekliflerini al
+  async getOffers(productId, searchData, culture = "tr-TR") {
+    const request = {
+      searchId: searchData?.searchId || '',
+      offerId: searchData?.offerId || '',
+      productType: 2,
+      productId: productId,
+      currency: searchData?.currency || "EUR",
+      culture: culture,
+      getRoomInfo: true
+    };
+    
+    try {
+      console.log('🎯 Getting offers for hotel ID:', productId);
+      console.log('📤 GetOffers Request:', JSON.stringify(request, null, 2));
+      
+      // Zorunlu alanları kontrol et
+      if (!request.searchId) {
+        throw new Error('searchId is required for GetOffers');
+      }
+      
+      if (!request.productId) {
+        throw new Error('productId is required for GetOffers');
+      }
+      
+      const response = await apiService.post('/GetOffers', request);
+      console.log('📥 GetOffers Response:', JSON.stringify(response, null, 2));
+      return response;
+    } catch (error) {
+      console.error('❌ Get offers failed:', error);
+      throw error;
+    }
+  }
+
+  // Teklifleri formatla
+  formatOffers(offersResponse) {
+    if (!offersResponse?.body?.offers) {
+      return [];
+    }
+    
+    return offersResponse.body.offers.map(offer => ({
+      id: offer.offerId,
+      checkIn: offer.checkIn,
+      checkOut: offer.checkOut || this.calculateCheckOut(offer.checkIn, offer.night),
+      nights: offer.night,
+      price: {
+        amount: offer.price?.amount || 0,
+        currency: offer.price?.currency || 'EUR'
+      },
+      isAvailable: offer.isAvailable,
+      isRefundable: offer.isRefundable,
+      availability: offer.availability,
+      expiresOn: offer.expiresOn,
+      rooms: this.formatRooms(offer.rooms || []),
+      cancellationPolicies: offer.cancellationPolicies || [],
+      provider: offer.provider
+    }));
+  }
+
+  // Odaları formatla
+  formatRooms(rooms) {
+    return rooms.map(room => ({
+      id: room.roomId,
+      name: room.roomName,
+      accommodation: room.accomName,
+      boardType: room.boardName,
+      price: {
+        amount: room.price?.amount || 0,
+        currency: room.price?.currency || 'EUR',
+        oldAmount: room.price?.oldAmount || null
+      },
+      allotment: room.allotment,
+      travellers: room.travellers || []
+    }));
+  }
+
+  // Check-out tarihini hesapla
+  calculateCheckOut(checkIn, nights) {
+    if (!checkIn || !nights) return null;
+    
+    const checkInDate = new Date(checkIn);
+    const checkOutDate = new Date(checkInDate);
+    checkOutDate.setDate(checkOutDate.getDate() + nights);
+    
+    return checkOutDate.toISOString();
+  }
+
   // Otel fotoğraflarını organize et - NULL SAFE
   organizeHotelMedia(hotel) {
     // Seasons null olabilir, bu durumda fallback kullan

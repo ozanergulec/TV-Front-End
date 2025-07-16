@@ -879,3 +879,245 @@
     padding: 15px 20px;
   }
 }
+
+/* Offers Section */
+.offers-section {
+  margin-top: 40px;
+  padding: 30px;
+  background: #f8f9fa;
+  border-radius: 16px;
+}
+
+.offers-section h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.offers-container {
+  display: grid;
+  gap: 20px;
+}
+
+.offer-card {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.offer-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
+}
+
+.offer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.offer-dates {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.offer-dates span {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.nights {
+  font-weight: 600;
+  color: #2c5aa0;
+}
+
+.offer-price {
+  text-align: right;
+}
+
+.price-amount {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #2c5aa0;
+  display: block;
+}
+
+.price-total {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.offer-details {
+  margin-bottom: 20px;
+}
+
+.offer-status {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.availability-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.availability-badge.available {
+  background: #d4edda;
+  color: #155724;
+}
+
+.availability-badge.unavailable {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.refundable-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.offer-rooms h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.room-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.room-option:last-child {
+  border-bottom: none;
+}
+
+.room-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.room-name {
+  font-weight: 600;
+  color: #333;
+}
+
+.room-board {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.room-price {
+  text-align: right;
+}
+
+.old-price {
+  display: block;
+  text-decoration: line-through;
+  color: #999;
+  font-size: 0.85rem;
+}
+
+.room-price-amount {
+  font-weight: 600;
+  color: #2c5aa0;
+}
+
+.offer-actions {
+  text-align: center;
+  padding-top: 15px;
+  border-top: 1px solid #e9ecef;
+}
+
+.select-offer-btn {
+  background: linear-gradient(135deg, #2c5aa0 0%, #1e3d72 100%);
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.select-offer-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(44, 90, 160, 0.3);
+}
+
+.select-offer-btn:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.offers-loading,
+.offers-error,
+.no-offers {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+.retry-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.3s ease;
+}
+
+.retry-btn:hover {
+  background: #c82333;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .offers-section {
+    padding: 20px;
+  }
+  
+  .offer-header {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .offer-price {
+    text-align: left;
+  }
+  
+  .room-option {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .room-price {
+    text-align: left;
+  }
+}

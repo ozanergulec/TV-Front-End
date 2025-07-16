@@ -175,7 +175,9 @@ function ResultsPage() {
       console.log('🏨 Full API Response:', searchResults);
       
       const hotelsData = searchResults?.body?.hotels || searchResults?.hotels || [];
+      const searchId = searchResults?.body?.searchId || null; // SearchId'yi extract et
       console.log('🏨 Hotels array:', hotelsData);
+      console.log('🔍 Search ID:', searchId);
       
       if (Array.isArray(hotelsData) && hotelsData.length > 0) {
         const hotelData = hotelsData.map((hotel, index) => {
@@ -197,7 +199,13 @@ function ResultsPage() {
             distance: parseFloat(hotel.distance) || (Math.random() * 5 + 0.5),
             address: safeString(hotel.address) || '',
             facilities: hotel.facilities || [],
-            hotelCategory: hotel.hotelCategory || null
+            hotelCategory: hotel.hotelCategory || null,
+            
+            // GetOffers için gerekli bilgileri ekle
+            searchId: searchId, // PriceSearch'den gelen searchId
+            offerId: hotel.offers?.[0]?.offerId || null, // İlk offer'ın ID'si
+            checkIn: hotel.offers?.[0]?.checkIn || null,
+            nights: hotel.offers?.[0]?.night || 1
           };
         });
         
@@ -205,16 +213,13 @@ function ResultsPage() {
         setHotels(hotelData);
         setFilteredHotels(hotelData);
         
-        // ❌ Fiyat aralığını otomatik ayarlama kısmını kaldır
-        // if (hotelData.length > 0) {
-        //   const prices = hotelData.map(h => h.price).filter(p => p > 0);
-        //   if (prices.length > 0) {
-        //     setPriceRange({
-        //       min: Math.floor(Math.min(...prices) * 0.8),
-        //       max: Math.ceil(Math.max(...prices) * 1.2)
-        //     });
-        //   }
-        // }
+        // searchData'ya searchId'yi de ekle
+        if (searchId && searchData) {
+          setSearchData(prev => ({
+            ...prev,
+            searchId: searchId
+          }));
+        }
       } else {
         console.log('❌ No hotels found in response');
         setHotels([]);
