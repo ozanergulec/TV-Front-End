@@ -254,7 +254,13 @@ h1, h2, h3, h4, h5, h6 {
   grid-template-columns: 2fr 1fr;
   gap: 2px;
   height: 280px; /* 450px'ten 280px'e küçültüldü */
-  margin: 0;
+  margin: 0 0 30px 0; /* Alt marjin eklendi */
+  border-radius: 8px;
+  overflow: hidden;
+  /* Clear fix için */
+  clear: both;
+  position: relative;
+  z-index: 1;
 }
 
 .main-photo {
@@ -262,6 +268,8 @@ h1, h2, h3, h4, h5, h6 {
   cursor: pointer;
   overflow: hidden;
   background: #f8f9fa;
+  /* Resim yükleme sırasında stable height */
+  min-height: 280px;
 }
 
 .main-photo img {
@@ -269,6 +277,8 @@ h1, h2, h3, h4, h5, h6 {
   height: 100%;
   object-fit: cover;
   transition: transform 0.3s ease;
+  /* Resim yükleme sırasında düzgün görünüm */
+  display: block;
 }
 
 .main-photo:hover img {
@@ -281,6 +291,7 @@ h1, h2, h3, h4, h5, h6 {
   left: 15px;
   opacity: 0;
   transition: opacity 0.3s ease;
+  z-index: 2;
 }
 
 .main-photo:hover .photo-overlay {
@@ -316,6 +327,8 @@ h1, h2, h3, h4, h5, h6 {
   cursor: pointer;
   overflow: hidden;
   background: #f8f9fa;
+  /* Grid fotoğrafları için stable height */
+  min-height: 139px; /* 280px / 2 - 1px gap */
 }
 
 .grid-photo img {
@@ -323,6 +336,7 @@ h1, h2, h3, h4, h5, h6 {
   height: 100%;
   object-fit: cover;
   transition: transform 0.3s ease;
+  display: block;
 }
 
 .grid-photo:hover img {
@@ -331,14 +345,19 @@ h1, h2, h3, h4, h5, h6 {
 
 .more-photos-overlay {
   position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
+  font-size: 1.1rem;
   font-weight: 600;
-  font-size: 0.9rem; /* 1rem'den küçültüldü */
+  backdrop-filter: blur(2px);
+  z-index: 2;
 }
 
 /* Professional Content Layout */
@@ -347,6 +366,11 @@ h1, h2, h3, h4, h5, h6 {
   grid-template-columns: 2fr 1fr;
   gap: 60px; /* 50px'ten artırıldı */
   padding: 50px;
+  /* Fotoğraf galerisi ile çakışmayı önlemek için */
+  margin-top: 20px;
+  clear: both;
+  position: relative;
+  z-index: 1;
 }
 
 .main-content {

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import hotelDetailsService from '../services/hotelDetailsService';
 import LoadingSpinner from './LoadingSpinner';
 import '../styles/OfferDetailsModal.css';
 
-function OfferDetailsModal({ isOpen, onClose, offerId, currency = "EUR" }) {
+function OfferDetailsModal({ isOpen, onClose, offerId, currency = "EUR", hotel, searchData }) {
+  const navigate = useNavigate();
   const [offerDetails, setOfferDetails] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -87,6 +89,22 @@ function OfferDetailsModal({ isOpen, onClose, offerId, currency = "EUR" }) {
     }
   }, [isOpen, onClose]);
 
+  // Booking page'e yönlendirme fonksiyonu
+  const handleSelectOffer = () => {
+    if (offerDetails && hotel && searchData) {
+      navigate('/booking', { 
+        state: { 
+          hotel, 
+          searchData, 
+          selectedOffer: {
+            id: offerId,
+            ...offerDetails
+          }
+        } 
+      });
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -141,9 +159,11 @@ function OfferDetailsModal({ isOpen, onClose, offerId, currency = "EUR" }) {
                     <span className={`badge ${offerDetails.isAvailable ? 'available' : 'unavailable'}`}>
                       {offerDetails.isAvailable ? 'Müsait' : 'Müsait Değil'}
                     </span>
-                    <span className={`badge ${offerDetails.reservableInfo?.reservable ? 'reservable' : 'not-reservable'}`}>
-                      {offerDetails.reservableInfo?.reservable ? 'Rezerve Edilebilir' : 'Rezerve Edilemez'}
-                    </span>
+                    {offerDetails.reservableInfo?.reservable && (
+                      <span className="badge reservable">
+                        Rezerve Edilebilir
+                      </span>
+                    )}
                     {offerDetails.isRefundable && (
                       <span className="badge refundable">İade Edilebilir</span>
                     )}
@@ -271,6 +291,14 @@ function OfferDetailsModal({ isOpen, onClose, offerId, currency = "EUR" }) {
           <button className="modal-close-footer-btn" onClick={onClose}>
             Kapat
           </button>
+          {offerDetails && offerDetails.isAvailable && (
+            <button 
+              className="select-offer-modal-btn" 
+              onClick={handleSelectOffer}
+            >
+              Bu Teklifi Seç
+            </button>
+          )}
         </div>
       </div>
     </div>

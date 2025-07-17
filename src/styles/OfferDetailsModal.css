@@ -163,6 +163,8 @@
   text-align: right;
   padding-left: 20px;
   border-left: 1px solid #e5e5e5;
+  margin-left: auto;
+  min-width: 120px;
 }
 
 .price-main {
@@ -348,27 +350,57 @@
 
 /* Modal Footer */
 .modal-footer {
-  padding: 16px 24px;
+  padding: 20px 24px;
   border-top: 1px solid #e5e5e5;
   background: #f8f9fa;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
 }
 
 .modal-close-footer-btn {
   background: #6c757d;
   color: white;
   border: none;
-  padding: 8px 16px;
+  padding: 12px 24px;
   border-radius: 6px;
+  font-weight: 600;
   cursor: pointer;
-  font-weight: 500;
+  transition: all 0.3s ease;
   font-size: 0.9rem;
-  transition: background 0.2s ease;
 }
 
 .modal-close-footer-btn:hover {
   background: #5a6268;
+}
+
+.select-offer-modal-btn {
+  background: linear-gradient(135deg, #2c5aa0 0%, #1e3d72 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 140px;
+}
+
+.select-offer-modal-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #1e3d72 0%, #2c5aa0 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(44, 90, 160, 0.3);
+}
+
+.select-offer-modal-btn:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
 }
 
 /* Responsive */
@@ -387,7 +419,7 @@
   }
   
   .offer-price {
-    text-align: left;
+    text-align: right;
     padding-left: 0;
     border-left: none;
     border-top: 1px solid #e5e5e5;
