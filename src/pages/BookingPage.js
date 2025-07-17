@@ -5,6 +5,7 @@ import BookingSteps from '../components/BookingSteps';
 import BookingSummary from '../components/BookingSummary';
 import TravellerForm from '../components/TravellerForm';
 import LoadingSpinner from '../components/LoadingSpinner';
+import ContactForm from '../components/ContactForm';
 import '../styles/BookingPage.css';
 
 function BookingPage() {
@@ -21,6 +22,9 @@ function BookingPage() {
   const [error, setError] = useState(null);
   const [travellers, setTravellers] = useState([]);
   const [formTravellers, setFormTravellers] = useState([]);
+  const [contactInfo, setContactInfo] = useState(null);
+  const [paymentCompleted, setPaymentCompleted] = useState(false);
+  const [reservationNumber, setReservationNumber] = useState('');
 
   // Sayfa yüklendiğinde transaction başlat
   useEffect(() => {
@@ -82,6 +86,20 @@ function BookingPage() {
   const handleTravellersChange = (updatedTravellers) => {
     setFormTravellers(updatedTravellers);
     console.log('✅ Yolcu bilgileri güncellendi:', updatedTravellers);
+  };
+
+  // İletişim bilgilerini güncelle
+  const handleContactInfoChange = (updatedContactInfo) => {
+    setContactInfo(updatedContactInfo);
+    console.log('✅ İletişim bilgileri güncellendi:', updatedContactInfo);
+  };
+
+  // Dummy ödeme işlemi
+  const handlePayment = () => {
+    setPaymentCompleted(true);
+    // Dummy rezervasyon numarası oluştur
+    const randomNumber = Math.random().toString(36).substr(2, 9).toUpperCase();
+    setReservationNumber(`RES-${randomNumber}`);
   };
 
   // Adım değiştirme
@@ -167,69 +185,130 @@ function BookingPage() {
               )}
               
               {currentStep === 2 && (
-                <div className="step-panel">
-                  <h3>İletişim Bilgileri</h3>
-                  <p>Bu aşamada iletişim bilgileri formu gelecek.</p>
-                  <p>Toplam Yolcu: {formTravellers.length}</p>
-                  
-                  <div className="step-actions">
-                    <button 
-                      onClick={() => goToStep(1)}
-                      className="prev-btn"
-                    >
-                      Geri
-                    </button>
-                    <button 
-                      onClick={() => goToStep(3)}
-                      className="next-btn"
-                    >
-                      Devam Et
-                    </button>
-                  </div>
-                </div>
+                <ContactForm
+                  travellers={formTravellers}
+                  onContactInfoChange={handleContactInfoChange}
+                  onNext={() => goToStep(3)}
+                  onBack={() => goToStep(1)}
+                />
               )}
               
               {currentStep === 3 && (
-                <div className="step-panel">
-                  <h3>Ödeme Bilgileri</h3>
-                  <p>Bu aşamada ödeme formu gelecek.</p>
-                  
-                  <div className="step-actions">
-                    <button 
-                      onClick={() => goToStep(2)}
-                      className="prev-btn"
-                    >
-                      Geri
-                    </button>
-                    <button 
-                      onClick={() => goToStep(4)}
-                      className="next-btn"
-                    >
-                      Devam Et
-                    </button>
-                  </div>
-                </div>
-              )}
-              
-              {currentStep === 4 && (
-                <div className="step-panel">
-                  <h3>Rezervasyon Onayı</h3>
-                  <p>Bu aşamada rezervasyon onayı gelecek.</p>
-                  
-                  <div className="step-actions">
-                    <button 
-                      onClick={() => goToStep(3)}
-                      className="prev-btn"
-                    >
-                      Geri
-                    </button>
-                    <button 
-                      className="complete-btn"
-                      onClick={() => alert('Rezervasyon tamamlandı!')}
-                    >
-                      Rezervasyonu Tamamla
-                    </button>
-                  </div>
+                <div className="payment-completion">
+                  {!paymentCompleted ? (
+                    <div className="payment-section">
+                      <h3>Ödeme Bilgileri</h3>
+                      
+                      <div className="payment-summary">
+                        <h4>Rezervasyon Özeti:</h4>
+                        <div className="summary-grid">
+                          <div className="summary-item">
+                            <strong>Otel:</strong> {hotel?.name}
+                          </div>
+                          <div className="summary-item">
+                            <strong>Toplam Yolcu:</strong> {formTravellers.length}
+                          </div>
+                          {contactInfo && (
+                            <>
+                              <div className="summary-item">
+                                <strong>İletişim Email:</strong> {contactInfo.primaryContact.email}
+                              </div>
+                              <div className="summary-item">
+                                <strong>İletişim Telefon:</strong> {contactInfo.primaryContact.phone}
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      
+                      <div className="step-actions">
+                        <button 
+                          onClick={() => goToStep(2)}
+                          className="prev-btn"
+                        >
+                          Geri
+                        </button>
+                        <button 
+                          onClick={handlePayment}
+                          className="payment-btn"
+                        >
+                          Ödeme Yap
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="payment-success">
+                      <div className="success-icon">
+                        <div className="checkmark">✓</div>
+                      </div>
+                      
+                      <h3>Rezervasyon Başarıyla Tamamlandı!</h3>
+                      <p>Rezervasyonunuz başarıyla oluşturuldu. Rezervasyon detaylarınız aşağıda yer almaktadır.</p>
+                      
+                      <div className="reservation-details">
+                        <div className="detail-card">
+                          <h4>Rezervasyon Bilgileri</h4>
+                          <div className="detail-grid">
+                            <div className="detail-item">
+                              <strong>Rezervasyon Numarası:</strong>
+                              <span className="reservation-number">{reservationNumber}</span>
+                            </div>
+                            <div className="detail-item">
+                              <strong>Otel:</strong>
+                              <span>{hotel?.name}</span>
+                            </div>
+                            <div className="detail-item">
+                              <strong>Toplam Yolcu:</strong>
+                              <span>{formTravellers.length} kişi</span>
+                            </div>
+                            <div className="detail-item">
+                              <strong>Rezervasyon Tarihi:</strong>
+                              <span>{new Date().toLocaleDateString('tr-TR')}</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {contactInfo && (
+                          <div className="detail-card">
+                            <h4>İletişim Bilgileri</h4>
+                            <div className="detail-grid">
+                              <div className="detail-item">
+                                <strong>Email:</strong>
+                                <span>{contactInfo.primaryContact.email}</span>
+                              </div>
+                              <div className="detail-item">
+                                <strong>Telefon:</strong>
+                                <span>{contactInfo.primaryContact.phone}</span>
+                              </div>
+                              <div className="detail-item">
+                                <strong>Adres:</strong>
+                                <span>{contactInfo.primaryContact.address}</span>
+                              </div>
+                              <div className="detail-item">
+                                <strong>Şehir:</strong>
+                                <span>{contactInfo.primaryContact.city}</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="success-actions">
+                        <button 
+                          onClick={handleBackToHome}
+                          className="home-btn"
+                        >
+                          Ana Sayfa
+                        </button>
+                        <button 
+                          onClick={() => window.print()}
+                          className="print-btn"
+                        >
+                          Yazdır
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
