@@ -12,7 +12,7 @@ function TravellerForm({ travellers, onTravellersChange, onNext }) {
         ...traveller,
         name: traveller.name || '',
         surname: traveller.surname || '',
-        birthDate: traveller.birthDate ? new Date(traveller.birthDate).toISOString().split('T')[0] : '',
+        birthDate: formatDateForInput(traveller.birthDate),
         identityNumber: traveller.identityNumber || '',
         gender: traveller.gender || 1,
         isLeader: index === 0, // İlk yolcu otomatik lider
@@ -36,14 +36,36 @@ function TravellerForm({ travellers, onTravellersChange, onNext }) {
         passportInfo: {
           serial: traveller.passportInfo?.serial || '',
           number: traveller.passportInfo?.number || '',
-          expireDate: traveller.passportInfo?.expireDate ? new Date(traveller.passportInfo.expireDate).toISOString().split('T')[0] : '',
-          issueDate: traveller.passportInfo?.issueDate ? new Date(traveller.passportInfo.issueDate).toISOString().split('T')[0] : '',
+          expireDate: formatDateForInput(traveller.passportInfo?.expireDate),
+          issueDate: formatDateForInput(traveller.passportInfo?.issueDate),
           citizenshipCountryCode: traveller.passportInfo?.citizenshipCountryCode || 'TR'
         }
       }));
       setFormData(initialData);
     }
   }, [travellers]);
+
+  // Tarih formatı güvenli dönüşüm
+  const formatDateForInput = (dateString) => {
+    if (!dateString) return '';
+    
+    // Geçersiz tarih formatları için kontrol
+    if (dateString.includes('0000') || dateString.includes('1900')) {
+      return ''; // Boş bırak
+    }
+    
+    try {
+      const date = new Date(dateString);
+      // Geçerli tarih kontrolü
+      if (isNaN(date.getTime()) || date.getFullYear() < 1900 || date.getFullYear() > 2100) {
+        return '';
+      }
+      return date.toISOString().split('T')[0];
+    } catch (error) {
+      console.warn('Tarih formatı hatası:', dateString, error);
+      return '';
+    }
+  };
 
   // Form alanı değişikliği
   const handleFieldChange = (travellerIndex, field, value) => {

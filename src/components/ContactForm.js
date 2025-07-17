@@ -74,6 +74,8 @@ function ContactForm({ travellers, onContactInfoChange, onNext, onBack }) {
   const validateForm = () => {
     const newErrors = {};
 
+    console.log('🔍 Validation kontrol ediliyor...', contactInfo);
+
     // Zorunlu alanlar
     if (!contactInfo.primaryContact.email?.trim()) {
       newErrors['primaryContact.email'] = 'Email adresi zorunludur';
@@ -93,15 +95,23 @@ function ContactForm({ travellers, onContactInfoChange, onNext, onBack }) {
       newErrors['primaryContact.city'] = 'Şehir zorunludur';
     }
 
+    console.log('🔍 Validation sonucu:', newErrors);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log('📝 ContactForm submit edildi');
+    console.log('📊 Contact Info:', contactInfo);
+    
     if (validateForm()) {
+      console.log('✅ Validation başarılı, onContactInfoChange çağrılıyor');
       onContactInfoChange(contactInfo);
       onNext();
+    } else {
+      console.log('❌ Validation başarısız');
+      console.log('❌ Hatalar:', errors);
     }
   };
 

@@ -5,8 +5,7 @@ function BookingSteps({ currentStep = 1 }) {
   const steps = [
     { id: 1, title: 'Yolcu Bilgileri', description: 'Yolcu detaylarını girin' },
     { id: 2, title: 'İletişim Bilgileri', description: 'İletişim bilgilerini girin' },
-    { id: 3, title: 'Ödeme', description: 'Ödeme bilgilerini girin' },
-    { id: 4, title: 'Onay', description: 'Rezervasyonu tamamlayın' }
+    { id: 3, title: 'Ödeme', description: 'Ödeme ve onay işlemi' }
   ];
 
   return (
