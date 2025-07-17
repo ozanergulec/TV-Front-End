@@ -226,6 +226,8 @@ function HotelOffers({ hotelId, searchData, hotel }) {
         onClose={closeDetailsModal}
         offerId={selectedOfferId}
         currency={searchData?.currency || 'EUR'}
+        hotel={hotel}
+        searchData={searchData}
       />
     </div>
   );
