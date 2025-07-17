@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import bookingService from '../services/bookingService';
 import BookingSteps from '../components/BookingSteps';
 import BookingSummary from '../components/BookingSummary';
+import TravellerForm from '../components/TravellerForm';
 import LoadingSpinner from '../components/LoadingSpinner';
 import '../styles/BookingPage.css';
 
@@ -19,6 +20,7 @@ function BookingPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [travellers, setTravellers] = useState([]);
+  const [formTravellers, setFormTravellers] = useState([]);
 
   // Sayfa yüklendiğinde transaction başlat
   useEffect(() => {
@@ -74,6 +76,12 @@ function BookingPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Yolcu bilgilerini güncelle
+  const handleTravellersChange = (updatedTravellers) => {
+    setFormTravellers(updatedTravellers);
+    console.log('✅ Yolcu bilgileri güncellendi:', updatedTravellers);
   };
 
   // Adım değiştirme
@@ -151,26 +159,18 @@ function BookingPage() {
           <div className="booking-main">
             <div className="booking-step-content">
               {currentStep === 1 && (
-                <div className="step-panel">
-                  <h3>Yolcu Bilgileri</h3>
-                  <p>Bu aşamada yolcu bilgileri formu gelecek.</p>
-                  <p>Yolcu Sayısı: {travellers.length}</p>
-                  
-                  <div className="step-actions">
-                    <button 
-                      onClick={() => goToStep(2)}
-                      className="next-btn"
-                    >
-                      Devam Et
-                    </button>
-                  </div>
-                </div>
+                <TravellerForm
+                  travellers={travellers}
+                  onTravellersChange={handleTravellersChange}
+                  onNext={() => goToStep(2)}
+                />
               )}
               
               {currentStep === 2 && (
                 <div className="step-panel">
                   <h3>İletişim Bilgileri</h3>
                   <p>Bu aşamada iletişim bilgileri formu gelecek.</p>
+                  <p>Toplam Yolcu: {formTravellers.length}</p>
                   
                   <div className="step-actions">
                     <button 
@@ -240,7 +240,6 @@ function BookingPage() {
               offer={selectedOffer}
               hotel={hotel}
               searchData={searchData}
-              transactionData={transactionData}
             />
           </div>
         </div>
