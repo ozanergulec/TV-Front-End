@@ -188,9 +188,7 @@ function HotelOffers({ hotelId, searchData, hotel }) {
                 </button>
                 <button 
                   className="select-offer-btn"
-                  onClick={() => navigate('/booking', { 
-                    state: { hotel, searchData, selectedOffer: offer } 
-                  })}
+                  onClick={() => handleSelectOffer(offer)}
                   disabled={!offer.isAvailable}
                 >
                   Bu Teklifi Seç
@@ -213,6 +211,19 @@ function HotelOffers({ hotelId, searchData, hotel }) {
   const closeDetailsModal = () => {
     setIsModalOpen(false);
     setSelectedOfferId(null);
+  };
+
+  // Teklifi seç fonksiyonu
+  const handleSelectOffer = (offer) => {
+    console.log('🎯 Teklif seçildi:', offer);
+    
+    navigate('/booking', { 
+      state: { 
+        hotel: hotel,
+        searchData: searchData,
+        selectedOffer: offer
+      } 
+    });
   };
 
   return (

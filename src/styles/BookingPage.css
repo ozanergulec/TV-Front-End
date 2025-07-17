@@ -1,0 +1,245 @@
+.booking-page {
+    min-height: 100vh;
+    background: #f8fafc;
+    padding: 24px 0;
+  }
+  
+  .booking-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+  
+  .booking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+  }
+  
+  .booking-header h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+  }
+  
+  .back-to-home {
+    background: #6b7280;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .back-to-home:hover {
+    background: #4b5563;
+  }
+  
+  .booking-content {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 32px;
+    align-items: start;
+  }
+  
+  .booking-main {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  
+  .booking-step-content {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+  }
+  
+  .step-panel h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 16px 0;
+  }
+  
+  .step-panel p {
+    color: #6b7280;
+    margin: 0 0 16px 0;
+    line-height: 1.6;
+  }
+  
+  .step-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid #e5e7eb;
+  }
+  
+  .step-actions button {
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    font-size: 0.9rem;
+  }
+  
+  .prev-btn {
+    background: #f3f4f6;
+    color: #374151;
+  }
+  
+  .prev-btn:hover {
+    background: #e5e7eb;
+  }
+  
+  .next-btn {
+    background: #2c5aa0;
+    color: white;
+  }
+  
+  .next-btn:hover {
+    background: #1e3d72;
+  }
+  
+  .complete-btn {
+    background: #10b981;
+    color: white;
+  }
+  
+  .complete-btn:hover {
+    background: #059669;
+  }
+  
+  .booking-sidebar {
+    position: sticky;
+    top: 24px;
+  }
+  
+  .booking-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+  }
+  
+  .booking-error {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 32px;
+    text-align: center;
+  }
+  
+  .booking-error h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #dc2626;
+    margin: 0 0 16px 0;
+  }
+  
+  .booking-error p {
+    color: #6b7280;
+    margin: 0 0 24px 0;
+    line-height: 1.6;
+  }
+  
+  .error-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+  
+  .retry-btn {
+    background: #2c5aa0;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .retry-btn:hover {
+    background: #1e3d72;
+  }
+  
+  .back-btn {
+    background: #6b7280;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .back-btn:hover {
+    background: #4b5563;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .booking-container {
+      padding: 0 16px;
+    }
+    
+    .booking-content {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    
+    .booking-sidebar {
+      position: relative;
+      top: 0;
+      order: -1;
+    }
+    
+    .booking-header {
+      flex-direction: column;
+      gap: 16px;
+      text-align: center;
+    }
+    
+    .booking-header h1 {
+      font-size: 1.5rem;
+    }
+    
+    .step-actions {
+      flex-direction: column;
+    }
+    
+    .step-actions button {
+      width: 100%;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .booking-page {
+      padding: 16px 0;
+    }
+    
+    .booking-container {
+      padding: 0 12px;
+    }
+    
+    .booking-step-content {
+      padding: 16px;
+    }
+    
+    .booking-error {
+      padding: 24px;
+    }
+    
+    .error-actions {
+      flex-direction: column;
+    }
+  }

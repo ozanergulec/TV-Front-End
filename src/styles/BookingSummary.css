@@ -1,0 +1,241 @@
+.booking-summary {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+    position: sticky;
+    top: 24px;
+    height: fit-content;
+  }
+  
+  .summary-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 24px 0;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f3f4f6;
+  }
+  
+  .summary-section {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #f3f4f6;
+  }
+  
+  .summary-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+  
+  .summary-section h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #374151;
+    margin: 0 0 12px 0;
+  }
+  
+  .hotel-info h5 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 4px 0;
+  }
+  
+  .hotel-location {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin: 0 0 8px 0;
+  }
+  
+  .hotel-rating .rating {
+    font-size: 0.85rem;
+    color: #f59e0b;
+    font-weight: 500;
+  }
+  
+  .date-info,
+  .guest-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .date-item,
+  .guest-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .date-label,
+  .guest-label {
+    font-size: 0.9rem;
+    color: #6b7280;
+    font-weight: 500;
+  }
+  
+  .date-value,
+  .guest-value {
+    font-size: 0.9rem;
+    color: #1f2937;
+    font-weight: 600;
+  }
+  
+  .room-info {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .room-item {
+    padding: 12px;
+    background: #f9fafb;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+  }
+  
+  .room-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 4px;
+  }
+  
+  .room-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  
+  .room-accommodation,
+  .room-board {
+    font-size: 0.85rem;
+    color: #6b7280;
+  }
+  
+  .room-board {
+    font-weight: 500;
+    color: #2c5aa0;
+  }
+  
+  .price-section {
+    background: #f8fafc;
+    border-radius: 6px;
+    padding: 16px;
+    margin: 20px -8px 0 -8px;
+  }
+  
+  .price-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .price-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .price-label {
+    font-size: 0.9rem;
+    color: #6b7280;
+    font-weight: 500;
+  }
+  
+  .price-value {
+    font-size: 0.9rem;
+    color: #1f2937;
+    font-weight: 600;
+  }
+  
+  .price-item.discount .price-value.saving {
+    color: #10b981;
+  }
+  
+  .price-item.total {
+    padding-top: 8px;
+    border-top: 1px solid #e5e7eb;
+    margin-top: 8px;
+  }
+  
+  .price-item.total .price-label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1f2937;
+  }
+  
+  .price-item.total .price-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #2c5aa0;
+  }
+  
+  .transaction-section {
+    background: #eff6ff;
+    border-radius: 6px;
+    padding: 16px;
+    margin: 20px -8px 0 -8px;
+  }
+  
+  .transaction-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .transaction-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .transaction-label {
+    font-size: 0.85rem;
+    color: #1e40af;
+    font-weight: 500;
+  }
+  
+  .transaction-value {
+    font-size: 0.85rem;
+    color: #1e40af;
+    font-weight: 600;
+    font-family: monospace;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .booking-summary {
+      position: relative;
+      top: 0;
+      margin-bottom: 24px;
+    }
+    
+    .summary-title {
+      font-size: 1.2rem;
+    }
+    
+    .price-section,
+    .transaction-section {
+      margin: 16px -12px 0 -12px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .booking-summary {
+      padding: 16px;
+    }
+    
+    .summary-section {
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+    }
+    
+    .price-section,
+    .transaction-section {
+      margin: 12px -8px 0 -8px;
+      padding: 12px;
+    }
+  }

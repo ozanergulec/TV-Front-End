@@ -1,0 +1,124 @@
+.booking-steps {
+    background: white;
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 24px;
+  }
+  
+  .steps-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .step-item {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    position: relative;
+  }
+  
+  .step-indicator {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e5e7eb;
+    border: 2px solid #e5e7eb;
+    color: #6b7280;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+  }
+  
+  .step-indicator.active {
+    background: #2c5aa0;
+    border-color: #2c5aa0;
+    color: white;
+  }
+  
+  .step-indicator.completed {
+    background: #10b981;
+    border-color: #10b981;
+    color: white;
+  }
+  
+  .step-check {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .step-content {
+    margin-left: 12px;
+    flex: 1;
+  }
+  
+  .step-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 4px 0;
+  }
+  
+  .step-description {
+    font-size: 12px;
+    color: #6b7280;
+    margin: 0;
+  }
+  
+  .step-connector {
+    height: 2px;
+    background: #e5e7eb;
+    margin: 0 16px;
+    flex: 1;
+    transition: all 0.3s ease;
+  }
+  
+  .step-connector.completed {
+    background: #10b981;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .steps-container {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .step-item {
+      width: 100%;
+      margin-bottom: 16px;
+    }
+    
+    .step-connector {
+      display: none;
+    }
+    
+    .step-content {
+      margin-left: 16px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .booking-steps {
+      padding: 16px;
+    }
+    
+    .step-indicator {
+      width: 32px;
+      height: 32px;
+      font-size: 12px;
+    }
+    
+    .step-check {
+      width: 16px;
+      height: 16px;
+    }
+  }
