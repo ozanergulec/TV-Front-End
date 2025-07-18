@@ -1,12 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/TravellerForm.css';
 
-const PASSENGER_TYPES = [
-  { value: 1, label: 'Yetişkin (12+ yaş)' },
-  { value: 2, label: 'Çocuk (2-11 yaş)' },
-  { value: 3, label: 'Bebek (0-2 yaş)' }
-];
-
 const COUNTRIES = [
   { code: 'TR', name: 'Türkiye' },
   { code: 'US', name: 'Amerika Birleşik Devletleri' },
@@ -49,34 +43,6 @@ const validateTCKimlik = (kimlik) => {
   return true;
 };
 
-// Telefon formatı (özel karakterlere izin ver)
-const formatPhone = (phone) => {
-  // Sadece boşlukları ve özel karakterleri koru, sayıları grupla
-  const cleaned = phone.replace(/[^\d\s\-\(\)\+]/g, '');
-  return cleaned;
-};
-
-// Yaş hesaplama
-const calculateAge = (birthDate) => {
-  const today = new Date();
-  const birth = new Date(birthDate);
-  const age = today.getFullYear() - birth.getFullYear();
-  const monthDiff = today.getMonth() - birth.getMonth();
-  
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-    return age - 1;
-  }
-  return age;
-};
-
-// Otomatik passenger type belirleme
-const determinePassengerType = (birthDate) => {
-  const age = calculateAge(birthDate);
-  if (age < 2) return 3; // Bebek
-  if (age < 12) return 2; // Çocuk
-  return 1; // Yetişkin
-};
-
 function TravellerForm({ travellers, onTravellersChange, onNext }) {
   const [formData, setFormData] = useState([]);
   const [errors, setErrors] = useState({});
@@ -91,6 +57,7 @@ function TravellerForm({ travellers, onTravellersChange, onNext }) {
         birthDate: formatDateForInput(traveller.birthDate),
         identityNumber: traveller.identityNumber || '',
         gender: traveller.gender || 1,
+        passengerType: traveller.passengerType || 1, // Default yetişkin
         isLeader: index === 0, // İlk yolcu otomatik lider
         address: {
           email: traveller.address?.email || '',
@@ -147,11 +114,7 @@ function TravellerForm({ travellers, onTravellersChange, onNext }) {
     const newFormData = [...formData];
     
     // Özel işlemler
-    if (field === 'birthDate') {
-      newFormData[travellerIndex][field] = value;
-      // Yaşa göre otomatik passenger type belirleme
-      newFormData[travellerIndex]['passengerType'] = determinePassengerType(value);
-    } else if (field === 'address.phone') {
+    if (field === 'address.phone') {
       // Telefon numarasını temizle (sadece rakam, boşluk, - ve () karakterleri)
       newFormData[travellerIndex].address.phone = value.replace(/[^\d\s\-\(\)]/g, '');
     } else if (field.includes('.')) {
@@ -190,8 +153,12 @@ function TravellerForm({ travellers, onTravellersChange, onNext }) {
       if (!traveller.birthDate) {
         newErrors[`${index}.birthDate`] = 'Doğum tarihi zorunludur';
       } else {
-        const age = calculateAge(traveller.birthDate);
-        if (age < 0 || age > 120) {
+        const birthDate = new Date(traveller.birthDate);
+        const today = new Date();
+        if (birthDate > today) {
+          newErrors[`${index}.birthDate`] = 'Doğum tarihi gelecek tarih olamaz';
+        }
+        if (birthDate < new Date('1900-01-01')) {
           newErrors[`${index}.birthDate`] = 'Geçerli bir doğum tarihi girin';
         }
       }
@@ -261,12 +228,7 @@ function TravellerForm({ travellers, onTravellersChange, onNext }) {
       {formData.map((traveller, index) => (
         <div key={index} className="traveller-section">
           <div className="traveller-header">
-            <h4>
-              {index + 1}. Yolcu
-              <span className="passenger-type">
-                {PASSENGER_TYPES.find(pt => pt.value === traveller.passengerType)?.label || 'Yetişkin'}
-              </span>
-            </h4>
+            <h4>{index + 1}. Yolcu</h4>
           </div>
           
           <div className="form-grid">
@@ -278,10 +240,9 @@ function TravellerForm({ travellers, onTravellersChange, onNext }) {
                 value={traveller.name}
                 onChange={(e) => handleFieldChange(index, 'name', e.target.value.toUpperCase())}
                 className={errors[`${index}.name`] ? 'error' : ''}
-                placeholder="ADI"
+                placeholder={errors[`${index}.name`] || "ADI"}
                 style={{ textTransform: 'uppercase' }}
               />
-              {errors[`${index}.name`] && <span className="error-message">{errors[`${index}.name`]}</span>}
             </div>
             
             {/* Soyad */}
@@ -292,10 +253,9 @@ function TravellerForm({ travellers, onTravellersChange, onNext }) {
                 value={traveller.surname}
                 onChange={(e) => handleFieldChange(index, 'surname', e.target.value.toUpperCase())}
                 className={errors[`${index}.surname`] ? 'error' : ''}
-                placeholder="SOYADI"
+                placeholder={errors[`${index}.surname`] || "SOYADI"}
                 style={{ textTransform: 'uppercase' }}
               />
-              {errors[`${index}.surname`] && <span className="error-message">{errors[`${index}.surname`]}</span>}
             </div>
             
             {/* Doğum Tarihi */}
@@ -307,12 +267,11 @@ function TravellerForm({ travellers, onTravellersChange, onNext }) {
                 onChange={(e) => handleFieldChange(index, 'birthDate', e.target.value)}
                 className={errors[`${index}.birthDate`] ? 'error' : ''}
                 max={new Date().toISOString().split('T')[0]}
-                min={new Date(Date.now() - 120 * 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}
+                min={new Date('1900-01-01').toISOString().split('T')[0]}
               />
-              {errors[`${index}.birthDate`] && <span className="error-message">{errors[`${index}.birthDate`]}</span>}
-              {traveller.birthDate && (
-                <small className="age-info">
-                  Yaş: {calculateAge(traveller.birthDate)}
+              {errors[`${index}.birthDate`] && (
+                <small style={{ color: '#e74c3c', fontSize: '12px' }}>
+                  {errors[`${index}.birthDate`]}
                 </small>
               )}
             </div>
@@ -353,10 +312,9 @@ function TravellerForm({ travellers, onTravellersChange, onNext }) {
                   value={traveller.identityNumber}
                   onChange={(e) => handleFieldChange(index, 'identityNumber', e.target.value.replace(/\D/g, ''))}
                   className={errors[`${index}.identityNumber`] ? 'error' : ''}
-                  placeholder="12345678901"
+                  placeholder={errors[`${index}.identityNumber`] || "12345678901"}
                   maxLength="11"
                 />
-                {errors[`${index}.identityNumber`] && <span className="error-message">{errors[`${index}.identityNumber`]}</span>}
               </div>
             ) : (
               <>
@@ -367,10 +325,9 @@ function TravellerForm({ travellers, onTravellersChange, onNext }) {
                     value={traveller.passportInfo.number}
                     onChange={(e) => handleFieldChange(index, 'passportInfo.number', e.target.value.toUpperCase())}
                     className={errors[`${index}.passportInfo.number`] ? 'error' : ''}
-                    placeholder="A1234567"
+                    placeholder={errors[`${index}.passportInfo.number`] || "A1234567"}
                     style={{ textTransform: 'uppercase' }}
                   />
-                  {errors[`${index}.passportInfo.number`] && <span className="error-message">{errors[`${index}.passportInfo.number`]}</span>}
                 </div>
                 
                 <div className="form-group">
@@ -382,7 +339,11 @@ function TravellerForm({ travellers, onTravellersChange, onNext }) {
                     className={errors[`${index}.passportInfo.expireDate`] ? 'error' : ''}
                     min={new Date().toISOString().split('T')[0]}
                   />
-                  {errors[`${index}.passportInfo.expireDate`] && <span className="error-message">{errors[`${index}.passportInfo.expireDate`]}</span>}
+                  {errors[`${index}.passportInfo.expireDate`] && (
+                    <small style={{ color: '#e74c3c', fontSize: '12px' }}>
+                      {errors[`${index}.passportInfo.expireDate`]}
+                    </small>
+                  )}
                 </div>
               </>
             )}
@@ -397,9 +358,8 @@ function TravellerForm({ travellers, onTravellersChange, onNext }) {
                     value={traveller.address.email}
                     onChange={(e) => handleFieldChange(index, 'address.email', e.target.value.toLowerCase())}
                     className={errors[`${index}.address.email`] ? 'error' : ''}
-                    placeholder="ornek@email.com"
+                    placeholder={errors[`${index}.address.email`] || "ornek@email.com"}
                   />
-                  {errors[`${index}.address.email`] && <span className="error-message">{errors[`${index}.address.email`]}</span>}
                 </div>
                 
                 {/* Telefon - Ülke Kodu ve Numara Ayrı */}
@@ -422,10 +382,9 @@ function TravellerForm({ travellers, onTravellersChange, onNext }) {
                       value={traveller.address.phone}
                       onChange={(e) => handleFieldChange(index, 'address.phone', e.target.value)}
                       className={errors[`${index}.address.phone`] ? 'error phone-number' : 'phone-number'}
-                      placeholder="555 123 4567"
+                      placeholder={errors[`${index}.address.phone`] || "555 123 4567"}
                     />
                   </div>
-                  {errors[`${index}.address.phone`] && <span className="error-message">{errors[`${index}.address.phone`]}</span>}
                 </div>
               </>
             )}
