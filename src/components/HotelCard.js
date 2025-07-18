@@ -130,14 +130,6 @@ const HotelCard = ({ hotel, nights, searchData }) => {
           >
             Detayları Gör
           </button>
-          <button 
-            className="book-now-btn"
-            onClick={() => navigate('/booking', { 
-              state: { hotel, searchData } 
-            })}
-          >
-            Rezervasyon Yap
-          </button>
         </div>
       </div>
     </div>
