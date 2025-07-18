@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import HotelCard from '../components/HotelCard';
 import SearchForm from '../components/SearchForm';
@@ -22,24 +22,20 @@ function ResultsPage() {
   const [filteredHotels, setFilteredHotels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState('recommended');
-  const [priceRange, setPriceRange] = useState({ min: '', max: '' }); // Boş string yap
+  const [priceRange, setPriceRange] = useState({ min: '', max: '' });
   const [selectedRating, setSelectedRating] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
 
-  // İlk yüklenme - eğer arama verisi varsa ama sonuç yoksa arama yap
+  // ✅ İlk yüklenme - sadece bir kez çalışsın
   useEffect(() => {
     const performInitialSearch = async () => {
       if (searchData && !searchResults && isInitialLoading) {
         try {
-          console.log('🔍 İlk arama yapılıyor...', searchData);
-          
           const result = await hotelService.priceSearch(searchData);
           
           if (result.header?.success) {
             setSearchResults(result);
-            console.log('✅ İlk arama tamamlandı');
           } else {
-            console.log('❌ Arama başarısız:', result);
             alert('Bu bölgede otel bulunamadı');
           }
         } catch (error) {
@@ -52,34 +48,28 @@ function ResultsPage() {
     };
 
     performInitialSearch();
-  }, [searchData, searchResults, isInitialLoading]);
+  }, []); // ✅ Boş dependency - sadece mount'ta çalışsın
 
-  // Yeni arama yapıldığında çağrılacak fonksiyon
-  const handleNewSearch = async (newSearchData) => {
+  // ✅ Yeni arama yapıldığında çağrılacak fonksiyon
+  const handleNewSearch = useCallback(async (newSearchData) => {
     setLoading(true);
-    
-    // ✅ Yeni arama başladığında eski otelleri temizle
     setHotels([]);
     setFilteredHotels([]);
     
     try {
-      console.log('🔄 Yeni arama yapılıyor...', newSearchData);
-      
       const result = await hotelService.priceSearch(newSearchData);
       
       if (result.header?.success) {
         setSearchResults(result);
         setSearchData(newSearchData);
         
-        // URL state'ini güncelle (browser history için)
+        // URL state'ini güncelle
         window.history.replaceState({
           searchResults: result,
           searchData: newSearchData
         }, '', window.location.pathname);
         
-        console.log('✅ Yeni arama tamamlandı');
       } else {
-        console.log('❌ Arama başarısız:', result);
         alert('Bu bölgede otel bulunamadı');
       }
     } catch (error) {
@@ -88,37 +78,24 @@ function ResultsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  // ✅ EXTRACT FUNCTIONS - DAHA TEMIZ
-  const extractHotelImage = (hotel, index) => {
-    if (hotel.thumbnailFull) {
-      console.log(`✅ Using thumbnailFull for hotel ${index}:`, hotel.thumbnailFull);
-      return hotel.thumbnailFull;
-    }
-    
-    if (hotel.thumbnail) {
-      console.log(`✅ Using thumbnail for hotel ${index}:`, hotel.thumbnail);
-      return hotel.thumbnail;
-    }
-    
-    if (hotel.image) {
-      console.log(`✅ Using image for hotel ${index}:`, hotel.image);
-      return hotel.image;
-    }
-    
-    console.log(`❌ No image found for hotel ${index}, using fallback`);
+  // ✅ Helper functions - memoize edilmiş
+  const extractHotelImage = useCallback((hotel, index) => {
+    if (hotel.thumbnailFull) return hotel.thumbnailFull;
+    if (hotel.thumbnail) return hotel.thumbnail;
+    if (hotel.image) return hotel.image;
     return '/images/destinations/istanbul.jpg';
-  };
+  }, []);
 
-  const extractAmenities = (hotel) => {
+  const extractAmenities = useCallback((hotel) => {
     if (hotel.facilities && Array.isArray(hotel.facilities)) {
       return hotel.facilities.slice(0, 8).map(f => f.name || f).filter(Boolean);
     }
     return ['WiFi', 'Klima', 'Kahvaltı', 'Havuz'];
-  };
+  }, []);
 
-  const extractRating = (hotel) => {
+  const extractRating = useCallback((hotel) => {
     if (hotel.rating && typeof hotel.rating === 'number') {
       return Math.max(3.0, Math.min(5.0, hotel.rating));
     }
@@ -126,133 +103,92 @@ function ResultsPage() {
       return Math.max(3.0, Math.min(5.0, hotel.stars));
     }
     return 3.5 + Math.random() * 1.5;
-  };
+  }, []);
 
-  const safeString = (value) => {
-    // Null, undefined veya false değerler için boş string dön
+  const safeString = useCallback((value) => {
     if (!value) return '';
-    
-    // Eğer zaten string ise direkt dön
     if (typeof value === 'string') return value;
-    
-    // Eğer number ise string'e çevir
     if (typeof value === 'number') return String(value);
-    
-    // Eğer obje ise farklı property'leri dene
     if (typeof value === 'object') {
-      // Önce text property'sini kontrol et
       if (value.text && typeof value.text === 'string') return value.text;
-      
-      // name property'sini kontrol et
       if (value.name && typeof value.name === 'string') return value.name;
-      
-      // value property'sini kontrol et
       if (value.value && typeof value.value === 'string') return value.value;
-      
-      // displayName property'sini kontrol et
       if (value.displayName && typeof value.displayName === 'string') return value.displayName;
-      
-      // title property'sini kontrol et
       if (value.title && typeof value.title === 'string') return value.title;
-      
-      // Hiçbiri çalışmazsa boş string dön (obje render etme)
-      console.warn('🚫 Object property could not be extracted safely:', value);
       return '';
     }
-    
-    // Diğer durumlar için boş string
     return '';
-  };
+  }, []);
 
-  // ✅ PARSE HOTEL DATA - DAHA DÜZENLI
+  // ✅ Hotel parsing - sadece searchResults değiştiğinde çalışsın
   useEffect(() => {
     if (!searchResults) {
       setLoading(false);
       return;
     }
 
-    try {
-      console.log('🏨 Full API Response:', searchResults);
-      
-      const hotelsData = searchResults?.body?.hotels || searchResults?.hotels || [];
-      const searchId = searchResults?.body?.searchId || null; // SearchId'yi extract et
-      console.log('🏨 Hotels array:', hotelsData);
-      console.log('🔍 Search ID:', searchId);
-      
-      if (Array.isArray(hotelsData) && hotelsData.length > 0) {
-        const hotelData = hotelsData.map((hotel, index) => {
-          console.log(`🏨 Processing hotel ${index}:`, hotel);
-          
-          // Deterministik mesafe hesaplama fonksiyonu
-          const getDeterministicDistance = (hotelId, index) => {
-            if (!hotelId) return 2.5; // Varsayılan mesafe
-            
-            // Hotel ID'sinden basit bir hash üret
-            let hash = 0;
-            const idStr = String(hotelId);
-            for (let i = 0; i < idStr.length; i++) {
-              hash = ((hash << 5) - hash + idStr.charCodeAt(i)) & 0xffffffff;
-            }
-            // 0.5 ile 5.0 km arasında deterministik bir değer
-            return Math.abs(hash % 45) / 10 + 0.5;
-          };
-          
-          return {
-            id: hotel.id || `hotel-${index}`,
-            name: safeString(hotel.name) || `Otel ${index + 1}`,
-            location: safeString(hotel.location?.name) || safeString(hotel.location) || safeString(hotel.city?.name) || safeString(hotel.city) || '',
-            rating: extractRating(hotel),
-            stars: hotel.stars || Math.floor(extractRating(hotel)),
-            image: extractHotelImage(hotel, index),
-            price: parseFloat(hotel.offers?.[0]?.price?.amount) || 0,
-            currency: safeString(hotel.offers?.[0]?.price?.currency) || safeString(searchData?.currency) || 'EUR',
-            originalPrice: parseFloat(hotel.offers?.[0]?.originalPrice?.amount) || null,
-            description: safeString(hotel.description) || (safeString(hotel.name) ? `${safeString(hotel.name)} size konforlu konaklama imkanı sunar. ${hotel.stars ? hotel.stars + ' yıldızlı' : 'Kaliteli'} otel deneyimi.` : 'Konforlu konaklama imkanı'),
-            amenities: extractAmenities(hotel),
-            offers: Array.isArray(hotel.offers) ? hotel.offers : [],
-            distance: parseFloat(hotel.distance) || getDeterministicDistance(hotel.id, index),
-            address: safeString(hotel.address) || '',
-            facilities: hotel.facilities || [],
-            hotelCategory: hotel.hotelCategory || null,
-            
-            // GetOffers için gerekli bilgileri ekle
-            searchId: searchId, // PriceSearch'den gelen searchId
-            offerId: hotel.offers?.[0]?.offerId || null, // İlk offer'ın ID'si
-            checkIn: hotel.offers?.[0]?.checkIn || null,
-            nights: hotel.offers?.[0]?.night || 1
-          };
-        });
+    const hotelsData = searchResults?.body?.hotels || searchResults?.hotels || [];
+    const searchId = searchResults?.body?.searchId || null;
+    
+    if (Array.isArray(hotelsData) && hotelsData.length > 0) {
+      const hotelData = hotelsData.map((hotel, index) => {
+        const getDeterministicDistance = (hotelId, index) => {
+          if (!hotelId) return 2.5;
+          let hash = 0;
+          const idStr = String(hotelId);
+          for (let i = 0; i < idStr.length; i++) {
+            hash = ((hash << 5) - hash + idStr.charCodeAt(i)) & 0xffffffff;
+          }
+          return Math.abs(hash % 45) / 10 + 0.5;
+        };
         
-        console.log('🏨 Final parsed hotels:', hotelData);
-        setHotels(hotelData);
-        setFilteredHotels(hotelData);
-        
-        // searchData'ya searchId'yi de ekle
-        if (searchId && searchData) {
-          setSearchData(prev => ({
-            ...prev,
-            searchId: searchId
-          }));
-        }
-      } else {
-        console.log('❌ No hotels found in response');
-        setHotels([]);
-        setFilteredHotels([]);
+        return {
+          id: hotel.id || `hotel-${index}`,
+          name: safeString(hotel.name) || `Otel ${index + 1}`,
+          location: safeString(hotel.location?.name) || safeString(hotel.location) || safeString(hotel.city?.name) || safeString(hotel.city) || '',
+          rating: extractRating(hotel),
+          stars: hotel.stars || Math.floor(extractRating(hotel)),
+          image: extractHotelImage(hotel, index),
+          price: parseFloat(hotel.offers?.[0]?.price?.amount) || 0,
+          currency: safeString(hotel.offers?.[0]?.price?.currency) || safeString(searchData?.currency) || 'EUR',
+          originalPrice: parseFloat(hotel.offers?.[0]?.originalPrice?.amount) || null,
+          description: safeString(hotel.description) || (safeString(hotel.name) ? `${safeString(hotel.name)} size konforlu konaklama imkanı sunar.` : 'Konforlu konaklama imkanı'),
+          amenities: extractAmenities(hotel),
+          offers: Array.isArray(hotel.offers) ? hotel.offers : [],
+          distance: parseFloat(hotel.distance) || getDeterministicDistance(hotel.id, index),
+          address: safeString(hotel.address) || '',
+          facilities: hotel.facilities || [],
+          hotelCategory: hotel.hotelCategory || null,
+          searchId: searchId,
+          offerId: hotel.offers?.[0]?.offerId || null,
+          checkIn: hotel.offers?.[0]?.checkIn || null,
+          nights: hotel.offers?.[0]?.night || 1
+        };
+      });
+      
+      setHotels(hotelData);
+      setFilteredHotels(hotelData);
+      
+      // ✅ SearchData güncelleme - sadece searchId yoksa ekle
+      if (searchId && searchData && !searchData.searchId) {
+        setSearchData(prev => ({
+          ...prev,
+          searchId: searchId
+        }));
       }
-    } catch (error) {
-      console.error('❌ Error parsing hotel data:', error);
+    } else {
       setHotels([]);
       setFilteredHotels([]);
     }
     
     setLoading(false);
-  }, [searchResults, searchData]);
+  }, [searchResults]); // ✅ Sadece searchResults dependency'si
 
-  // ✅ FILTERING & SORTING
-  useEffect(() => {
+  // ✅ Filtering & Sorting - memoize edilmiş
+  const filteredAndSortedHotels = useMemo(() => {
     let filtered = [...hotels];
 
-    // Fiyat filtresi - sadece değer girilmişse uygula
+    // Fiyat filtresi
     if (priceRange.min !== '' || priceRange.max !== '') {
       const minPrice = priceRange.min === '' ? 0 : Number(priceRange.min);
       const maxPrice = priceRange.max === '' ? Infinity : Number(priceRange.max);
@@ -262,10 +198,12 @@ function ResultsPage() {
       );
     }
 
+    // Rating filtresi
     if (selectedRating > 0) {
       filtered = filtered.filter(hotel => hotel.rating >= selectedRating);
     }
 
+    // Sıralama
     switch (sortBy) {
       case 'price_low':
         filtered.sort((a, b) => a.price - b.price);
@@ -283,19 +221,16 @@ function ResultsPage() {
         break;
     }
 
-    setFilteredHotels(filtered);
+    return filtered;
   }, [hotels, priceRange, selectedRating, sortBy]);
 
-  // SearchForm'a mevcut arama verilerini ayarla
+  // ✅ Filtered hotels'i güncelle
   useEffect(() => {
-    if (searchData && searchFormRef.current) {
-      // SearchForm'u mevcut arama verileri ile güncelle
-      // Bu, SearchForm'un internal state'ini set etmek için gerekli olabilir
-    }
-  }, [searchData]);
+    setFilteredHotels(filteredAndSortedHotels);
+  }, [filteredAndSortedHotels]);
 
-  // ✅ HELPER FUNCTIONS
-  const formatDate = (dateString) => {
+  // ✅ Helper functions
+  const formatDate = useCallback((dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
     return date.toLocaleDateString('tr-TR', {
@@ -303,23 +238,26 @@ function ResultsPage() {
       month: '2-digit',
       year: 'numeric'
     });
-  };
+  }, []);
 
-  const calculateNights = () => {
+  const calculateNights = useCallback(() => {
     if (!searchData?.checkIn || !searchData?.checkOut) return 1;
     const checkIn = new Date(searchData.checkIn);
     const checkOut = new Date(searchData.checkOut);
     const diffTime = Math.abs(checkOut - checkIn);
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
-  };
+  }, [searchData?.checkIn, searchData?.checkOut]);
 
-  // renderStars fonksiyonunu kaldır (artık HotelResultsFilters içinde)
+  // ✅ Memoize edilmiş değerler
+  const nights = useMemo(() => calculateNights(), [calculateNights]);
+  const totalGuests = useMemo(() => {
+    return searchData?.rooms?.reduce((sum, room) => sum + (room.adults || 0) + (room.children || 0), 0) || 2;
+  }, [searchData?.rooms]);
 
-  // ✅ LOADING STATE - İlk yükleme için güzel spinner
+  // ✅ LOADING STATE
   if (isInitialLoading || (loading && !searchResults)) {
     return (
       <div className="results-page">
-        {/* Search Form Section - Loading sırasında da göster */}
         <div className="search-form-section" style={{ 
           background: 'white', 
           padding: '20px 0', 
@@ -331,12 +269,10 @@ function ResultsPage() {
               ref={searchFormRef}
               onSearchComplete={handleNewSearch}
               initialData={searchData}
-              externalLoading={true} // ✅ Loading state'ini geç
+              externalLoading={true}
             />
           </div>
         </div>
-
-        {/* Loading Spinner */}
         <LoadingSpinner 
           message="Oteller aranıyor..."
           submessage={searchData?.destinationName ? `${searchData.destinationName} için en iyi fiyatları buluyoruz` : "En uygun otelleri buluyoruz"}
@@ -360,9 +296,6 @@ function ResultsPage() {
     );
   }
 
-  const nights = calculateNights();
-  const totalGuests = searchData.rooms?.reduce((sum, room) => sum + (room.adults || 0) + (room.children || 0), 0) || 2;
-
   return (
     <div className="results-page">
       {/* Search Form Section */}
@@ -377,12 +310,10 @@ function ResultsPage() {
             ref={searchFormRef}
             onSearchComplete={handleNewSearch}
             initialData={searchData}
-            externalLoading={loading} // ✅ Loading state'ini geç
+            externalLoading={loading}
           />
         </div>
       </div>
-
-      {/* ❌ ÜSTTEKİ LOADING SPINNER'I KALDIR */}
 
       <div className="results-container">
         {/* Filters Sidebar */}
@@ -421,7 +352,7 @@ function ResultsPage() {
             </button>
           </div>
 
-          {/* Results Count - Sadece loading değilse göster */}
+          {/* Results Count */}
           {!loading && (
             <div style={{ 
               padding: '20px 0 10px 0', 
@@ -434,7 +365,7 @@ function ResultsPage() {
             </div>
           )}
 
-          {/* ✅ LOADING STATE - Arama sırasında spinner göster */}
+          {/* Loading or Results */}
           {loading ? (
             <div style={{ padding: '40px 0' }}>
               <LoadingSpinner 
@@ -444,7 +375,6 @@ function ResultsPage() {
               />
             </div>
           ) : (
-            /* ✅ HOTELS LIST - Sadece loading bittikten sonra göster */
             <div className="hotels-list">
               {filteredHotels.length === 0 ? (
                 <div className="no-results">
