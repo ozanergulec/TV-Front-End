@@ -10,7 +10,7 @@ const HotelCard = ({ hotel, nights, searchData }) => {
     return String(value);
   };
 
-  // Her kelimenin ilk harfini büyük yapan fonksiyon
+  // Her kelimenin ilk harfini büyük yapan fonksiyona
   const capitalizeWords = (str) => {
     if (!str) return '';
     return str
