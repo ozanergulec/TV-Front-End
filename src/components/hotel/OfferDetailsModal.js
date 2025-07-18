@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import hotelDetailsService from '../services/hotelDetailsService';
-import LoadingSpinner from './LoadingSpinner';
-import '../styles/OfferDetailsModal.css';
+import hotelDetailsService from '../../services/hotelDetailsService';
+import LoadingSpinner from '../LoadingSpinner';
+import '../../styles/OfferDetailsModal.css';
 
 function OfferDetailsModal({ isOpen, onClose, offerId, currency = "EUR", hotel, searchData }) {
   const navigate = useNavigate();

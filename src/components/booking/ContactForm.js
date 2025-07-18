@@ -1,28 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import '../styles/ContactForm.css';
+import '../../styles/ContactForm.css';
 
-function ContactForm({ travellers, onContactInfoChange, onNext, onBack }) {
+function ContactForm({ travellers, initialContactInfo, onContactInfoChange, onNext, onBack }) {
   const [contactInfo, setContactInfo] = useState({
     primaryContact: {
       email: '',
       phone: '',
       address: '',
       city: '',
-      zipCode: '',
-      country: 'Türkiye',
-      emergencyContact: {
-        name: '',
-        phone: '',
-        relation: ''
-      }
+      country: 'Türkiye'
     }
   });
 
   const [errors, setErrors] = useState({});
 
-  // Lider yolcudan iletişim bilgilerini al
+  // İlk yüklemede kayıtlı bilgileri al
   useEffect(() => {
-    if (travellers && travellers.length > 0) {
+    if (initialContactInfo) {
+      console.log('📋 Kayıtlı iletişim bilgileri yükleniyor:', initialContactInfo);
+      setContactInfo(initialContactInfo);
+    } else if (travellers && travellers.length > 0) {
+      // Eğer kayıtlı bilgi yoksa lider yolcudan al
       const leader = travellers.find(t => t.isLeader) || travellers[0];
       if (leader && leader.address) {
         setContactInfo(prev => ({
@@ -32,13 +30,12 @@ function ContactForm({ travellers, onContactInfoChange, onNext, onBack }) {
             email: leader.address.email || '',
             phone: leader.address.phone || '',
             address: leader.address.address || '',
-            city: leader.address.city?.name || '',
-            zipCode: leader.address.zipCode || ''
+            city: leader.address.city?.name || ''
           }
         }));
       }
     }
-  }, [travellers]);
+  }, [initialContactInfo, travellers]);
 
   const handleInputChange = (section, field, value) => {
     setContactInfo(prev => ({
@@ -56,19 +53,6 @@ function ContactForm({ travellers, onContactInfoChange, onNext, onBack }) {
         [`${section}.${field}`]: undefined
       }));
     }
-  };
-
-  const handleNestedInputChange = (section, nested, field, value) => {
-    setContactInfo(prev => ({
-      ...prev,
-      [section]: {
-        ...prev[section],
-        [nested]: {
-          ...prev[section][nested],
-          [field]: value
-        }
-      }
-    }));
   };
 
   const validateForm = () => {
@@ -89,10 +73,6 @@ function ContactForm({ travellers, onContactInfoChange, onNext, onBack }) {
 
     if (!contactInfo.primaryContact.address?.trim()) {
       newErrors['primaryContact.address'] = 'Adres zorunludur';
-    }
-
-    if (!contactInfo.primaryContact.city?.trim()) {
-      newErrors['primaryContact.city'] = 'Şehir zorunludur';
     }
 
     console.log('🔍 Validation sonucu:', newErrors);
@@ -124,7 +104,7 @@ function ContactForm({ travellers, onContactInfoChange, onNext, onBack }) {
 
       {/* Ana İletişim Bilgileri */}
       <div className="form-section">
-        <h4>Ana İletişim Bilgileri</h4>
+        <h4>İletişim Bilgileri</h4>
         <div className="form-grid">
           <div className="form-group">
             <label>Email Adresi *</label>
@@ -133,11 +113,8 @@ function ContactForm({ travellers, onContactInfoChange, onNext, onBack }) {
               value={contactInfo.primaryContact.email}
               onChange={(e) => handleInputChange('primaryContact', 'email', e.target.value)}
               className={errors['primaryContact.email'] ? 'error' : ''}
-              placeholder="ornek@email.com"
+              placeholder={errors['primaryContact.email'] || "ornek@email.com"}
             />
-            {errors['primaryContact.email'] && (
-              <span className="error-message">{errors['primaryContact.email']}</span>
-            )}
           </div>
 
           <div className="form-group">
@@ -147,11 +124,8 @@ function ContactForm({ travellers, onContactInfoChange, onNext, onBack }) {
               value={contactInfo.primaryContact.phone}
               onChange={(e) => handleInputChange('primaryContact', 'phone', e.target.value)}
               className={errors['primaryContact.phone'] ? 'error' : ''}
-              placeholder="+90 555 123 4567"
+              placeholder={errors['primaryContact.phone'] || "555 123 4567"}
             />
-            {errors['primaryContact.phone'] && (
-              <span className="error-message">{errors['primaryContact.phone']}</span>
-            )}
           </div>
 
           <div className="form-group full-width">
@@ -161,34 +135,17 @@ function ContactForm({ travellers, onContactInfoChange, onNext, onBack }) {
               value={contactInfo.primaryContact.address}
               onChange={(e) => handleInputChange('primaryContact', 'address', e.target.value)}
               className={errors['primaryContact.address'] ? 'error' : ''}
-              placeholder="Tam adres bilgisi"
+              placeholder={errors['primaryContact.address'] || "Tam adres bilgisi"}
             />
-            {errors['primaryContact.address'] && (
-              <span className="error-message">{errors['primaryContact.address']}</span>
-            )}
           </div>
 
           <div className="form-group">
-            <label>Şehir *</label>
+            <label>Şehir</label>
             <input
               type="text"
               value={contactInfo.primaryContact.city}
               onChange={(e) => handleInputChange('primaryContact', 'city', e.target.value)}
-              className={errors['primaryContact.city'] ? 'error' : ''}
               placeholder="Şehir"
-            />
-            {errors['primaryContact.city'] && (
-              <span className="error-message">{errors['primaryContact.city']}</span>
-            )}
-          </div>
-
-          <div className="form-group">
-            <label>Posta Kodu</label>
-            <input
-              type="text"
-              value={contactInfo.primaryContact.zipCode}
-              onChange={(e) => handleInputChange('primaryContact', 'zipCode', e.target.value)}
-              placeholder="Posta kodu"
             />
           </div>
 
@@ -203,49 +160,8 @@ function ContactForm({ travellers, onContactInfoChange, onNext, onBack }) {
               <option value="İngiltere">İngiltere</option>
               <option value="Fransa">Fransa</option>
               <option value="Amerika">Amerika</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      {/* Acil Durum İletişim */}
-      <div className="form-section">
-        <h4>Acil Durum İletişim</h4>
-        <div className="form-grid">
-          <div className="form-group">
-            <label>İsim Soyisim</label>
-            <input
-              type="text"
-              value={contactInfo.primaryContact.emergencyContact.name}
-              onChange={(e) => handleNestedInputChange('primaryContact', 'emergencyContact', 'name', e.target.value)}
-              placeholder="Acil durumda aranacak kişi"
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Telefon</label>
-            <input
-              type="tel"
-              value={contactInfo.primaryContact.emergencyContact.phone}
-              onChange={(e) => handleNestedInputChange('primaryContact', 'emergencyContact', 'phone', e.target.value)}
-              placeholder="+90 555 123 4567"
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Yakınlık Derecesi</label>
-            <select
-              value={contactInfo.primaryContact.emergencyContact.relation}
-              onChange={(e) => handleNestedInputChange('primaryContact', 'emergencyContact', 'relation', e.target.value)}
-            >
-              <option value="">Seçiniz</option>
-              <option value="anne">Anne</option>
-              <option value="baba">Baba</option>
-              <option value="eş">Eş</option>
-              <option value="kardeş">Kardeş</option>
-              <option value="çocuk">Çocuk</option>
-              <option value="arkadaş">Arkadaş</option>
-              <option value="diğer">Diğer</option>
+              <option value="İtalya">İtalya</option>
+              <option value="İspanya">İspanya</option>
             </select>
           </div>
         </div>

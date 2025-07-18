@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import hotelService from '../services/hotelService';
+import hotelService from '../../services/hotelService';
 
 const DestinationInput = ({ value, displayValue, onChange, disabled }) => {
   const [suggestions, setSuggestions] = useState([]);

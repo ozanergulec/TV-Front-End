@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import hotelDetailsService from '../services/hotelDetailsService';
 import LoadingSpinner from '../components/LoadingSpinner';
-import HotelOffers from '../components/HotelOffers';
+import HotelOffers from '../components/hotel/HotelOffers';
 import '../styles/HotelDetailPage.css';
 
 function HotelDetailPage() {

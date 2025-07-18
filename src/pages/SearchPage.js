@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
-import SearchForm from '../components/SearchForm';
-import PopularDestinations from '../components/PopularDestinations';
+import SearchForm from '../components/search/SearchForm';
+import PopularDestinations from '../components/search/PopularDestinations';
 
 function SearchPage() {
   const searchFormRef = useRef(null);

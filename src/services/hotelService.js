@@ -1,6 +1,11 @@
 import apiService from './api';
 
 class HotelService {
+  constructor() {
+    this.checkInDatesCache = new Map(); // Cache ekleyelim
+    this.cacheExpiry = 5 * 60 * 1000; // 5 dakika
+  }
+
   // Destinasyon autocomplete
   async getArrivalAutocomplete(searchText) {
     const request = {
@@ -19,47 +24,67 @@ class HotelService {
     }
   }
 
-  // Check-in tarihleri - FORMAT DÜZELTİLDİ
+  // ✅ Düzeltilmiş check-in dates - API'nin beklediği format
   async getCheckInDates(destinationId) {
-    const request = {
-      ProductType: 2,
-      arrivalLocations: [
-        {
-          Id: destinationId,
-          Type: 1
-        }
-      ]
-    };
+    const cacheKey = `checkin_${destinationId}`;
+    const cached = this.checkInDatesCache.get(cacheKey);
+    
+    // Cache kontrol et
+    if (cached && Date.now() - cached.timestamp < this.cacheExpiry) {
+      console.log('✅ Check-in dates cache\'den alındı');
+      return cached.data;
+    }
     
     try {
+      // ✅ API'nin beklediği format
+      const request = {
+        productType: 2,
+        includeSubLocations: true,
+        product: null,
+        arrivalLocations: [
+          {
+            id: destinationId,
+            type: 2
+          }
+        ]
+      };
+      
+      console.log('📅 Check-in dates request:', request);
+      
       const response = await apiService.post('/HotelProduct/get-checkin-dates', request);
+      
       console.log('📅 RAW Check-in dates response:', response);
       
-      // FORMAT DÜZELTİLDİ - body.dates kullan, header.success yok
-      if (response && response.body && response.body.dates && response.body.dates.length > 0) {
-        console.log('✅ Check-in dates bulundu:', response.body.dates.length, 'tarih');
-        return response.body.dates;
-      } else {
-        console.log('⚠️ Check-in dates bulunamadı');
-        return [];
+      if (response && response.body && response.body.dates) {
+        const dates = response.body.dates;
+        console.log('✅ Check-in dates bulundu:', dates.length, 'tarih');
+        
+        // Cache'e kaydet
+        this.checkInDatesCache.set(cacheKey, {
+          data: dates,
+          timestamp: Date.now()
+        });
+        
+        return dates;
       }
+      
+      return [];
     } catch (error) {
       console.error('Check-in dates failed:', error);
       return [];
     }
   }
 
-  // Fiyat arama - ÇOK ODALI DESTEK EKLENDİ
+  // ✅ Optimized price search - cache check düzeltildi
   async priceSearch(searchData) {
     const nights = this.calculateNights(searchData.checkIn, searchData.checkOut);
     
     let arrivalLocations = [];
     
     if (searchData.destination) {
-      // Destinasyon ID'si var
       console.log('🎯 Destinasyon ID olarak geldi:', searchData.destination);
       
-      // Check-in dates kontrol et
+      // Check-in dates'i kontrol et (cache mekanizması ile)
       console.log('📅 Check-in dates kontrol ediliyor...');
       const availableDates = await this.getCheckInDates(searchData.destination);
       
@@ -72,7 +97,7 @@ class HotelService {
       
       arrivalLocations = [{
         id: searchData.destination,
-        type: 2  // 1 değil, 2 olmalı!
+        type: 2
       }];
     }
 
@@ -89,7 +114,7 @@ class HotelService {
       getOnlyBestOffers: true,
       productType: 2,
       arrivalLocations: arrivalLocations,
-      roomCriteria: roomCriteria, // Artık array olarak gönderiyor
+      roomCriteria: roomCriteria,
       nationality: searchData.nationality,
       checkIn: searchData.checkIn,
       night: nights,
@@ -114,7 +139,12 @@ class HotelService {
     }
   }
 
-  // YENİ LOOKUP SERVICE METHODLARI
+  // Cache temizleme
+  clearCache() {
+    this.checkInDatesCache.clear();
+  }
+
+  // ✅ YENİ LOOKUP SERVICE METHODLARI
   async getCurrencies() {
     try {
       const response = await apiService.request('/Lookup/currencies', {
@@ -149,16 +179,12 @@ class HotelService {
     }
   }
 
-  // Gece sayısını hesapla
+  // Helper functions
   calculateNights(checkIn, checkOut) {
-    if (!checkIn || !checkOut) return 1;
-    
-    const startDate = new Date(checkIn);
-    const endDate = new Date(checkOut);
-    const timeDiff = endDate.getTime() - startDate.getTime();
-    const nights = Math.ceil(timeDiff / (1000 * 3600 * 24));
-    
-    return nights > 0 ? nights : 1;
+    const checkInDate = new Date(checkIn);
+    const checkOutDate = new Date(checkOut);
+    const diffTime = Math.abs(checkOutDate - checkInDate);
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   }
 }
 

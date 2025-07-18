@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import hotelDetailsService from '../services/hotelDetailsService';
-import LoadingSpinner from './LoadingSpinner';
+import hotelDetailsService from '../../services/hotelDetailsService';
+import LoadingSpinner from '../LoadingSpinner';
 import OfferDetailsModal from './OfferDetailsModal';
-import '../styles/HotelOffers.css';
+import '../../styles/HotelOffers.css';
 
 function HotelOffers({ hotelId, searchData, hotel }) {
   const navigate = useNavigate();

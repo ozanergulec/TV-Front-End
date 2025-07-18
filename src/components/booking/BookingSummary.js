@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/BookingSummary.css';
+import '../../styles/BookingSummary.css';
 
 function BookingSummary({ offer, hotel, searchData, transactionData }) {
   if (!offer || !hotel) return null;

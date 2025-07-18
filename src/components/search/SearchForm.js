@@ -1,15 +1,16 @@
-import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
+import React, { useState, useEffect, useImperativeHandle, forwardRef, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DestinationInput from './DestinationInput';
 import DateRangeSelector from './DateRangeSelector';
 import GuestRoomSelector from './GuestRoomSelector';
 import AdvancedOptionsPanel from './AdvancedOptionsPanel';
-import hotelService from '../services/hotelService';
-import '../components.css';
+import hotelService from '../../services/hotelService';
+import '../../components.css';
 
 const SearchForm = forwardRef((props, ref) => {
   const { onSearchComplete, initialData, externalLoading = false } = props;
   const navigate = useNavigate();
+  const searchInProgressRef = useRef(false); // Duplicate search kontrolü
   
   const [searchData, setSearchData] = useState(initialData || {
     destination: '',
@@ -128,7 +129,10 @@ const SearchForm = forwardRef((props, ref) => {
   const handleSearch = async (e) => {
     e.preventDefault();
     
-    if (externalLoading || isLoading) return;
+    if (externalLoading || isLoading || searchInProgressRef.current) {
+      console.log('🚫 Arama zaten devam ediyor, duplicate request engellendi');
+      return;
+    }
     
     // Validation
     if (!searchData.destination) {
@@ -152,17 +156,22 @@ const SearchForm = forwardRef((props, ref) => {
       }
     }
     
+    searchInProgressRef.current = true;
     console.log('🔍 Arama başlatılıyor...', searchData);
     
-    if (onSearchComplete) {
-      onSearchComplete(searchData);
-    } else {
-      navigate('/results', { 
-        state: { 
-          searchData: searchData,
-          isLoading: true 
-        } 
-      });
+    try {
+      if (onSearchComplete) {
+        await onSearchComplete(searchData);
+      } else {
+        navigate('/results', { 
+          state: { 
+            searchData: searchData,
+            isLoading: true 
+          } 
+        });
+      }
+    } finally {
+      searchInProgressRef.current = false;
     }
   };
 

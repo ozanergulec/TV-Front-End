@@ -2,6 +2,9 @@
 .results-page {
   min-height: 100vh;
   background-color: white;
+  /* STICKY POSITIONING FIX */
+  position: relative;
+  overflow: visible;
 }
 
 /* Loading State */
@@ -116,7 +119,36 @@
   border-color: rgba(255,255,255,0.5);
 }
 
-/* Main Container */
+/* Main Container - STICKY POSITIONING FIX */
+.results-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  /* STICKY POSITIONING FIX */
+  position: relative;
+  overflow: visible;
+  min-height: calc(100vh - 200px);
+}
+
+/* Filters Sidebar - BASIT STICKY */
+.filters-sidebar {
+  width: 280px;
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  position: sticky;
+  top: 20px;
+  height: fit-content;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+/* Results Container - BASIT LAYOUT */
 .results-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -126,19 +158,37 @@
   align-items: flex-start;
 }
 
-/* Filters Sidebar */
+.results-main {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Filters Sidebar - Normal durumda orijinal styling */
 .filters-sidebar {
   width: 280px;
   background: white;
   border-radius: 12px;
   padding: 24px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-  position: sticky;
-  top: 120px; /* Search form'un yüksekliğini hesaba katıyoruz */
   height: fit-content;
-  max-height: calc(100vh - 140px); /* Ekran yüksekliğini aşmasını önlüyoruz */
-  overflow-y: auto; /* İçerik çok uzunsa scroll ekleyelim */
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
   flex-shrink: 0;
+}
+
+.filters-sidebar.sticky-active {
+  position: fixed !important;
+  top: 20px !important;
+  width: 280px !important;
+  z-index: 999 !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
+  transition: all 0.3s ease;
+}
+
+/* Placeholder - invisible but takes space */
+.filters-placeholder {
+  background: transparent;
+  pointer-events: none;
 }
 
 .filters-header {
@@ -272,10 +322,11 @@
   margin-left: 8px;
 }
 
-/* Main Results */
+/* Main Results - MARGIN TRANSITION KALDIR */
 .results-main {
   flex: 1;
   min-width: 0;
+  /* margin transition kaldırıldı */
 }
 
 /* Sort Filter Bar */
@@ -768,4 +819,80 @@
   height: 60px;
   border-radius: 8px;
   object-fit: cover;
+}
+
+/* ÖZEL STICKY FIX - APP CONTAINER OVERRIDE */
+.results-page .App {
+  position: static !important;
+  overflow: visible !important;
+}
+
+/* HEADER Z-INDEX FIX */
+.header {
+  z-index: 1000 !important;
+}
+
+.filters-sidebar {
+  z-index: 999 !important;
+}
+
+/* Results Container - Position context for sticky */
+.results-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  position: relative;
+  min-height: calc(100vh - 200px);
+}
+
+/* Filters Sidebar - Container-based sticky */
+.filters-sidebar {
+  width: 280px;
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  height: fit-content;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.filters-sidebar.sticky-active {
+  position: sticky !important;
+  top: 20px !important;
+  z-index: 999 !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
+}
+
+/* Placeholder - invisible but takes space */
+.filters-placeholder {
+  background: transparent;
+  pointer-events: none;
+}
+
+.map-section-top {
+  background: #f8f9fa;
+  padding: 20px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.map-section {
+  display: none; /* Eski map-section'u gizle */
+}
+
+@media (max-width: 768px) {
+  .map-section-top {
+    padding: 15px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .map-section-top {
+    padding: 10px 0;
+  }
 }
