@@ -180,73 +180,111 @@ class BookingService {
       }
     };
 
-    // Telefon numarasını parse et
+    // Telefon numarasını birleştir ve ContactPhone için parse et
+    const buildFullPhone = (traveller) => {
+      if (!traveller.address?.phone) return '';
+      
+      const countryCode = traveller.address?.countryCode || '+90';
+      const phone = traveller.address?.phone || '';
+      
+      // Ülke kodu varsa birleştir, yoksa sadece phone'u döndür
+      if (countryCode && phone) {
+        return `${countryCode} ${phone}`;
+      }
+      return phone;
+    };
+
+    // ContactPhone için parse et
     const parsePhone = (phoneString) => {
       if (!phoneString) return null;
       
       // +90 555 123 4567 formatını parse et
       const cleaned = phoneString.replace(/\D/g, '');
       if (cleaned.length >= 10) {
+        // Ülke kodu olarak ilk 2 digit'i al
+        let countryCode = cleaned.substring(0, 2);
+        let remaining = cleaned.substring(2);
+        
+        // Eğer 0 ile başlıyorsa, Türkiye için özel durum
+        if (cleaned.startsWith('0')) {
+          countryCode = '90';
+          remaining = cleaned.substring(1);
+        }
+        
+        // Alan kodu ve telefon numarası
+        const areaCode = remaining.substring(0, 3) || '555';
+        const phoneNumber = remaining.substring(3) || '5555555';
+        
         return {
-          CountryCode: cleaned.substring(0, 2) || '90',    // PascalCase
-          AreaCode: cleaned.substring(2, 5) || '555',      // PascalCase
-          PhoneNumber: cleaned.substring(5) || '5555555'   // PascalCase
+          CountryCode: countryCode,
+          AreaCode: areaCode,
+          PhoneNumber: phoneNumber
         };
       }
       return {
-        CountryCode: '90',     // PascalCase
-        AreaCode: '555',       // PascalCase
-        PhoneNumber: '5555555' // PascalCase
+        CountryCode: '90',
+        AreaCode: '555',
+        PhoneNumber: '5555555'
       };
     };
 
+    // Tam telefon numarasını oluştur
+    const fullPhone = buildFullPhone(traveller);
+
     const result = {
-      TravellerId: (orderNumber || 1).toString(),                              // PascalCase
-      Type: traveller.type || 1,                                               // PascalCase
-      Title: traveller.title || 1,                                             // PascalCase
-      AcademicTitle: traveller.academicTitle ? { Id: traveller.academicTitle.id || 1 } : { Id: 1 }, // PascalCase
-      PassengerType: traveller.passengerType || 1,                             // PascalCase
-      Name: traveller.name || '',                                              // PascalCase
-      Surname: traveller.surname || '',                                        // PascalCase
-      IsLeader: traveller.isLeader || false,                                   // PascalCase
-      BirthDate: formatDateTime(traveller.birthDate),                          // PascalCase
-      Nationality: {                                                           // PascalCase
-        TwoLetterCode: traveller.nationality?.twoLetterCode || 'TR'            // PascalCase
+      TravellerId: (orderNumber || 1).toString(),
+      Type: traveller.type || 1,
+      Title: traveller.title || 1,
+      AcademicTitle: traveller.academicTitle ? { Id: traveller.academicTitle.id || 1 } : { Id: 1 },
+      PassengerType: traveller.passengerType || 1,
+      Name: traveller.name || '',
+      Surname: traveller.surname || '',
+      IsLeader: traveller.isLeader || false,
+      BirthDate: formatDateTime(traveller.birthDate),
+      Nationality: {
+        TwoLetterCode: traveller.nationality?.twoLetterCode || 'TR'
       },
-      IdentityNumber: traveller.identityNumber || '',                          // PascalCase
-      PassportInfo: {                                                          // PascalCase
-        Serial: traveller.passportInfo?.serial || '',                         // PascalCase
-        Number: traveller.passportInfo?.number || '',                         // PascalCase
-        ExpireDate: formatDateTime(traveller.passportInfo?.expireDate),       // PascalCase
-        IssueDate: formatDateTime(traveller.passportInfo?.issueDate),         // PascalCase
-        CitizenshipCountryCode: traveller.passportInfo?.citizenshipCountryCode || 'TR' // PascalCase
+      IdentityNumber: traveller.identityNumber || '',
+      PassportInfo: {
+        Serial: traveller.passportInfo?.serial || '',
+        Number: traveller.passportInfo?.number || '',
+        ExpireDate: formatDateTime(traveller.passportInfo?.expireDate),
+        IssueDate: formatDateTime(traveller.passportInfo?.issueDate),
+        CitizenshipCountryCode: traveller.passportInfo?.citizenshipCountryCode || 'TR'
       },
-      Address: {                                                               // PascalCase
-        Phone: traveller.address?.phone || '',                                // PascalCase
-        Email: traveller.address?.email || '',                                // PascalCase
-        Address: traveller.address?.address || '',                            // PascalCase
-        ZipCode: traveller.address?.zipCode || '',                            // PascalCase
-        City: {                                                               // PascalCase
-          Id: traveller.address?.city?.id || '',                             // PascalCase
-          Name: traveller.address?.city?.name || ''                          // PascalCase
+      Address: {
+        Phone: fullPhone, // Birleştirilmiş telefon numarası
+        Email: traveller.address?.email || '',
+        Address: traveller.address?.address || '',
+        ZipCode: traveller.address?.zipCode || '',
+        City: {
+          Id: traveller.address?.city?.id || '',
+          Name: traveller.address?.city?.name || ''
         },
-        Country: {                                                            // PascalCase
-          Id: traveller.address?.country?.id || '',                          // PascalCase
-          Name: traveller.address?.country?.name || ''                       // PascalCase
+        Country: {
+          Id: traveller.address?.country?.id || '',
+          Name: traveller.address?.country?.name || ''
         }
       },
-      DestinationAddress: {},                                                  // PascalCase
-      OrderNumber: orderNumber || 1,                                          // PascalCase
-      Documents: [],                                                           // PascalCase
-      InsertFields: [],                                                        // PascalCase
-      Status: traveller.status || 0,                                          // PascalCase
-      Gender: traveller.gender || 0                                           // PascalCase
+      DestinationAddress: {},
+      OrderNumber: orderNumber || 1,
+      Documents: [],
+      InsertFields: [],
+      Status: traveller.status || 0,
+      Gender: traveller.gender || 0
     };
 
-    // Lider yolcu için contactPhone ekle
-    if (traveller.isLeader && traveller.address?.phone) {
-      result.Address.ContactPhone = parsePhone(traveller.address.phone);      // PascalCase
+    // Lider yolcu için ContactPhone ekle
+    if (traveller.isLeader && fullPhone) {
+      result.Address.ContactPhone = parsePhone(fullPhone);
     }
+
+    console.log('📱 Telefon Debug:', {
+      countryCode: traveller.address?.countryCode,
+      phone: traveller.address?.phone,
+      fullPhone: fullPhone,
+      contactPhone: result.Address.ContactPhone
+    });
 
     return result;
   }
