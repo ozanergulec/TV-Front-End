@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import HotelCard from '../components/hotel/HotelCard';
 import SearchForm from '../components/search/SearchForm';
 import HotelResultsFilters from '../components/hotel/HotelResultsFilters';
+import HotelMap from '../components/hotel/HotelMap';
 import LoadingSpinner from '../components/LoadingSpinner';
 import hotelService from '../services/hotelService';
 import '../pages.css';
@@ -25,6 +26,7 @@ function ResultsPage() {
   const [priceRange, setPriceRange] = useState({ min: '', max: '' });
   const [selectedRating, setSelectedRating] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
+  const [selectedHotel, setSelectedHotel] = useState(null);
 
   // ✅ İlk yüklenme - sadece bir kez çalışsın
   useEffect(() => {
@@ -142,6 +144,22 @@ function ResultsPage() {
           return Math.abs(hash % 45) / 10 + 0.5;
         };
         
+        // Koordinatları parse et
+        const parseCoordinates = (hotel) => {
+          const lat = hotel.geolocation?.latitude || hotel.location?.latitude || null;
+          const lng = hotel.geolocation?.longitude || hotel.location?.longitude || null;
+          
+          // Koordinatlar varsa bunları kullan
+          if (lat && lng) {
+            return {
+              lat: parseFloat(lat),
+              lng: parseFloat(lng)
+            };
+          }
+          
+          return null;
+        };
+        
         return {
           id: hotel.id || `hotel-${index}`,
           name: safeString(hotel.name) || `Otel ${index + 1}`,
@@ -162,7 +180,9 @@ function ResultsPage() {
           searchId: searchId,
           offerId: hotel.offers?.[0]?.offerId || null,
           checkIn: hotel.offers?.[0]?.checkIn || null,
-          nights: hotel.offers?.[0]?.night || 1
+          nights: hotel.offers?.[0]?.night || 1,
+          // ✅ Gerçek koordinatları ekle
+          coordinates: parseCoordinates(hotel)
         };
       });
       
@@ -316,6 +336,16 @@ function ResultsPage() {
       </div>
 
       <div className="results-container">
+        {/* Hotel Map */}
+        <div className="map-section">
+          <HotelMap 
+            hotels={filteredHotels}
+            selectedHotel={selectedHotel}
+            onHotelSelect={setSelectedHotel}
+            searchData={searchData}
+          />
+        </div>
+
         {/* Filters Sidebar */}
         <HotelResultsFilters
           showFilters={showFilters}
@@ -388,6 +418,8 @@ function ResultsPage() {
                     hotel={hotel}
                     nights={nights}
                     searchData={searchData}
+                    isSelected={selectedHotel?.id === hotel.id}
+                    onClick={() => setSelectedHotel(hotel)}
                   />
                 ))
               )}

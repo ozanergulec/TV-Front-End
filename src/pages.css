@@ -874,3 +874,14 @@
   background: transparent;
   pointer-events: none;
 }
+
+.map-section {
+  grid-column: 1 / -1;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .map-section {
+    margin-bottom: 15px;
+  }
+}
