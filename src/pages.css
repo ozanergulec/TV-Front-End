@@ -875,13 +875,24 @@
   pointer-events: none;
 }
 
+.map-section-top {
+  background: #f8f9fa;
+  padding: 20px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
 .map-section {
-  grid-column: 1 / -1;
-  margin-bottom: 20px;
+  display: none; /* Eski map-section'u gizle */
 }
 
 @media (max-width: 768px) {
-  .map-section {
-    margin-bottom: 15px;
+  .map-section-top {
+    padding: 15px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .map-section-top {
+    padding: 10px 0;
   }
 }

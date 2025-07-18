@@ -335,9 +335,9 @@ function ResultsPage() {
         </div>
       </div>
 
-      <div className="results-container">
-        {/* Hotel Map */}
-        <div className="map-section">
+      {/* Hotel Map - Filtrelerin üzerinde */}
+      <div className="map-section-top">
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
           <HotelMap 
             hotels={filteredHotels}
             selectedHotel={selectedHotel}
@@ -345,7 +345,9 @@ function ResultsPage() {
             searchData={searchData}
           />
         </div>
+      </div>
 
+      <div className="results-container">
         {/* Filters Sidebar */}
         <HotelResultsFilters
           showFilters={showFilters}

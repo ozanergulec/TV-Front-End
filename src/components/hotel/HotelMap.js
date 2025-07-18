@@ -116,7 +116,7 @@ function HotelMap({ hotels, selectedHotel, onHotelSelect, searchData }) {
         fillOpacity: 1,
         strokeColor: '#ffffff',
         strokeWeight: 2,
-        scale: 1.5,
+        scale: isSelected ? 2 : 1.5, // Seçili otel daha büyük
         anchor: new window.google.maps.Point(12, 22)
       };
 
@@ -159,8 +159,9 @@ function HotelMap({ hotels, selectedHotel, onHotelSelect, searchData }) {
         }
       });
 
-      // InfoWindow'u marker'a bağla
+      // InfoWindow'u marker'a bağla ve hotel id'sini ekle
       marker.infoWindow = infoWindow;
+      marker.hotelId = hotel.id;
       newMarkers.push(marker);
       bounds.extend(position);
     });
@@ -183,6 +184,45 @@ function HotelMap({ hotels, selectedHotel, onHotelSelect, searchData }) {
 
     setMarkers(newMarkers);
   }, [map, hotels, selectedHotel]);
+
+  // ✅ Seçilen otele zoom yapma ve InfoWindow açma
+  useEffect(() => {
+    if (!map || !selectedHotel || !markers.length) return;
+
+    // Seçilen otelin marker'ını bul
+    const selectedMarker = markers.find(marker => marker.hotelId === selectedHotel.id);
+    
+    if (selectedMarker) {
+      // Önce haritayı otomatik olarak açık hale getir
+      setShowMapToggle(true);
+      
+      // Seçilen otelin konumuna git
+      const position = selectedMarker.getPosition();
+      
+      // Diğer InfoWindow'ları kapat
+      markers.forEach(m => {
+        if (m.infoWindow) {
+          m.infoWindow.close();
+        }
+      });
+      
+      // Smooth pan to position
+      map.panTo(position);
+      
+      // Eğer zoom seviyesi 13'ten küçükse 13'e çıkar
+      setTimeout(() => {
+        const currentZoom = map.getZoom();
+        if (currentZoom < 13) {
+          map.setZoom(13);
+        }
+        
+        // InfoWindow'u aç
+        setTimeout(() => {
+          selectedMarker.infoWindow.open(map, selectedMarker);
+        }, 200);
+      }, 400);
+    }
+  }, [selectedHotel, map, markers]);
 
   // Daha gerçekçi konum oluşturma fonksiyonu
   const generateHotelPosition = (hotel, index, mapCenter) => {
@@ -253,6 +293,9 @@ function HotelMap({ hotels, selectedHotel, onHotelSelect, searchData }) {
           <p>📍 {hotels.length} otel gösteriliyor</p>
           {searchData?.destinationName && (
             <p>🎯 {searchData.destinationName}</p>
+          )}
+          {selectedHotel && (
+            <p>🔍 Seçilen: {selectedHotel.name}</p>
           )}
         </div>
       </div>
