@@ -12,32 +12,21 @@
   
   .booking-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: center; /* Sadece başlığı ortala */
     align-items: center;
-    margin-bottom: 32px;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #e9ecef;
   }
   
   .booking-header h1 {
-    font-size: 2rem;
+    color: #2c3e50;
+    font-size: 32px;
     font-weight: 600;
-    color: #1f2937;
     margin: 0;
   }
   
-  .back-to-home {
-    background: #6b7280;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  
-  .back-to-home:hover {
-    background: #4b5563;
-  }
+  /* .back-to-home stilini kaldır */
   
   .booking-content {
     display: grid;

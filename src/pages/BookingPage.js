@@ -21,6 +21,7 @@ function BookingPage() {
   const [travellers, setTravellers] = useState([]);
   const [formTravellers, setFormTravellers] = useState([]);
   const [contactInfo, setContactInfo] = useState(null);
+  const [savedContactInfo, setSavedContactInfo] = useState(null); // Yeni state ekledik
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [paymentCompleted, setPaymentCompleted] = useState(false);
@@ -109,7 +110,7 @@ function BookingPage() {
 
   // İletişim bilgilerini güncelle
   const handleContactInfoChange = (updatedContactInfo) => {
-    setContactInfo(updatedContactInfo);
+    setSavedContactInfo(updatedContactInfo); // Geçici olarak kaydet
     console.log('✅ İletişim bilgileri güncellendi:', updatedContactInfo);
   };
 
@@ -184,6 +185,7 @@ function BookingPage() {
       if (response.header.success) {
         setReservationSaved(true);
         setContactInfo(contactInfo);
+        setSavedContactInfo(contactInfo); // Kalıcı olarak kaydet
         goToStep(3);
       } else {
         throw new Error(response.header.messages?.[0]?.message || 'Rezervasyon bilgileri kaydedilemedi');
@@ -321,9 +323,7 @@ function BookingPage() {
       <div className="booking-container">
         <div className="booking-header">
           <h1>Rezervasyon</h1>
-          <button onClick={handleBackToHome} className="back-to-home">
-            ← Ana Sayfa
-          </button>
+          {/* Ana Sayfa butonu kaldırıldı */}
         </div>
         
         <BookingSteps currentStep={currentStep} />
@@ -345,7 +345,7 @@ function BookingPage() {
               
               {transactionData && currentStep === 1 && (
                 <TravellerForm
-                  travellers={travellers}
+                  travellers={formTravellers.length > 0 ? formTravellers : travellers}
                   onTravellersChange={handleTravellersChange}
                   onNext={() => goToStep(2)}
                 />
@@ -354,6 +354,7 @@ function BookingPage() {
               {transactionData && currentStep === 2 && (
                 <ContactForm
                   travellers={formTravellers}
+                  initialContactInfo={savedContactInfo} // Kayıtlı iletişim bilgilerini gönder
                   onContactInfoChange={handleReservationSave}
                   onNext={() => {}}
                   onBack={() => goToStep(1)}
