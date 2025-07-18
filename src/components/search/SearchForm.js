@@ -4,8 +4,8 @@ import DestinationInput from './DestinationInput';
 import DateRangeSelector from './DateRangeSelector';
 import GuestRoomSelector from './GuestRoomSelector';
 import AdvancedOptionsPanel from './AdvancedOptionsPanel';
-import hotelService from '../services/hotelService';
-import '../components.css';
+import hotelService from '../../services/hotelService';
+import '../../components.css';
 
 const SearchForm = forwardRef((props, ref) => {
   const { onSearchComplete, initialData, externalLoading = false } = props;

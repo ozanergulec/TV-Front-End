@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import hotelService from '../services/hotelService';
+import hotelService from '../../services/hotelService';
 
 const AdvancedOptionsPanel = ({ currency, nationality, onChange, disabled }) => {
   const [currencies, setCurrencies] = useState([]);

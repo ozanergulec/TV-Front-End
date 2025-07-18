@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import bookingService from '../services/bookingService';
-import BookingSteps from '../components/BookingSteps';
-import BookingSummary from '../components/BookingSummary';
-import TravellerForm from '../components/TravellerForm';
+import BookingSteps from '../components/booking/BookingSteps';
+import BookingSummary from '../components/booking/BookingSummary';
+import TravellerForm from '../components/booking/TravellerForm';
 import LoadingSpinner from '../components/LoadingSpinner';
-import ContactForm from '../components/ContactForm';
+import ContactForm from '../components/booking/ContactForm';
 import '../styles/BookingPage.css';
 
 function BookingPage() {

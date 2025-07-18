@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../styles/TravellerForm.css';
+import '../../styles/TravellerForm.css';
 
 const COUNTRIES = [
   { code: 'TR', name: 'Türkiye' },

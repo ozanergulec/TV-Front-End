@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../styles/ContactForm.css';
+import '../../styles/ContactForm.css';
 
 function ContactForm({ travellers, initialContactInfo, onContactInfoChange, onNext, onBack }) {
   const [contactInfo, setContactInfo] = useState({

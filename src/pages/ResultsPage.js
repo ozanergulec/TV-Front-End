@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import HotelCard from '../components/HotelCard';
-import SearchForm from '../components/SearchForm';
-import HotelResultsFilters from '../components/HotelResultsFilters';
+import HotelCard from '../components/hotel/HotelCard';
+import SearchForm from '../components/search/SearchForm';
+import HotelResultsFilters from '../components/hotel/HotelResultsFilters';
 import LoadingSpinner from '../components/LoadingSpinner';
 import hotelService from '../services/hotelService';
 import '../pages.css';
