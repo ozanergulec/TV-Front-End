@@ -52,7 +52,7 @@ function HotelMap({ hotels, selectedHotel, onHotelSelect, searchData }) {
       // Ortalama merkezi bul
       const avgLat = validHotelCoords.reduce((sum, c) => sum + c.lat, 0) / validHotelCoords.length;
       const avgLng = validHotelCoords.reduce((sum, c) => sum + c.lng, 0) / validHotelCoords.length;
-      return { lat: avgLat, lng: avgLng, zoom: 11 }; // Zoom'u isteğe göre ayarlayabilirsin
+      return { lat: avgLat, lng: avgLng, zoom: 10 }; // Zoom'u isteğe göre ayarlayabilirsin
     }
 
     // Aksi halde eski davranış
@@ -206,12 +206,19 @@ function HotelMap({ hotels, selectedHotel, onHotelSelect, searchData }) {
         setTimeout(() => {
           const hotelNameElement = document.getElementById(uniqueId);
           if (hotelNameElement) {
-            hotelNameElement.addEventListener('click', (e) => {
+            hotelNameElement.onclick = (e) => {
               e.stopPropagation();
               navigateToHotelDetail(hotel);
-            });
+            };
           }
         }, 100);
+      });
+
+      // InfoWindow kapatıldığında seçimi kaldır
+      window.google.maps.event.addListener(infoWindow, 'closeclick', () => {
+        if (onHotelSelect) {
+          onHotelSelect(null);
+        }
       });
 
       // InfoWindow'u marker'a bağla ve hotel id'sini ekle
@@ -398,9 +405,9 @@ function HotelMap({ hotels, selectedHotel, onHotelSelect, searchData }) {
         
         <div className="map-info">
           <div>
-            <p>📍 {hotels.length} otel gösteriliyor</p>
+            <p> {hotels.length} otel gösteriliyor</p>
             {searchData?.destinationName && (
-              <p>🎯 {searchData.destinationName}</p>
+              <p> {searchData.destinationName}</p>
             )}
             {selectedHotel && (
               <p>🔍 Seçilen: {selectedHotel.name}</p>
