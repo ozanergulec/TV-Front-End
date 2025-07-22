@@ -43,23 +43,30 @@ function HotelMap({ hotels, selectedHotel, onHotelSelect, searchData }) {
 
   // Arama destinasyonuna göre merkez koordinatı belirle
   const getMapCenter = () => {
+    // Eğer otellerin gerçek koordinatları varsa, onların ortalamasını al
+    const validHotelCoords = hotels
+      .map(hotel => hotel.coordinates)
+      .filter(coord => coord && coord.lat && coord.lng);
+
+    if (validHotelCoords.length > 0) {
+      // Ortalama merkezi bul
+      const avgLat = validHotelCoords.reduce((sum, c) => sum + c.lat, 0) / validHotelCoords.length;
+      const avgLng = validHotelCoords.reduce((sum, c) => sum + c.lng, 0) / validHotelCoords.length;
+      return { lat: avgLat, lng: avgLng, zoom: 11 }; // Zoom'u isteğe göre ayarlayabilirsin
+    }
+
+    // Aksi halde eski davranış
     if (searchData?.destinationName) {
       const destination = searchData.destinationName.toLowerCase();
-      
-      // Exact match
       if (destinationCoordinates[destination]) {
         return destinationCoordinates[destination];
       }
-      
-      // Partial match
       for (const [key, coords] of Object.entries(destinationCoordinates)) {
         if (destination.includes(key) || key.includes(destination)) {
           return coords;
         }
       }
     }
-    
-    // Varsayılan: İstanbul
     return { lat: 41.0082, lng: 28.9784, zoom: 11 };
   };
 
