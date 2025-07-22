@@ -15,8 +15,8 @@ function HotelMap({ hotels, selectedHotel, onHotelSelect, searchData }) {
   const API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
   // Minimum zoom seviyesi - bu seviyeden sonra zoom değişmeyecek
-  const MIN_ZOOM_FOR_SELECTION = 16;
-  const MAX_ZOOM_FOR_SELECTION = 18; // Maksimum zoom seviyesi
+  const MIN_ZOOM_FOR_SELECTION = 14;
+  const MAX_ZOOM_FOR_SELECTION = 16; // Maksimum zoom seviyesi
 
   // Popüler destinasyonların koordinatları
   const destinationCoordinates = {
