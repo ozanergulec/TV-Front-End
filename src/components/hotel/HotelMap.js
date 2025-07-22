@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../../styles/HotelMap.css';
 
 function HotelMap({ hotels, selectedHotel, onHotelSelect, searchData }) {
@@ -7,9 +8,15 @@ function HotelMap({ hotels, selectedHotel, onHotelSelect, searchData }) {
   const [markers, setMarkers] = useState([]);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [showMapToggle, setShowMapToggle] = useState(false);
+  const [isInitialLoad, setIsInitialLoad] = useState(true); // İlk yüklenme kontrolü
+  const navigate = useNavigate();
 
   // En üstte API key'i tanımlayın
   const API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+
+  // Minimum zoom seviyesi - bu seviyeden sonra zoom değişmeyecek
+  const MIN_ZOOM_FOR_SELECTION = 14;
+  const MAX_ZOOM_FOR_SELECTION = 16; // Maksimum zoom seviyesi
 
   // Popüler destinasyonların koordinatları
   const destinationCoordinates = {
@@ -36,23 +43,30 @@ function HotelMap({ hotels, selectedHotel, onHotelSelect, searchData }) {
 
   // Arama destinasyonuna göre merkez koordinatı belirle
   const getMapCenter = () => {
+    // Eğer otellerin gerçek koordinatları varsa, onların ortalamasını al
+    const validHotelCoords = hotels
+      .map(hotel => hotel.coordinates)
+      .filter(coord => coord && coord.lat && coord.lng);
+
+    if (validHotelCoords.length > 0) {
+      // Ortalama merkezi bul
+      const avgLat = validHotelCoords.reduce((sum, c) => sum + c.lat, 0) / validHotelCoords.length;
+      const avgLng = validHotelCoords.reduce((sum, c) => sum + c.lng, 0) / validHotelCoords.length;
+      return { lat: avgLat, lng: avgLng, zoom: 10 }; // Zoom'u isteğe göre ayarlayabilirsin
+    }
+
+    // Aksi halde eski davranış
     if (searchData?.destinationName) {
       const destination = searchData.destinationName.toLowerCase();
-      
-      // Exact match
       if (destinationCoordinates[destination]) {
         return destinationCoordinates[destination];
       }
-      
-      // Partial match
       for (const [key, coords] of Object.entries(destinationCoordinates)) {
         if (destination.includes(key) || key.includes(destination)) {
           return coords;
         }
       }
     }
-    
-    // Varsayılan: İstanbul
     return { lat: 41.0082, lng: 28.9784, zoom: 11 };
   };
 
@@ -92,6 +106,21 @@ function HotelMap({ hotels, selectedHotel, onHotelSelect, searchData }) {
     setMap(mapInstance);
   }, [isMapLoaded, searchData]);
 
+  // Otel detay sayfasına yönlendirme fonksiyonu
+  const navigateToHotelDetail = (hotel) => {
+    navigate(`/hotel/${hotel.id}`, {
+      state: {
+        hotel: hotel,
+        searchData: searchData
+      }
+    });
+  };
+
+  // Global click listener için unique ID oluşturma
+  const generateUniqueId = () => {
+    return 'hotel-' + Math.random().toString(36).substr(2, 9);
+  };
+
   // Otellerin marker'larını haritaya ekle
   useEffect(() => {
     if (!map || !hotels.length) return;
@@ -128,11 +157,21 @@ function HotelMap({ hotels, selectedHotel, onHotelSelect, searchData }) {
         zIndex: isSelected ? 1000 : 100
       });
 
+      // Unique ID oluştur
+      const uniqueId = generateUniqueId();
+
       // Marker'a tıklandığında otel bilgilerini göster
       const infoWindow = new window.google.maps.InfoWindow({
         content: `
           <div class="hotel-map-info">
-            <h4>${hotel.name}</h4>
+           <img 
+              src="${hotel.image || hotel.photoUrl || 'https://via.placeholder.com/120x80?text=No+Image'}" 
+              alt="${hotel.name}" 
+              style="width: 120px; height: 80px; object-fit: cover; border-radius: 6px; margin-bottom: 8px;"
+            />
+            <h4 id="${uniqueId}" style="cursor: pointer; color: #2c5aa0; text-decoration: underline;">
+              ${hotel.name}
+            </h4>
             <p>${hotel.location}</p>
             <p><strong>${hotel.price} ${hotel.currency}</strong></p>
             <div class="hotel-rating">
@@ -141,10 +180,14 @@ function HotelMap({ hotels, selectedHotel, onHotelSelect, searchData }) {
             <p style="font-size: 10px; color: #666;">
               ${hotel.coordinates ? 'Gerçek konum' : 'Tahmini konum'}
             </p>
+            <div style="margin-top: 8px; font-size: 10px; color: #888; font-style: italic;">
+              💡 Detaylar için otel adına tıklayın
+            </div>
           </div>
         `
       });
 
+      // Click event listener
       marker.addListener('click', () => {
         // Önceki açık infoWindow'ları kapat
         markers.forEach(m => {
@@ -154,8 +197,27 @@ function HotelMap({ hotels, selectedHotel, onHotelSelect, searchData }) {
         });
         
         infoWindow.open(map, marker);
+        
         if (onHotelSelect) {
           onHotelSelect(hotel);
+        }
+
+        // InfoWindow açıldıktan sonra click listener'ı ekle
+        setTimeout(() => {
+          const hotelNameElement = document.getElementById(uniqueId);
+          if (hotelNameElement) {
+            hotelNameElement.onclick = (e) => {
+              e.stopPropagation();
+              navigateToHotelDetail(hotel);
+            };
+          }
+        }, 100);
+      });
+
+      // InfoWindow kapatıldığında seçimi kaldır
+      window.google.maps.event.addListener(infoWindow, 'closeclick', () => {
+        if (onHotelSelect) {
+          onHotelSelect(null);
         }
       });
 
@@ -166,28 +228,32 @@ function HotelMap({ hotels, selectedHotel, onHotelSelect, searchData }) {
       bounds.extend(position);
     });
 
-    // Haritayı tüm marker'ları içerecek şekilde ayarla
-    if (hotels.length > 0) {
+    // Haritayı tüm marker'ları içerecek şekilde ayarla - sadece ilk yüklemede
+    if (hotels.length > 0 && isInitialLoad) {
       map.fitBounds(bounds);
       // Zoom seviyesini kontrol et
       const listener = window.google.maps.event.addListener(map, 'idle', () => {
         const zoom = map.getZoom();
-        if (zoom > 15) {
-          map.setZoom(15);
+        if (zoom > MAX_ZOOM_FOR_SELECTION) {
+          map.setZoom(MAX_ZOOM_FOR_SELECTION);
         }
-        if (zoom < 10) {
-          map.setZoom(10);
+        if (zoom < MIN_ZOOM_FOR_SELECTION) {
+          map.setZoom(MIN_ZOOM_FOR_SELECTION);
         }
         window.google.maps.event.removeListener(listener);
+        setIsInitialLoad(false); // İlk yükleme tamamlandı
       });
+    } else if (!isInitialLoad) {
+      // İlk yüklemeden sonraki marker güncellemelerinde zoom'u değiştirme
+      setIsInitialLoad(false);
     }
 
     setMarkers(newMarkers);
-  }, [map, hotels, selectedHotel]);
+  }, [map, hotels, selectedHotel, navigate, searchData, isInitialLoad]);
 
-  // ✅ Seçilen otele zoom yapma ve InfoWindow açma
+  // ✅ Seçilen otele geçiş - SMOOTH PAN (yumuşak kaydırma)
   useEffect(() => {
-    if (!map || !selectedHotel || !markers.length) return;
+    if (!map || !selectedHotel || !markers.length || isInitialLoad) return;
 
     // Seçilen otelin marker'ını bul
     const selectedMarker = markers.find(marker => marker.hotelId === selectedHotel.id);
@@ -206,23 +272,71 @@ function HotelMap({ hotels, selectedHotel, onHotelSelect, searchData }) {
         }
       });
       
-      // Smooth pan to position
+      // Mevcut zoom seviyesini al ve sabit tut
+      const currentZoom = map.getZoom();
+      
+      // SMOOTH PAN - Yumuşak geçiş animasyonu
       map.panTo(position);
       
-      // Eğer zoom seviyesi 13'ten küçükse 13'e çıkar
-      setTimeout(() => {
-        const currentZoom = map.getZoom();
-        if (currentZoom < 13) {
-          map.setZoom(13);
+      // Alternatif olarak daha kontrole edilebilir smooth pan:
+      // const currentCenter = map.getCenter();
+      // const lat1 = currentCenter.lat();
+      // const lng1 = currentCenter.lng();
+      // const lat2 = position.lat;
+      // const lng2 = position.lng;
+      // 
+      // // Animasyon adımları
+      // let step = 0;
+      // const steps = 30; // 30 adımda geçiş yap
+      // 
+      // const smoothPan = () => {
+      //   step++;
+      //   const progress = step / steps;
+      //   const easeProgress = 1 - Math.pow(1 - progress, 3); // Ease-out cubic
+      //   
+      //   const currentLat = lat1 + (lat2 - lat1) * easeProgress;
+      //   const currentLng = lng1 + (lng2 - lng1) * easeProgress;
+      //   
+      //   map.setCenter({ lat: currentLat, lng: currentLng });
+      //   
+      //   if (step < steps) {
+      //     requestAnimationFrame(smoothPan);
+      //   }
+      // };
+      // smoothPan();
+      
+      // Pan tamamlandığında zoom kontrolü ve InfoWindow açma
+      const panListener = map.addListener('idle', () => {
+        // Listener'ı temizle
+        window.google.maps.event.removeListener(panListener);
+        
+        // Sadece zoom çok düşük/yüksekse ayarla
+        if (currentZoom < MIN_ZOOM_FOR_SELECTION) {
+          map.setZoom(MIN_ZOOM_FOR_SELECTION);
+        } else if (currentZoom > MAX_ZOOM_FOR_SELECTION) {
+          map.setZoom(MAX_ZOOM_FOR_SELECTION);
         }
         
-        // InfoWindow'u aç
+        // InfoWindow'u aç (pan animasyonu bittikten sonra)
         setTimeout(() => {
           selectedMarker.infoWindow.open(map, selectedMarker);
-        }, 200);
-      }, 400);
+          
+          // Click listener'ı ekle
+          setTimeout(() => {
+            const hotelNameElements = document.querySelectorAll('[id^="hotel-"]');
+            hotelNameElements.forEach(element => {
+              if (element.textContent.trim() === selectedHotel.name) {
+                element.addEventListener('click', (e) => {
+                  e.stopPropagation();
+                  navigateToHotelDetail(selectedHotel);
+                });
+              }
+            });
+          }, 100);
+        }, 150);
+      });
     }
-  }, [selectedHotel, map, markers]);
+  }, [selectedHotel, map, markers, navigate, isInitialLoad]);
 
   // Daha gerçekçi konum oluşturma fonksiyonu
   const generateHotelPosition = (hotel, index, mapCenter) => {
@@ -290,13 +404,18 @@ function HotelMap({ hotels, selectedHotel, onHotelSelect, searchData }) {
         />
         
         <div className="map-info">
-          <p>📍 {hotels.length} otel gösteriliyor</p>
-          {searchData?.destinationName && (
-            <p>🎯 {searchData.destinationName}</p>
-          )}
-          {selectedHotel && (
-            <p>🔍 Seçilen: {selectedHotel.name}</p>
-          )}
+          <div>
+            <p> {hotels.length} otel gösteriliyor</p>
+            {searchData?.destinationName && (
+              <p> {searchData.destinationName}</p>
+            )}
+            {selectedHotel && (
+              <p>🔍 Seçilen: {selectedHotel.name}</p>
+            )}
+          </div>
+          <div style={{ fontSize: '12px', color: '#888', fontStyle: 'italic' }}>
+             Otel detayları için popup'taki otel adına tıklayın
+          </div>
         </div>
       </div>
     </div>

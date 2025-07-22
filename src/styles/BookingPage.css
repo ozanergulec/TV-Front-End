@@ -460,3 +460,185 @@
     width: 100%;
   }
 }
+
+/* Ana kapsayıcılar */
+.booking-page {
+  min-height: 100vh;
+  background: #f7f7f7;
+  padding: 24px 0;
+}
+
+.booking-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  padding: 32px 32px 24px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.booking-header {
+  margin-bottom: 12px;
+}
+
+.booking-content {
+  display: flex;
+  flex-direction: row;
+  gap: 32px;
+}
+
+.booking-main {
+  flex: 2;
+  min-width: 0;
+}
+
+.booking-sidebar {
+  flex: 1;
+  min-width: 280px;
+  max-width: 350px;
+}
+
+/* Mobil uyumluluk */
+@media (max-width: 900px) {
+  .booking-container {
+    padding: 16px 4px;
+  }
+  .booking-content {
+    flex-direction: column;
+    gap: 0;
+  }
+  .booking-main, .booking-sidebar {
+    max-width: 100%;
+    min-width: 0;
+  }
+  .booking-sidebar {
+    margin-top: 24px;
+  }
+}
+
+@media (max-width: 600px) {
+  .booking-container {
+    padding: 6px 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .booking-header h1 {
+    font-size: 1.3rem;
+  }
+  .booking-main, .booking-sidebar {
+    padding: 0;
+  }
+  .booking-sidebar {
+    margin-top: 16px;
+  }
+  .booking-step-content,
+  .payment-section,
+  .payment-success,
+  .detail-card {
+    padding: 0 4px !important;
+  }
+}
+
+/* Form elemanları ve gridler */
+.summary-grid, .detail-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.summary-item, .detail-item {
+  flex: 1 1 200px;
+  min-width: 120px;
+}
+
+@media (max-width: 600px) {
+  .summary-grid, .detail-grid {
+    flex-direction: column;
+    gap: 6px;
+  }
+  .summary-item, .detail-item {
+    min-width: 0;
+    font-size: 0.98rem;
+  }
+}
+
+/* Butonlar */
+.booking-page button,
+.booking-page .retry-btn,
+.booking-page .back-btn,
+.booking-page .payment-btn,
+.booking-page .home-btn,
+.booking-page .print-btn {
+  width: 100%;
+  max-width: 320px;
+  margin: 8px 0;
+  font-size: 1rem;
+  padding: 10px 0;
+}
+
+@media (min-width: 601px) {
+  .booking-page button,
+  .booking-page .retry-btn,
+  .booking-page .back-btn,
+  .booking-page .payment-btn,
+  .booking-page .home-btn,
+  .booking-page .print-btn {
+    width: auto;
+    max-width: none;
+    margin: 0 8px 0 0;
+    padding: 10px 24px;
+  }
+}
+
+/* Form inputları */
+.booking-page input,
+.booking-page select {
+  width: 100%;
+  min-width: 0;
+  font-size: 1rem;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  box-sizing: border-box;
+}
+
+/* Rezervasyon Özeti ve Detaylar için mobil düzeltmeler */
+@media (max-width: 600px) {
+  .summary-grid, .detail-grid {
+    flex-direction: column;
+    gap: 4px !important;
+  }
+  .summary-item, .detail-item {
+    min-width: 0;
+    font-size: 1rem;
+    margin-bottom: 2px !important;
+    padding: 2px 0 !important;
+    /* min-height veya height varsa kaldır */
+    min-height: unset !important;
+    height: unset !important;
+  }
+  .payment-summary, .detail-card {
+    padding: 8px 4px !important;
+    margin-bottom: 8px !important;
+  }
+  .payment-summary h4, .detail-card h4 {
+    font-size: 1.08rem;
+    margin-bottom: 6px;
+  }
+}
+
+/* Genel olarak summary-item'lar arası boşluğu azalt */
+.summary-item, .detail-item {
+  margin-bottom: 8px;
+  padding: 2px 0;
+}
+
+/* Eğer border veya divider varsa, mobilde kaldır veya incelt */
+@media (max-width: 600px) {
+  .summary-item:not(:last-child), .detail-item:not(:last-child) {
+    border-bottom: 1px solid #f2f2f2;
+    margin-bottom: 4px;
+  }
+}

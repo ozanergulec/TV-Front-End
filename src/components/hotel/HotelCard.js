@@ -39,7 +39,22 @@ const HotelCard = ({ hotel, nights, searchData }) => {
   };
 
   return (
-    <div className="hotel-card">
+    <div
+      className="hotel-card"
+      onClick={() => navigate(`/hotel/${hotel.id}`, { 
+        state: { 
+          hotel, 
+          searchData: {
+            ...searchData,
+            searchId: hotel.searchId,
+            offerId: hotel.offerId,
+            checkIn: hotel.checkIn,
+            nights: hotel.nights
+          }
+        } 
+      })}
+      style={{ cursor: 'pointer' }} // Kullanıcıya tıklanabilir olduğunu göstermek için
+    >
       <div className="hotel-image">
         <img 
           src={hotel.image} 
@@ -71,11 +86,11 @@ const HotelCard = ({ hotel, nights, searchData }) => {
         </div>
 
         {safeRender(hotel.location) && (
-          <p className="hotel-location">📍 {safeRender(hotel.location)}</p>
+          <p className="hotel-location"> {safeRender(hotel.location)}</p>
         )}
         
         {hotel.distance > 0 && (
-          <p className="hotel-distance">🚗 Merkeze {hotel.distance.toFixed(1)} km</p>
+          <p className="hotel-distance"> Merkeze {hotel.distance.toFixed(1)} km</p>
         )}
 
         {safeRender(hotel.description) && (
@@ -115,18 +130,21 @@ const HotelCard = ({ hotel, nights, searchData }) => {
         <div className="booking-actions">
           <button 
             className="view-details-btn"
-            onClick={() => navigate(`/hotel/${hotel.id}`, { 
-              state: { 
-                hotel, 
-                searchData: {
-                  ...searchData,
-                  searchId: hotel.searchId, // Hotel'den gelen searchId
-                  offerId: hotel.offerId,   // Hotel'den gelen offerId
-                  checkIn: hotel.checkIn,
-                  nights: hotel.nights
-                }
-              } 
-            })}
+            onClick={(e) => {
+              e.stopPropagation(); // Butona tıklanınca kartın onClick'i tetiklenmesin
+              navigate(`/hotel/${hotel.id}`, { 
+                state: { 
+                  hotel, 
+                  searchData: {
+                    ...searchData,
+                    searchId: hotel.searchId,
+                    offerId: hotel.offerId,
+                    checkIn: hotel.checkIn,
+                    nights: hotel.nights
+                  }
+                } 
+              });
+            }}
           >
             Detayları Gör
           </button>
