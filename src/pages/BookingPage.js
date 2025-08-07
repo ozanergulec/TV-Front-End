@@ -216,31 +216,38 @@ function BookingPage() {
       if (response && response.header && response.header.success) {
         setCommitCompleted(true);
         
-        // Dummy rezervasyon numarası oluştur
-        const randomNumber = Math.random().toString(36).substr(2, 9).toUpperCase();
-        setReservationNumber(`RES-${randomNumber}`);
+        // Commit yanıtından rezervasyon numarasını al
+        const reservationNo = response?.body?.reservationNumber || response?.body?.encryptedReservationNumber;
+
+        if (reservationNo) {
+          setReservationNumber(reservationNo);
+        } else {
+          // Fallback: geçici bir numara üret
+          const randomNumber = Math.random().toString(36).substr(2, 9).toUpperCase();
+          setReservationNumber(`RES-${randomNumber}`);
+        }
         
         // Direkt success ekranı göster
         setPaymentCompleted(true);
         
         console.log('🎉 Ödeme başarılı ekranı gösteriliyor');
         
-        // İsteğe bağlı olarak rezervasyon detaylarını al (arka planda)
-        try {
-          const detailResponse = await bookingService.getReservationDetail(
-            transactionData.transactionId
-          );
-          
-          console.log('📋 Rezervasyon detayları:', detailResponse);
-          
-          if (detailResponse && detailResponse.header && detailResponse.header.success) {
-            // Gerçek rezervasyon numarası varsa güncelle
-            if (detailResponse.body.reservationNumber) {
-              setReservationNumber(detailResponse.body.reservationNumber);
+        // Rezervasyon detaylarını gerçek rezervasyon numarası ile al (arka planda)
+        if (reservationNo) {
+          try {
+            const detailResponse = await bookingService.getReservationDetail(reservationNo);
+            
+            console.log('📋 Rezervasyon detayları:', detailResponse);
+            
+            if (detailResponse && detailResponse.header && detailResponse.header.success) {
+              // Gerçek rezervasyon numarası varsa güncelle
+              if (detailResponse.body.reservationNumber) {
+                setReservationNumber(detailResponse.body.reservationNumber);
+              }
             }
+          } catch (detailError) {
+            console.log('⚠️ Rezervasyon detayları alınamadı:', detailError);
           }
-        } catch (detailError) {
-          console.log('⚠️ Rezervasyon detayları alınamadı, dummy data kullanılıyor:', detailError);
         }
         
       } else {
