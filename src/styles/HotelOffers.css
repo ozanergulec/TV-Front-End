@@ -1,7 +1,6 @@
-/* Hotel Offers Section - Web Sitesi Görünümü */
 .hotel-offers-section {
     margin-top: 40px;
-    padding: 20px; /* 25px'ten azaltıldı */
+    padding: 20px; 
     background: white;
     border-radius: 12px;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
@@ -9,18 +8,18 @@
   }
   
   .hotel-offers-section h2 {
-    font-size: 1.4rem; /* 1.5rem'den azaltıldı */
+    font-size: 1.4rem; 
     font-weight: 600;
     color: #1a1a1a;
-    margin-bottom: 20px; /* 25px'ten azaltıldı */
-    padding-bottom: 12px; /* 15px'ten azaltıldı */
+    margin-bottom: 20px; 
+    padding-bottom: 12px; 
     border-bottom: 2px solid #f8f9fa;
   }
   
   .offers-container {
     display: flex;
     flex-direction: column;
-    gap: 12px; /* 15px'ten azaltıldı */
+    gap: 12px; 
   }
   
   .offer-card {
@@ -41,20 +40,20 @@
     display: grid;
     grid-template-columns: 1fr 1fr 1fr auto;
     align-items: center;
-    padding: 15px 18px; /* 20px 25px'ten azaltıldı */
+    padding: 15px 18px; 
     background: white;
     border-bottom: 1px solid #e9ecef;
-    gap: 15px; /* 20px'ten azaltıldı */
+    gap: 15px; 
   }
   
   .offer-dates {
     display: flex;
     flex-direction: column;
-    gap: 3px; /* 4px'ten azaltıldı */
+    gap: 3px; 
   }
   
   .offer-dates .date-label {
-    font-size: 0.7rem; /* 0.75rem'den azaltıldı */
+    font-size: 0.7rem; 
     color: #6c757d;
     font-weight: 500;
     text-transform: uppercase;
@@ -62,26 +61,26 @@
   }
   
   .offer-dates .date-value {
-    font-size: 0.85rem; /* 0.9rem'den azaltıldı */
+    font-size: 0.85rem; 
     color: #333;
     font-weight: 600;
   }
   
   .nights {
-    font-size: 0.8rem; /* 0.85rem'den azaltıldı */
+    font-size: 0.8rem; 
     color: #2c5aa0;
     font-weight: 600;
     background: #e8f2ff;
-    padding: 3px 6px; /* 4px 8px'ten azaltıldı */
+    padding: 3px 6px; 
     border-radius: 4px;
     display: inline-block;
-    margin-top: 3px; /* 4px'ten azaltıldı */
+    margin-top: 3px; 
   }
   
   .offer-status {
     display: flex;
     flex-direction: column;
-    gap: 5px; /* 6px'ten azaltıldı */
+    gap: 5px; 
     align-items: center;
   }
   
@@ -93,14 +92,14 @@
   }
   
   .price-amount {
-    font-size: 1.4rem; /* 1.6rem'den azaltıldı */
+    font-size: 1.4rem; 
     font-weight: 700;
     color: #2c5aa0;
     line-height: 1.2;
   }
   
   .price-total {
-    font-size: 0.7rem; /* 0.75rem'den azaltıldı */
+    font-size: 0.7rem; 
     color: #6c757d;
     text-transform: uppercase;
     font-weight: 500;
@@ -108,7 +107,7 @@
   }
   
   .offer-details {
-    padding: 15px 18px; /* 20px 25px'ten azaltıldı */
+    padding: 15px 18px; 
     background: white;
   }
   
@@ -117,29 +116,29 @@
   }
   
   .offer-rooms h4 {
-    font-size: 0.85rem; /* 0.9rem'den azaltıldı */
+    font-size: 0.85rem; 
     font-weight: 600;
     color: #495057;
-    margin-bottom: 6px; /* 8px'ten azaltıldı */
+    margin-bottom: 6px; 
     display: flex;
     align-items: center;
-    gap: 6px; /* 8px'ten azaltıldı */
+    gap: 6px; 
   }
   
   /* Table düzeltmeleri */
 .room-options-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 8px; /* 10px'ten azaltıldı */
+  margin-top: 8px; 
   table-layout: fixed;
 }
 
 .room-options-table th {
   background: #f8f9fa;
-  padding: 10px 12px; /* 12px 15px'ten azaltıldı */
+  padding: 10px 12px; 
   text-align: left;
   font-weight: 600;
-  font-size: 0.8rem; /* 0.85rem'den azaltıldı */
+  font-size: 0.8rem; 
   color: #495057;
   border-bottom: 2px solid #e9ecef;
   text-transform: uppercase;
@@ -152,12 +151,12 @@
 
 .room-options-table th:last-child {
   width: 35%;
-  text-align: left; /* Pansiyon başlığını sola hizala */
-  padding-left: 15px; /* 20px'ten azaltıldı */
+  text-align: left; 
+  padding-left: 15px; 
 }
 
 .room-options-table td {
-  padding: 12px 12px; /* 15px 15px'ten azaltıldı */
+  padding: 12px 12px; 
   border-bottom: 1px solid #f1f3f4;
   vertical-align: middle;
   word-wrap: break-word;
@@ -170,23 +169,23 @@
 .room-name {
   font-weight: 600;
   color: #333;
-  font-size: 0.85rem; /* 0.9rem'den azaltıldı */
-  margin-bottom: 3px; /* 4px'ten azaltıldı */
+  font-size: 0.85rem; 
+  margin-bottom: 3px; 
   line-height: 1.3;
 }
 
 .room-board {
-  font-size: 0.75rem; /* 0.8rem'den azaltıldı */
+  font-size: 0.75rem; 
   color: #6c757d;
-  margin-top: 3px; /* 4px'ten azaltıldı */
+  margin-top: 3px; 
   line-height: 1.2;
 }
 
-/* Pansiyon hücresi için özel stil - SOLDAN HIZALI */
+
 .room-options-table td:last-child {
-  text-align: left; /* Pansiyon içeriğini sola hizala */
-  padding-left: 15px; /* 20px'ten azaltıldı */
-  padding-right: 12px; /* 15px'ten azaltıldı */
+  text-align: left; 
+  padding-left: 15px; 
+  padding-right: 12px; 
   vertical-align: middle;
 }
 
@@ -194,10 +193,10 @@
   font-weight: 600;
   color: #2c5aa0;
   background: #e8f2ff;
-  padding: 6px 12px; /* 8px 16px'ten azaltıldı */
+  padding: 6px 12px; 
   border-radius: 6px;
   display: inline-block;
-  font-size: 0.8rem; /* 0.85rem'den azaltıldı */
+  font-size: 0.8rem; 
   text-align: center;
   white-space: nowrap;
   margin: 0;
@@ -212,20 +211,20 @@
     display: block;
     text-decoration: line-through;
     color: #dc3545;
-    font-size: 0.75rem; /* 0.8rem'den azaltıldı */
+    font-size: 0.75rem; 
     margin-bottom: 2px;
   }
   
   .room-price-amount {
     font-weight: 600;
     color: #2c5aa0;
-    font-size: 0.85rem; /* 0.9rem'den azaltıldı */
+    font-size: 0.85rem; 
   }
   
   .availability-badge {
-    padding: 5px 10px; /* 6px 12px'ten azaltıldı */
+    padding: 5px 10px; 
     border-radius: 20px;
-    font-size: 0.65rem; /* 0.7rem'den azaltıldı */
+    font-size: 0.65rem; 
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -243,9 +242,9 @@
   }
   
   .refundable-badge {
-    padding: 5px 10px; /* 6px 12px'ten azaltıldı */
+    padding: 5px 10px; 
     border-radius: 20px;
-    font-size: 0.65rem; /* 0.7rem'den azaltıldı */
+    font-size: 0.65rem; 
     font-weight: 600;
     background: #d1ecf1;
     color: #0c5460;
@@ -255,17 +254,17 @@
   }
   
   .offer-actions {
-    padding: 15px 18px; /* 20px 25px'ten azaltıldı */
+    padding: 15px 18px; 
     background: #f8f9fa;
     border-top: 1px solid #e9ecef;
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    gap: 12px; /* 15px'ten azaltıldı */
+    gap: 12px; 
   }
   
   .offer-actions .offer-info {
-    font-size: 0.75rem; /* 0.8rem'den azaltıldı */
+    font-size: 0.75rem; 
     color: #6c757d;
     flex: 1;
   }
@@ -274,15 +273,15 @@
     background: linear-gradient(135deg, #2c5aa0 0%, #1e3d72 100%);
     color: white;
     border: none;
-    padding: 10px 20px; /* 12px 24px'ten azaltıldı */
+    padding: 10px 20px; 
     border-radius: 6px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    font-size: 0.85rem; /* 0.9rem'den azaltıldı */
+    font-size: 0.85rem; 
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    min-width: 120px; /* 140px'ten azaltıldı */
+    min-width: 120px; 
   }
   
   .select-offer-btn:hover:not(:disabled) {
@@ -473,15 +472,15 @@
   background: transparent;
   color: #2c5aa0;
   border: 1px solid #2c5aa0;
-  padding: 8px 16px; /* 10px 20px'ten azaltıldı */
+  padding: 8px 16px;
   border-radius: 6px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 0.8rem; /* 0.85rem'den azaltıldı */
+  font-size: 0.8rem; 
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  min-width: 100px; /* 120px'ten azaltıldı */
+  min-width: 100px; 
 }
 
 .details-btn:hover {

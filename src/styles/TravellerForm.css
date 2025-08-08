@@ -99,7 +99,7 @@
     box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.2);
   }
   
-  /* Error mesajlarını kaldır - sadece placeholder'da göster */
+  
   .form-group input.error::placeholder {
     color: #e74c3c;
   }
@@ -203,7 +203,7 @@
     }
   }
 
-/* Telefon grubu için özel stilleme */
+/* Mobile Responsive */
 .phone-group {
   grid-column: span 2;
 }

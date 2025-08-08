@@ -68,7 +68,6 @@ const GuestRoomSelector = ({ rooms, onChange, disabled }) => {
     onChange(newRooms);
   };
 
-  // Click outside to close
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {

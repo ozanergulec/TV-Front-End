@@ -16,7 +16,6 @@ const AdvancedOptionsPanel = ({ currency, nationality, onChange, disabled }) => 
   const currencyDropdownRef = useRef(null);
   const nationalityDropdownRef = useRef(null);
 
-  // Lookup data çekme
   useEffect(() => {
     const loadLookupData = async () => {
       setLoadingLookups(true);
@@ -52,10 +51,10 @@ const AdvancedOptionsPanel = ({ currency, nationality, onChange, disabled }) => 
         setCurrencySearch(defaultCurrency?.name || 'Euro');
         setNationalitySearch(defaultNationality?.name || 'Türkiye (TR)');
         
-        console.log('✅ Lookup verileri yüklendi');
+        console.log(' Lookup verileri yüklendi');
         
       } catch (error) {
-        console.error('❌ Lookup verileri yüklenemedi:', error);
+        console.error(' Lookup verileri yüklenemedi:', error);
         
         const fallbackCurrencies = [
           { code: 'EUR', name: 'Euro', fullName: 'Euro' },
@@ -120,7 +119,6 @@ const AdvancedOptionsPanel = ({ currency, nationality, onChange, disabled }) => 
     setShowNationalityDropdown(false);
   };
 
-  // Click outside to close
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (currencyDropdownRef.current && !currencyDropdownRef.current.contains(event.target)) {

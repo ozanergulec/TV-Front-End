@@ -4,13 +4,12 @@ import { useNavigate } from 'react-router-dom';
 const HotelCard = ({ hotel, nights, searchData }) => {
   const navigate = useNavigate();
 
-  // Güvenli string render fonksiyonu
+  
   const safeRender = (value, fallback = '') => {
     if (!value || typeof value === 'object') return fallback;
     return String(value);
   };
 
-  // Her kelimenin ilk harfini büyük yapan fonksiyon
   const capitalizeWords = (str) => {
     if (!str) return '';
     return str
@@ -53,7 +52,7 @@ const HotelCard = ({ hotel, nights, searchData }) => {
           }
         } 
       })}
-      style={{ cursor: 'pointer' }} // Kullanıcıya tıklanabilir olduğunu göstermek için
+      style={{ cursor: 'pointer' }} 
     >
       <div className="hotel-image">
         <img 
@@ -131,7 +130,7 @@ const HotelCard = ({ hotel, nights, searchData }) => {
           <button 
             className="view-details-btn"
             onClick={(e) => {
-              e.stopPropagation(); // Butona tıklanınca kartın onClick'i tetiklenmesin
+              e.stopPropagation(); 
               navigate(`/hotel/${hotel.id}`, { 
                 state: { 
                   hotel, 

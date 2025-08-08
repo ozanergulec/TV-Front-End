@@ -10,7 +10,7 @@ function HotelDetailPage() {
   const location = useLocation();
   const navigate = useNavigate();
   
-  // Teklifler kısmına scroll için ref
+  
   const offersRef = useRef(null);
   
   const [hotelDetails, setHotelDetails] = useState(null);
@@ -45,7 +45,7 @@ function HotelDetailPage() {
           const rawHotel = response.body.hotel;
           const formatted = hotelDetailsService.formatHotelInfo(rawHotel);
           
-          console.log('Ham otel verisi:', rawHotel);
+          console.log('Raw otel Data:', rawHotel);
           console.log('Formatlanmış otel verisi:', formatted);
           
           const images = [
@@ -76,7 +76,7 @@ function HotelDetailPage() {
     }
   }, [id]);
 
-  // Sayfa mount olduğunda en yukarıya git
+  
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -114,7 +114,7 @@ function HotelDetailPage() {
     setSelectedImage((prev) => (prev - 1 + allImages.length) % allImages.length);
   };
 
-  // Açıklamayı kırpma fonksiyonu
+  
   const getTruncatedDescription = (text, maxLength = 300) => {
     if (!text || text.length <= maxLength) return text;
     
@@ -123,7 +123,7 @@ function HotelDetailPage() {
     return truncated.substr(0, lastSpace) + '...';
   };
 
-  // Keyboard navigation
+  
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (lightboxOpen) {

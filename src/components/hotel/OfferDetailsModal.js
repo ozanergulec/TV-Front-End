@@ -10,7 +10,6 @@ function OfferDetailsModal({ isOpen, onClose, offerId, currency = "EUR", hotel, 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Teklif detaylarını fetch et
   const fetchOfferDetails = async () => {
     try {
       setLoading(true);
@@ -22,14 +21,14 @@ function OfferDetailsModal({ isOpen, onClose, offerId, currency = "EUR", hotel, 
       
       if (response?.header?.success && response?.body?.offerDetails) {
         const formatted = hotelDetailsService.formatOfferDetails(response);
-        console.log('✅ Formatted offer details:', formatted);
+        console.log(' Formatted offer details:', formatted);
         setOfferDetails(formatted);
       } else {
-        console.error('❌ Offer details alınamadı:', response);
+        console.error(' Offer details alınamadı:', response);
         setError('Teklif detayları bulunamadı');
       }
     } catch (err) {
-      console.error('❌ Offer details fetch error:', err);
+      console.error(' Offer details fetch error:', err);
       setError('Teklif detayları yüklenirken bir hata oluştu');
     } finally {
       setLoading(false);
@@ -54,20 +53,16 @@ function OfferDetailsModal({ isOpen, onClose, offerId, currency = "EUR", hotel, 
   // Body scroll'unu control et
   useEffect(() => {
     if (isOpen) {
-      // Modal açıldığında body scroll'unu disable et
       document.body.style.overflow = 'hidden';
-      document.body.style.paddingRight = '0px'; // Scrollbar padding'i kaldır
+      document.body.style.paddingRight = '0px'; 
       
-      // Bir de html element'ini de disable et (bazı browser'lar için)
       document.documentElement.style.overflow = 'hidden';
     } else {
-      // Modal kapandığında body scroll'unu enable et
       document.body.style.overflow = 'auto';
       document.body.style.paddingRight = '';
       document.documentElement.style.overflow = 'auto';
     }
 
-    // Cleanup function - component unmount olduğunda scroll'u restore et
     return () => {
       document.body.style.overflow = 'auto';
       document.body.style.paddingRight = '';
@@ -75,7 +70,6 @@ function OfferDetailsModal({ isOpen, onClose, offerId, currency = "EUR", hotel, 
     };
   }, [isOpen]);
 
-  // ESC tuşu ile modal'ı kapat
   useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === 'Escape' && isOpen) {
@@ -89,7 +83,6 @@ function OfferDetailsModal({ isOpen, onClose, offerId, currency = "EUR", hotel, 
     }
   }, [isOpen, onClose]);
 
-  // Booking page'e yönlendirme fonksiyonu
   const handleSelectOffer = () => {
     if (offerDetails && hotel && searchData) {
       navigate('/booking', { 

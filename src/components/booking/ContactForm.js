@@ -46,7 +46,6 @@ function ContactForm({ travellers, initialContactInfo, onContactInfoChange, onNe
       }
     }));
 
-    // Hata varsa temizle
     if (errors[`${section}.${field}`]) {
       setErrors(prev => ({
         ...prev,
@@ -57,8 +56,6 @@ function ContactForm({ travellers, initialContactInfo, onContactInfoChange, onNe
 
   const validateForm = () => {
     const newErrors = {};
-
-    console.log('🔍 Validation kontrol ediliyor...', contactInfo);
 
     // Zorunlu alanlar
     if (!contactInfo.primaryContact.email?.trim()) {
@@ -86,7 +83,6 @@ function ContactForm({ travellers, initialContactInfo, onContactInfoChange, onNe
     console.log('📊 Contact Info:', contactInfo);
     
     if (validateForm()) {
-      console.log('✅ Validation başarılı, onContactInfoChange çağrılıyor');
       onContactInfoChange(contactInfo);
       onNext();
     } else {

@@ -30,13 +30,11 @@ const SearchForm = forwardRef((props, ref) => {
     setDestinationFromCity: async (cityName, shouldNavigate = true) => {
       try {
         setIsLoading(true);
-        console.log('🏙️ Şehir adından destination bulunuyor:', cityName);
+        console.log(' Şehir adından destination bulunuyor:', cityName);
         
-        // API'den şehir adına göre destination ara
         const result = await hotelService.getArrivalAutocomplete(cityName);
         
         if (result.header?.success && result.body?.items && result.body.items.length > 0) {
-          // İlk şehir sonucunu al (type === 1)
           const cityItem = result.body.items.find(item => item.type === 1);
           
           if (cityItem) {
@@ -45,18 +43,15 @@ const SearchForm = forwardRef((props, ref) => {
             const countryName = cityItem.country?.name || '';
             const displayName = countryName ? `${cityDisplayName}, ${countryName}` : cityDisplayName;
             
-            // SearchData'yı güncelle
             setSearchData(prev => ({
               ...prev,
               destination: destinationId,
               destinationName: displayName
             }));
             
-            console.log('✅ Destination bulundu:', { destinationId, displayName });
+            console.log(' Destination bulundu:', { destinationId, displayName });
             
-            // Eğer shouldNavigate true ise ve diğer gerekli alanlar doluysa search başlat
             if (shouldNavigate) {
-              // Default tarihler set et (bugünden itibaren 2 gün)
               const today = new Date();
               const tomorrow = new Date(today);
               tomorrow.setDate(tomorrow.getDate() + 1);
@@ -71,9 +66,8 @@ const SearchForm = forwardRef((props, ref) => {
                 checkOut: dayAfterTomorrow.toISOString().split('T')[0]
               };
               
-              console.log('🔍 Otomatik arama başlatılıyor...', updatedSearchData);
+              console.log(' Otomatik arama başlatılıyor...', updatedSearchData);
               
-              // Navigate to results page
               navigate('/results', { 
                 state: { 
                   searchData: updatedSearchData,
@@ -82,15 +76,15 @@ const SearchForm = forwardRef((props, ref) => {
               });
             }
           } else {
-            console.error('❌ Şehir bulunamadı:', cityName);
+            console.error(' Şehir bulunamadı:', cityName);
             alert('Seçilen şehir bulunamadı');
           }
         } else {
-          console.error('❌ Şehir arama sonucu bulunamadı:', cityName);
+          console.error(' Şehir arama sonucu bulunamadı:', cityName);
           alert('Seçilen şehir bulunamadı');
         }
       } catch (error) {
-        console.error('❌ Şehir arama hatası:', error);
+        console.error(' Şehir arama hatası:', error);
         alert('Şehir arama sırasında bir hata oluştu');
       } finally {
         setIsLoading(false);

@@ -1,5 +1,3 @@
-/* Simplified Web-Style Modal */
-/* Modal overlay - prevent background scrolling */
 .offer-details-modal-overlay {
   position: fixed;
   top: 0;
@@ -12,7 +10,6 @@
   justify-content: center;
   z-index: 1000;
   padding: 20px;
-  /* Prevent scroll on touch devices */
   touch-action: none;
   -webkit-overflow-scrolling: touch;
 }

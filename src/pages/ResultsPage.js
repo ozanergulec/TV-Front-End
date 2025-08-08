@@ -28,7 +28,7 @@ function ResultsPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [selectedHotel, setSelectedHotel] = useState(null);
 
-  // ✅ İlk yüklenme - sadece bir kez çalışsın
+  //  İlk yüklenme 
   useEffect(() => {
     const performInitialSearch = async () => {
       if (searchData && !searchResults && isInitialLoading) {
@@ -41,7 +41,7 @@ function ResultsPage() {
             alert('Bu bölgede otel bulunamadı');
           }
         } catch (error) {
-          console.error('❌ Arama hatası:', error);
+          console.error(' Arama hatası:', error);
           alert('Arama sırasında hata oluştu');
         } finally {
           setIsInitialLoading(false);
@@ -50,9 +50,9 @@ function ResultsPage() {
     };
 
     performInitialSearch();
-  }, []); // ✅ Boş dependency - sadece mount'ta çalışsın
+  }, []); //  Boş dependency - sadece mount'ta çalışsın
 
-  // ✅ Yeni arama yapıldığında çağrılacak fonksiyon
+  
   const handleNewSearch = useCallback(async (newSearchData) => {
     setLoading(true);
     setHotels([]);
@@ -75,14 +75,14 @@ function ResultsPage() {
         alert('Bu bölgede otel bulunamadı');
       }
     } catch (error) {
-      console.error('❌ Arama hatası:', error);
+      console.error(' Arama hatası:', error);
       alert('Arama sırasında hata oluştu');
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // ✅ Helper functions - memoize edilmiş
+  //  Helper functions 
   const extractHotelImage = useCallback((hotel, index) => {
     if (hotel.thumbnailFull) return hotel.thumbnailFull;
     if (hotel.thumbnail) return hotel.thumbnail;
@@ -122,7 +122,7 @@ function ResultsPage() {
     return '';
   }, []);
 
-  // ✅ Hotel parsing - sadece searchResults değiştiğinde çalışsın
+  //  Hotel parsing - sadece searchResults değiştiğinde çalışsın
   useEffect(() => {
     if (!searchResults) {
       setLoading(false);
@@ -144,7 +144,7 @@ function ResultsPage() {
           return Math.abs(hash % 45) / 10 + 0.5;
         };
         
-        // Koordinatları parse et
+        
         const parseCoordinates = (hotel) => {
           const lat = hotel.geolocation?.latitude || hotel.location?.latitude || null;
           const lng = hotel.geolocation?.longitude || hotel.location?.longitude || null;
@@ -181,7 +181,7 @@ function ResultsPage() {
           offerId: hotel.offers?.[0]?.offerId || null,
           checkIn: hotel.offers?.[0]?.checkIn || null,
           nights: hotel.offers?.[0]?.night || 1,
-          // ✅ Gerçek koordinatları ekle
+          
           coordinates: parseCoordinates(hotel)
         };
       });
@@ -189,7 +189,7 @@ function ResultsPage() {
       setHotels(hotelData);
       setFilteredHotels(hotelData);
       
-      // ✅ SearchData güncelleme - sadece searchId yoksa ekle
+      
       if (searchId && searchData && !searchData.searchId) {
         setSearchData(prev => ({
           ...prev,
@@ -202,13 +202,12 @@ function ResultsPage() {
     }
     
     setLoading(false);
-  }, [searchResults]); // ✅ Sadece searchResults dependency'si
+  }, [searchResults]); 
 
-  // ✅ Filtering & Sorting - memoize edilmiş
+  
   const filteredAndSortedHotels = useMemo(() => {
     let filtered = [...hotels];
 
-    // Fiyat filtresi
     if (priceRange.min !== '' || priceRange.max !== '') {
       const minPrice = priceRange.min === '' ? 0 : Number(priceRange.min);
       const maxPrice = priceRange.max === '' ? Infinity : Number(priceRange.max);
@@ -217,13 +216,10 @@ function ResultsPage() {
         hotel.price >= minPrice && hotel.price <= maxPrice
       );
     }
-
-    // Rating filtresi
     if (selectedRating > 0) {
       filtered = filtered.filter(hotel => hotel.rating >= selectedRating);
     }
 
-    // Sıralama
     switch (sortBy) {
       case 'price_low':
         filtered.sort((a, b) => a.price - b.price);
@@ -244,12 +240,11 @@ function ResultsPage() {
     return filtered;
   }, [hotels, priceRange, selectedRating, sortBy]);
 
-  // ✅ Filtered hotels'i güncelle
   useEffect(() => {
     setFilteredHotels(filteredAndSortedHotels);
   }, [filteredAndSortedHotels]);
 
-  // ✅ Helper functions
+  //  Helper functions
   const formatDate = useCallback((dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
@@ -268,13 +263,13 @@ function ResultsPage() {
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
   }, [searchData?.checkIn, searchData?.checkOut]);
 
-  // ✅ Memoize edilmiş değerler
+  //  Memoize edilmiş değerler
   const nights = useMemo(() => calculateNights(), [calculateNights]);
   const totalGuests = useMemo(() => {
     return searchData?.rooms?.reduce((sum, room) => sum + (room.adults || 0) + (room.children || 0), 0) || 2;
   }, [searchData?.rooms]);
 
-  // ✅ LOADING STATE
+  //  LOADING STATE
   if (isInitialLoading || (loading && !searchResults)) {
     return (
       <div className="results-page">
@@ -302,7 +297,7 @@ function ResultsPage() {
     );
   }
 
-  // ✅ ERROR STATE
+  //  ERROR STATE
   if (!searchData) {
     return (
       <div className="results-page">

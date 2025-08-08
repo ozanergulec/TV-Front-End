@@ -21,7 +21,7 @@ function BookingPage() {
   const [travellers, setTravellers] = useState([]);
   const [formTravellers, setFormTravellers] = useState([]);
   const [contactInfo, setContactInfo] = useState(null);
-  const [savedContactInfo, setSavedContactInfo] = useState(null); // Yeni state ekledik
+  const [savedContactInfo, setSavedContactInfo] = useState(null); 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [paymentCompleted, setPaymentCompleted] = useState(false);
@@ -31,14 +31,14 @@ function BookingPage() {
 
   // Debug log'ları
   useEffect(() => {
-    console.log('🔍 BookingPage Debug Info:');
+    console.log(' BookingPage Debug Info:');
     console.log('Hotel:', hotel);
     console.log('SearchData:', searchData);
     console.log('SelectedOffer:', selectedOffer);
     console.log('TransactionData:', transactionData);
   }, [hotel, searchData, selectedOffer, transactionData]);
 
-  // Transaction başlatma - sayfa yüklendiğinde otomatik
+  // Transaction başlatma 
   useEffect(() => {
     if (selectedOffer && !transactionData && !loading) {
       console.log('🚀 Auto-starting transaction...');
@@ -49,12 +49,11 @@ function BookingPage() {
   // Gerekli veriler yoksa ana sayfaya yönlendir
   useEffect(() => {
     if (!hotel || !searchData || !selectedOffer) {
-      console.log('❌ Missing required data, redirecting to home...');
+      console.log(' Missing required data, redirecting to home...');
       navigate('/');
     }
   }, [hotel, searchData, selectedOffer, navigate]);
 
-  // Transaction başlatma
   const beginTransaction = async () => {
     try {
       setLoading(true);
@@ -74,7 +73,7 @@ function BookingPage() {
         'tr-TR'
       );
       
-      console.log('✅ Transaction response:', response);
+      console.log(' Transaction response:', response);
       
       if (response && response.header && response.header.success) {
         const newTransactionData = {
@@ -84,37 +83,37 @@ function BookingPage() {
         };
         
         setTransactionData(newTransactionData);
-        console.log('💾 Transaction data saved:', newTransactionData);
+        console.log(' Transaction data saved:', newTransactionData);
         
-        // API'den gelen boş yolcu şablonlarını set et
+        
         if (response.body.reservationData?.travellers) {
           setTravellers(response.body.reservationData.travellers);
-          console.log('📄 Yolcu şablonları set edildi:', response.body.reservationData.travellers);
+          console.log(' Yolcu şablonları set edildi:', response.body.reservationData.travellers);
         }
       } else {
         throw new Error(response?.header?.messages?.[0]?.message || 'Transaction başlatılamadı');
       }
     } catch (err) {
-      console.error('❌ Transaction başlatma hatası:', err);
+      console.error(' Transaction başlatma hatası:', err);
       setError(err.message || 'Transaction başlatılırken bir hata oluştu');
     } finally {
       setLoading(false);
     }
   };
 
-  // Yolcu bilgilerini güncelle
+  
   const handleTravellersChange = (updatedTravellers) => {
     setFormTravellers(updatedTravellers);
     console.log('✅ Yolcu bilgileri güncellendi:', updatedTravellers);
   };
 
-  // İletişim bilgilerini güncelle
+  
   const handleContactInfoChange = (updatedContactInfo) => {
     setSavedContactInfo(updatedContactInfo); // Geçici olarak kaydet
     console.log('✅ İletişim bilgileri güncellendi:', updatedContactInfo);
   };
 
-  // Rezervasyon bilgilerini kaydet (2. adımdan 3. adıma geçerken)
+  
   const handleReservationSave = async (contactInfo) => {
     try {
       setLoading(true);
@@ -138,7 +137,7 @@ function BookingPage() {
         bookingService.formatTravellerForRequest(traveller, index + 1)
       );
       
-      console.log('📤 Formatted Travellers:', formattedTravellers);
+      console.log(' Formatted Travellers:', formattedTravellers);
       
       // Customer info'yu ilk yolcudan (lider) oluştur
       const leader = formTravellers.find(t => t.isLeader) || formTravellers[0];
@@ -169,54 +168,54 @@ function BookingPage() {
         }
       });
 
-      console.log('📤 Formatted Customer Info:', customerInfo);
-      console.log('📤 Transaction ID:', transactionData.transactionId);
+      console.log(' Formatted Customer Info:', customerInfo);
+      console.log(' Transaction ID:', transactionData.transactionId);
 
       const response = await bookingService.setReservationInfo(
         transactionData.transactionId,
         formattedTravellers,
         customerInfo,
-        '', // reservationNote
-        '' // agencyReservationNumber
+        '', 
+        '' 
       );
 
-      console.log('✅ Rezervasyon bilgileri kaydedildi:', response);
+      console.log(' Rezervasyon bilgileri kaydedildi:', response);
       
       if (response.header.success) {
         setReservationSaved(true);
         setContactInfo(contactInfo);
-        setSavedContactInfo(contactInfo); // Kalıcı olarak kaydet
+        setSavedContactInfo(contactInfo); 
         goToStep(3);
       } else {
         throw new Error(response.header.messages?.[0]?.message || 'Rezervasyon bilgileri kaydedilemedi');
       }
     } catch (err) {
-      console.error('❌ Rezervasyon kaydetme hatası:', err);
+      console.error(' Rezervasyon kaydetme hatası:', err);
       setError(err.message || 'Rezervasyon bilgileri kaydedilirken bir hata oluştu');
     } finally {
       setLoading(false);
     }
   };
 
-  // Ödeme ve commit işlemi
+  
   const handlePayment = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      console.log('🔄 Rezervasyon commit ediliyor...');
-      console.log('📊 Transaction ID:', transactionData.transactionId);
+      console.log(' Rezervasyon commit ediliyor...');
+      console.log(' Transaction ID:', transactionData.transactionId);
       
       const response = await bookingService.commitTransaction(
         transactionData.transactionId
       );
 
-      console.log('✅ Rezervasyon commit edildi:', response);
+      console.log(' Rezervasyon commit edildi:', response);
       
       if (response && response.header && response.header.success) {
         setCommitCompleted(true);
         
-        // Commit yanıtından rezervasyon numarasını al
+        
         const reservationNo = response?.body?.reservationNumber || response?.body?.encryptedReservationNumber;
 
         if (reservationNo) {
@@ -227,26 +226,24 @@ function BookingPage() {
           setReservationNumber(`RES-${randomNumber}`);
         }
         
-        // Direkt success ekranı göster
+        
         setPaymentCompleted(true);
         
-        console.log('🎉 Ödeme başarılı ekranı gösteriliyor');
-        
-        // Rezervasyon detaylarını gerçek rezervasyon numarası ile al (arka planda)
+        console.log(' Ödeme başarılı ekranı gösteriliyor');
         if (reservationNo) {
           try {
             const detailResponse = await bookingService.getReservationDetail(reservationNo);
             
-            console.log('📋 Rezervasyon detayları:', detailResponse);
+            console.log(' Rezervasyon detayları:', detailResponse);
             
             if (detailResponse && detailResponse.header && detailResponse.header.success) {
-              // Gerçek rezervasyon numarası varsa güncelle
+              
               if (detailResponse.body.reservationNumber) {
                 setReservationNumber(detailResponse.body.reservationNumber);
               }
             }
           } catch (detailError) {
-            console.log('⚠️ Rezervasyon detayları alınamadı:', detailError);
+            console.log(' Rezervasyon detayları alınamadı:', detailError);
           }
         }
         
@@ -254,7 +251,7 @@ function BookingPage() {
         throw new Error(response?.header?.messages?.[0]?.message || 'Rezervasyon commit edilemedi');
       }
     } catch (err) {
-      console.error('❌ Commit hatası:', err);
+      console.error(' Commit hatası:', err);
       setError(err.message || 'Rezervasyon tamamlanırken bir hata oluştu');
       
       // Hata durumunda da dummy olarak devam et

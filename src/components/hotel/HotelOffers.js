@@ -38,11 +38,10 @@ function HotelOffers({ hotelId, searchData, hotel }) {
       const response = await hotelDetailsService.getOffers(hotelId, searchData);
       
       if (response?.header?.success && response?.body?.offers) {
-        console.log('🔍 Raw API Response:', response);
-        console.log('🔍 Raw Offers:', response.body.offers);
-        
+        console.log(' Raw API Response:', response);
+        console.log(' Raw Offers:', response.body.offers);
         const formattedOffers = hotelDetailsService.formatOffers(response);
-        console.log('✅ Formatlanmış teklifler:', formattedOffers);
+        console.log(' Formatlanmış teklifler:', formattedOffers);
         setOffers(formattedOffers);
       } else {
         console.error('❌ Teklifler alınamadı:', response);
@@ -201,21 +200,19 @@ function HotelOffers({ hotelId, searchData, hotel }) {
     );
   };
 
-  // Modal açma fonksiyonu
   const openDetailsModal = (offerId) => {
     setSelectedOfferId(offerId);
     setIsModalOpen(true);
   };
 
-  // Modal kapatma fonksiyonu
   const closeDetailsModal = () => {
     setIsModalOpen(false);
     setSelectedOfferId(null);
   };
 
-  // Teklifi seç fonksiyonu
+  
   const handleSelectOffer = (offer) => {
-    console.log('🎯 Teklif seçildi:', offer);
+    console.log(' Teklif seçildi:', offer);
     
     navigate('/booking', { 
       state: { 

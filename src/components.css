@@ -1,9 +1,8 @@
-/* Reset ve Base Styles */
 * {
   box-sizing: border-box;
 }
 
-/* Header ile uyumlu Search Bar */
+/*  Search Bar */
 .booking-search {
   max-width: 1200px;
   margin: 0 auto;
@@ -271,7 +270,7 @@
   font-size: 12px;
 }
 
-/* Header uyumlu Counter */
+/* Counter */
 .guest-counter {
   display: flex;
   align-items: center;
@@ -345,7 +344,7 @@
   gap: 8px;
 }
 
-/* Mevcut .age-select-small stilini güncelle */
+/* Age Select */
 .age-select-small {
   padding: 8px 10px !important;
   border: 2px solid #0a825a !important;
@@ -393,7 +392,7 @@
   color: #0a825a !important;
 }
 
-/* Çocuk yaşları label'ını da güçlendir */
+
 .child-ages-label {
   font-size: 14px !important;
   color: #0a825a !important;
@@ -401,7 +400,7 @@
   margin-bottom: 4px !important;
 }
 
-/* Çocuk yaşları container'ını da düzelt */
+
 .child-ages-row {
   display: flex !important;
   justify-content: space-between !important;
@@ -491,7 +490,7 @@
   gap: 6px;
 }
 
-/* Mevcut advanced-grid select stilini güncelle */
+
 .advanced-grid select {
   padding: 10px 12px;
   border: 2px solid #0a825a;
@@ -518,7 +517,7 @@
   box-shadow: 0 0 0 3px rgba(10, 130, 90, 0.2);
 }
 
-/* Option stillerini ekle */
+/* Option stilleri */
 .advanced-grid select option {
   padding: 8px 12px !important;
   background: white !important;
@@ -539,7 +538,7 @@
   color: #0a825a !important;
 }
 
-/* Label'ları da daha belirgin yap */
+
 .advanced-grid label {
   font-size: 14px !important;
   font-weight: 600 !important;
@@ -548,7 +547,7 @@
   display: block !important;
 }
 
-/* Date input'lar için özel stil ekle */
+
 .date-field input[type="date"] {
   padding: 14px 18px !important;
   border: 2px solid transparent !important;
@@ -563,12 +562,12 @@
   height: 50px !important;
   line-height: 1.4 !important;
   
-  /* Date picker ikonunu sağda tut ama tüm alan tıklanabilir yap */
+
   -webkit-appearance: none !important;
   -moz-appearance: none !important;
   appearance: none !important;
   
-  /* Custom date icon ekle */
+
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23666'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'/%3e%3c/svg%3e") !important;
   background-repeat: no-repeat !important;
   background-position: right 12px center !important;
@@ -588,7 +587,7 @@
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
 }
 
-/* Webkit tarayıcılar için date picker butonunu göster */
+/* Webkit tarayıcılar için date picker butonu */
 .date-field input[type="date"]::-webkit-calendar-picker-indicator {
   position: absolute !important;
   top: 0 !important;

@@ -1,28 +1,26 @@
 import apiService from './api';
 
 class HotelDetailsService {
-  // Otel detay bilgilerini al
   async getProductInfo(productId, productType = 2, ownerProvider = 2, culture = "en-US") {
     const request = {
       productType: productType,
-      ownerProvider: ownerProvider, // 2 olarak değiştirildi
+      ownerProvider: ownerProvider, 
       product: productId,
       culture: culture
     };
     
     try {
-      console.log('🏨 Getting hotel product info for ID:', productId);
-      console.log('📤 Request:', JSON.stringify(request, null, 2));
+      console.log(' Getting hotel product info for ID:', productId);
+      console.log(' Request:', JSON.stringify(request, null, 2));
       const response = await apiService.post('/HotelProduct/getProductInfo', request);
-      console.log('📥 Hotel product info response:', JSON.stringify(response, null, 2));
+      console.log(' Hotel product info response:', JSON.stringify(response, null, 2));
       return response;
     } catch (error) {
-      console.error('❌ Get product info failed:', error);
+      console.error(' Get product info failed:', error);
       throw error;
     }
   }
 
-  // Otel tekliflerini al
   async getOffers(productId, searchData, culture = "tr-TR") {
     const request = {
       searchId: searchData?.searchId || '',
@@ -35,10 +33,10 @@ class HotelDetailsService {
     };
     
     try {
-      console.log('🎯 Getting offers for hotel ID:', productId);
-      console.log('📤 GetOffers Request:', JSON.stringify(request, null, 2));
+      console.log(' Getting offers for hotel ID:', productId);
+      console.log(' GetOffers Request:', JSON.stringify(request, null, 2));
       
-      // Zorunlu alanları kontrol et
+      // Zorunlu alan kontrol 
       if (!request.searchId) {
         throw new Error('searchId is required for GetOffers');
       }
@@ -48,26 +46,26 @@ class HotelDetailsService {
       }
       
       const response = await apiService.post('/GetOffers', request);
-      console.log('📥 GetOffers Response:', JSON.stringify(response, null, 2));
+      console.log(' GetOffers Response:', JSON.stringify(response, null, 2));
       return response;
     } catch (error) {
-      console.error('❌ Get offers failed:', error);
+      console.error(' Get offers failed:', error);
       throw error;
     }
   }
 
-  // Teklifleri formatla
+  // Helper functions
   formatOffers(offersResponse) {
     if (!offersResponse?.body?.offers) {
       return [];
     }
     
-    console.log('🔍 Formatting offers:', offersResponse.body.offers);
+    console.log(' Formatting offers:', offersResponse.body.offers);
     
     return offersResponse.body.offers.map(offer => {
-      console.log('🔍 Processing offer:', offer);
-      console.log('🔍 Offer price:', offer.price);
-      console.log('🔍 Offer rooms:', offer.rooms);
+      console.log(' Processing offer:', offer);
+      console.log(' Offer price:', offer.price);
+      console.log(' Offer rooms:', offer.rooms);
       
       const formattedOffer = {
         id: offer.offerId,
@@ -87,12 +85,11 @@ class HotelDetailsService {
         provider: offer.provider
       };
       
-      console.log('�� Formatted offer:', formattedOffer);
+      console.log(' Formatted offer:', formattedOffer);
       return formattedOffer;
     });
   }
 
-  // Odaları formatla
   formatRooms(rooms) {
     console.log('🔍 Formatting rooms:', rooms);
     
@@ -115,12 +112,11 @@ class HotelDetailsService {
         partNo: room.partNo || 1
       };
       
-      console.log('🔍 Formatted room:', formattedRoom);
+      console.log(' Formatted room:', formattedRoom);
       return formattedRoom;
     });
   }
 
-  // Check-out tarihini hesapla
   calculateCheckOut(checkIn, nights) {
     if (!checkIn || !nights) return null;
     
@@ -131,13 +127,12 @@ class HotelDetailsService {
     return checkOutDate.toISOString();
   }
 
-  // Otel fotoğraflarını organize et - NULL SAFE
   organizeHotelMedia(hotel) {
     // Seasons null olabilir, bu durumda fallback kullan
     const mediaFiles = hotel.seasons?.[0]?.mediaFiles || [];
-    const images = mediaFiles.filter(media => media.fileType === 1); // 1 = image
+    const images = mediaFiles.filter(media => media.fileType === 1); 
     
-    // Varsayılan resim yolu
+    // Varsayılan resim 
     const defaultImage = '/images/destinations/istanbul.jpg';
     
     return {
@@ -148,16 +143,16 @@ class HotelDetailsService {
 
   // Otel olanaklarını kategorilere ayır - NULL SAFE
   organizeFacilities(hotel) {
-    console.log('🔧 Organizing facilities for hotel:', hotel.name);
-    console.log('🔧 Seasons data:', hotel.seasons);
+    console.log(' Organizing facilities for hotel:', hotel.name);
+    console.log(' Seasons data:', hotel.seasons);
     
     // Seasons null olabilir
     const facilityCategories = hotel.seasons?.[0]?.facilityCategories || [];
     console.log('🔧 Facility categories found:', facilityCategories.length);
     
     if (facilityCategories.length === 0) {
-      console.log('⚠️ No facility categories found, creating mock data');
-      // Mock data oluştur
+      console.log(' No facility categories found, creating mock data');
+      
       return [
         {
           name: 'Genel',
@@ -180,7 +175,7 @@ class HotelDetailsService {
     }));
   }
 
-  // Otel bilgilerini formatla - NULL SAFE
+  
   formatHotelInfo(hotel) {
     return {
       id: hotel.id || 'N/A',
@@ -210,7 +205,7 @@ class HotelDetailsService {
       facilities: this.organizeFacilities(hotel),
       themes: hotel.themes || [],
       provider: hotel.provider || 'Bilinmeyen Provider',
-      // Koordinatlar için özel field
+      
       coordinates: {
         lat: hotel.geolocation?.latitude || hotel.location?.latitude || null,
         lng: hotel.geolocation?.longitude || hotel.location?.longitude || null
@@ -218,19 +213,16 @@ class HotelDetailsService {
     };
   }
 
-  // Tam adres oluştur - NULL SAFE
   buildFullAddress(address) {
     if (!address) return 'Adres bilgisi mevcut değil';
     
     let fullAddress = '';
     
-    // Street number ve street birleştir
     if (address.streetNumber) fullAddress += address.streetNumber;
     if (address.street) {
       fullAddress += (fullAddress ? ' ' : '') + address.street;
     }
     
-    // Address lines ekle
     if (address.addressLines && address.addressLines.length > 0) {
       const addressLinesText = address.addressLines.join(', ');
       fullAddress += (fullAddress ? ', ' : '') + addressLinesText;
@@ -275,7 +267,6 @@ class HotelDetailsService {
     return stars > 0 ? '★'.repeat(Math.min(stars, 5)) : 'Kategori Belirtilmemiş';
   }
 
-  // Teklif detaylarını al
   async getOfferDetails(offerIds, currency = "EUR") {
     const request = {
       offerIds: Array.isArray(offerIds) ? offerIds : [offerIds],
@@ -284,36 +275,35 @@ class HotelDetailsService {
     };
     
     try {
-      console.log('🔍 Getting offer details for IDs:', offerIds);
-      console.log('📤 GetOfferDetails Request:', JSON.stringify(request, null, 2));
+      console.log(' Getting offer details for IDs:', offerIds);
+      console.log(' GetOfferDetails Request:', JSON.stringify(request, null, 2));
       const response = await apiService.post('/GetOfferDetails/GetOfferDetails', request);
-      console.log('📥 GetOfferDetails Response:', JSON.stringify(response, null, 2));
+      console.log(' GetOfferDetails Response:', JSON.stringify(response, null, 2));
       return response;
     } catch (error) {
-      console.error('❌ Get offer details failed:', error);
+      console.error(' Get offer details failed:', error);
       throw error;
     }
   }
 
-  // Teklif detaylarını formatla
   formatOfferDetails(detailsResponse) {
-    console.log('🔍 formatOfferDetails called with:', detailsResponse);
+    console.log(' formatOfferDetails called with:', detailsResponse);
     
     if (!detailsResponse?.body?.offerDetails) {
-      console.log('❌ No offerDetails found in response');
+      console.log(' No offerDetails found in response');
       return null;
     }
     
-    console.log('🔍 offerDetails array:', detailsResponse.body.offerDetails);
+    console.log(' offerDetails array:', detailsResponse.body.offerDetails);
     
-    const detail = detailsResponse.body.offerDetails[0]; // İlk detayı al
+    const detail = detailsResponse.body.offerDetails[0]; 
     
     if (!detail) {
-      console.log('❌ No detail found in offerDetails array');
+      console.log(' No detail found in offerDetails array');
       return null;
     }
     
-    console.log('🔍 Processing detail:', detail);
+    console.log(' Processing detail:', detail);
     
     const formatted = {
       id: detail.offerId,
@@ -337,7 +327,7 @@ class HotelDetailsService {
       reservableInfo: detail.reservableInfo
     };
     
-    console.log('✅ Formatted offer details:', formatted);
+    console.log(' Formatted offer details:', formatted);
     return formatted;
   }
 }

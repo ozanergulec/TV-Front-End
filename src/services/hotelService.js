@@ -2,11 +2,11 @@ import apiService from './api';
 
 class HotelService {
   constructor() {
-    this.checkInDatesCache = new Map(); // Cache ekleyelim
-    this.cacheExpiry = 5 * 60 * 1000; // 5 dakika
+    this.checkInDatesCache = new Map(); 
+    this.cacheExpiry = 5 * 60 * 1000; 
   }
 
-  // Destinasyon autocomplete
+  
   async getArrivalAutocomplete(searchText) {
     const request = {
       ProductType: 2,
@@ -24,7 +24,7 @@ class HotelService {
     }
   }
 
-  // ✅ Düzeltilmiş check-in dates - API'nin beklediği format
+  
   async getCheckInDates(destinationId) {
     const cacheKey = `checkin_${destinationId}`;
     const cached = this.checkInDatesCache.get(cacheKey);
@@ -36,7 +36,7 @@ class HotelService {
     }
     
     try {
-      // ✅ API'nin beklediği format
+      
       const request = {
         productType: 2,
         includeSubLocations: true,
@@ -49,15 +49,15 @@ class HotelService {
         ]
       };
       
-      console.log('📅 Check-in dates request:', request);
+      console.log(' Check-in dates request:', request);
       
       const response = await apiService.post('/HotelProduct/get-checkin-dates', request);
       
-      console.log('📅 RAW Check-in dates response:', response);
+      console.log(' RAW Check-in dates response:', response);
       
       if (response && response.body && response.body.dates) {
         const dates = response.body.dates;
-        console.log('✅ Check-in dates bulundu:', dates.length, 'tarih');
+        console.log(' Check-in dates bulundu:', dates.length, 'tarih');
         
         // Cache'e kaydet
         this.checkInDatesCache.set(cacheKey, {
@@ -75,25 +75,25 @@ class HotelService {
     }
   }
 
-  // ✅ Optimized price search - cache check düzeltildi
+  //  Optimized price search 
   async priceSearch(searchData) {
     const nights = this.calculateNights(searchData.checkIn, searchData.checkOut);
     
     let arrivalLocations = [];
     
     if (searchData.destination) {
-      console.log('🎯 Destinasyon ID olarak geldi:', searchData.destination);
+      console.log(' Destinasyon ID olarak geldi:', searchData.destination);
       
       // Check-in dates'i kontrol et (cache mekanizması ile)
-      console.log('📅 Check-in dates kontrol ediliyor...');
+      console.log(' Check-in dates kontrol ediliyor...');
       const availableDates = await this.getCheckInDates(searchData.destination);
       
       if (availableDates.length === 0) {
-        console.log('❌ Bu destinasyonda uygun tarih bulunamadı');
+        console.log(' Bu destinasyonda uygun tarih bulunamadı');
         throw new Error('Bu destinasyonda seçilen tarihlerde otel bulunamadı');
       }
       
-      console.log('✅ Check-in dates onaylandı, price search devam ediyor...');
+      console.log(' Check-in dates onaylandı, price search devam ediyor...');
       
       arrivalLocations = [{
         id: searchData.destination,
@@ -101,7 +101,7 @@ class HotelService {
       }];
     }
 
-    // ÇOK ODALI ROOM CRITERIA OLUŞTUR
+    // ÇOK ODALI ROOM CRITERIA 
     const roomCriteria = searchData.rooms.map(room => ({
       adult: parseInt(room.adults),
       childAges: room.children > 0 ? room.childAges : []
@@ -122,8 +122,8 @@ class HotelService {
       culture: "en-US"
     };
     
-    console.log('📤 Çok odalı price search request:', JSON.stringify(request, null, 2));
-    console.log('🏠 Room Criteria Details:');
+    console.log(' Çok odalı price search request:', JSON.stringify(request, null, 2));
+    console.log(' Room Criteria Details:');
     roomCriteria.forEach((room, index) => {
       console.log(`  Oda ${index + 1}: ${room.adult} yetişkin, ${room.childAges.length} çocuk`, 
                  room.childAges.length > 0 ? `(Yaşlar: ${room.childAges.join(', ')})` : '');
@@ -131,7 +131,7 @@ class HotelService {
     
     try {
       const response = await apiService.post('/HotelProduct/price-search', request);
-      console.log('📥 Price search response:', JSON.stringify(response, null, 2));
+      console.log(' Price search response:', JSON.stringify(response, null, 2));
       return response;
     } catch (error) {
       console.error('Price search failed:', error);
@@ -139,18 +139,17 @@ class HotelService {
     }
   }
 
-  // Cache temizleme
   clearCache() {
     this.checkInDatesCache.clear();
   }
 
-  // ✅ YENİ LOOKUP SERVICE METHODLARI
+  //  YENİ LOOKUP SERVICE METHODLARI
   async getCurrencies() {
     try {
       const response = await apiService.request('/Lookup/currencies', {
         method: 'GET'
       });
-      console.log('💱 Currencies response:', response);
+      console.log(' Currencies response:', response);
       
       if (response && response.body && response.body.currencies) {
         return response.body.currencies;
@@ -167,7 +166,7 @@ class HotelService {
       const response = await apiService.request('/Lookup/nationalities', {
         method: 'GET'
       });
-      console.log('🌍 Nationalities response:', response);
+      console.log(' Nationalities response:', response);
       
       if (response && response.body && response.body.nationalities) {
         return response.body.nationalities;

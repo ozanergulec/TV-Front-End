@@ -27,7 +27,6 @@ const COUNTRY_CODES = [
   { code: '+43', country: 'AT', name: 'Avusturya' }
 ];
 
-// TC Kimlik doğrulama algoritması
 const validateTCKimlik = (kimlik) => {
   if (!/^\d{11}$/.test(kimlik)) return false;
   
@@ -89,7 +88,6 @@ function TravellerForm({ travellers, onTravellersChange, onNext }) {
     }
   }, [travellers]);
 
-  // Tarih formatı güvenli dönüşüm
   const formatDateForInput = (dateString) => {
     if (!dateString) return '';
     
@@ -113,7 +111,6 @@ function TravellerForm({ travellers, onTravellersChange, onNext }) {
   const handleFieldChange = (travellerIndex, field, value) => {
     const newFormData = [...formData];
     
-    // Özel işlemler
     if (field === 'address.phone') {
       // Telefon numarasını temizle (sadece rakam, boşluk, - ve () karakterleri)
       newFormData[travellerIndex].address.phone = value.replace(/[^\d\s\-\(\)]/g, '');

@@ -11,7 +11,7 @@ function HotelMap({ hotels, selectedHotel, onHotelSelect, searchData }) {
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const navigate = useNavigate();
   
-  // ✅ Global InfoWindow referansı - sadece bir tane olacak
+  //  Global InfoWindow referansı - sadece bir tane olacak
   const infoWindowRef = useRef(null);
 
   const API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
@@ -52,7 +52,7 @@ function HotelMap({ hotels, selectedHotel, onHotelSelect, searchData }) {
       // Ortalama merkezi bul
       const avgLat = validHotelCoords.reduce((sum, c) => sum + c.lat, 0) / validHotelCoords.length;
       const avgLng = validHotelCoords.reduce((sum, c) => sum + c.lng, 0) / validHotelCoords.length;
-      return { lat: avgLat, lng: avgLng, zoom: 10 }; // Zoom'u isteğe göre ayarlayabilirsin
+      return { lat: avgLat, lng: avgLng, zoom: 10 }; 
     }
 
     // Aksi halde eski davranış
@@ -103,13 +103,13 @@ function HotelMap({ hotels, selectedHotel, onHotelSelect, searchData }) {
       ]
     });
 
-    // ✅ Global InfoWindow oluştur
+    // Global InfoWindow oluştur
     infoWindowRef.current = new window.google.maps.InfoWindow();
     
     setMap(mapInstance);
   }, [isMapLoaded, searchData]);
 
-  // ✅ InfoWindow içeriğini oluştur
+  //  InfoWindow içeriğini oluştur
   const createInfoWindowContent = (hotel) => {
     const uniqueId = generateUniqueId();
     const imageId = `${uniqueId}-image`; // Resim için ayrı ID
@@ -141,7 +141,7 @@ function HotelMap({ hotels, selectedHotel, onHotelSelect, searchData }) {
     `;
   };
 
-  // ✅ InfoWindow açma fonksiyonu
+  //  InfoWindow açma fonksiyonu
   const openInfoWindow = (hotel, marker) => {
     if (!infoWindowRef.current) return;
     
@@ -171,20 +171,15 @@ function HotelMap({ hotels, selectedHotel, onHotelSelect, searchData }) {
     }, 100);
   };
 
-  // Otellerin marker'larını haritaya ekle
+
   useEffect(() => {
     if (!map || !hotels.length || !infoWindowRef.current) return;
-
-    // ✅ Eski marker'ları tamamen temizle
     markers.forEach(marker => {
-      // Event listener'ları temizle
       window.google.maps.event.clearInstanceListeners(marker);
       marker.setMap(null);
     });
 
-    // ✅ InfoWindow'u kapat
     infoWindowRef.current.close();
-
     const newMarkers = [];
     const bounds = new window.google.maps.LatLngBounds();
 
@@ -212,7 +207,7 @@ function HotelMap({ hotels, selectedHotel, onHotelSelect, searchData }) {
         zIndex: isSelected ? 1000 : 100
       });
 
-      // ✅ Sadece tek bir click listener ekle
+      
       marker.addListener('click', () => {
         openInfoWindow(hotel, marker);
         if (onHotelSelect) {
@@ -220,20 +215,17 @@ function HotelMap({ hotels, selectedHotel, onHotelSelect, searchData }) {
         }
       });
 
-      // Hotel ID'sini marker'a ekle
       marker.hotelId = hotel.id;
       newMarkers.push(marker);
       bounds.extend(position);
     });
-
-    // ✅ InfoWindow kapatıldığında seçimi kaldır
     infoWindowRef.current.addListener('closeclick', () => {
       if (onHotelSelect) {
         onHotelSelect(null);
       }
     });
 
-    // Haritayı tüm marker'ları içerecek şekilde ayarla - sadece ilk yüklemede
+    
     if (hotels.length > 0 && isInitialLoad) {
       map.fitBounds(bounds);
       const listener = window.google.maps.event.addListener(map, 'idle', () => {
@@ -254,7 +246,7 @@ function HotelMap({ hotels, selectedHotel, onHotelSelect, searchData }) {
     setMarkers(newMarkers);
   }, [map, hotels, selectedHotel, navigate, searchData, isInitialLoad]);
 
-  // ✅ Seçilen otele geçiş
+  //  Seçilen otele geçiş
   useEffect(() => {
     if (!map || !selectedHotel || !markers.length || isInitialLoad || !infoWindowRef.current) return;
 
@@ -276,7 +268,7 @@ function HotelMap({ hotels, selectedHotel, onHotelSelect, searchData }) {
           map.setZoom(MAX_ZOOM_FOR_SELECTION);
         }
         
-        // ✅ InfoWindow'u aç
+        //  InfoWindow'u aç
         setTimeout(() => {
           openInfoWindow(selectedHotel, selectedMarker);
         }, 150);
@@ -284,21 +276,21 @@ function HotelMap({ hotels, selectedHotel, onHotelSelect, searchData }) {
     }
   }, [selectedHotel, map, markers, navigate, isInitialLoad]);
 
-  // Daha gerçekçi konum oluşturma fonksiyonu
+  
   const generateHotelPosition = (hotel, index, mapCenter) => {
     const baseLat = mapCenter.lat;
     const baseLng = mapCenter.lng;
     
-    // Hotel ID'sine göre deterministic konum oluştur
+    
     const hash = hotel.id ? hashCode(hotel.id.toString()) : index;
     
-    // Daha geniş alan için offset'i artır
-    const maxOffset = 0.01; // ~1.1 km
+   
+    const maxOffset = 0.01; 
     const latOffset = ((hash % 200) - 100) * maxOffset / 100;
     const lngOffset = ((Math.floor(hash / 200) % 200) - 100) * maxOffset / 100;
     
-    // Mesafe bilgisini de kullan
-    const distanceMultiplier = Math.min(hotel.distance / 10, 1); // 0-1 arasında
+    
+    const distanceMultiplier = Math.min(hotel.distance / 10, 1); 
     const adjustedLatOffset = latOffset * (0.5 + distanceMultiplier);
     const adjustedLngOffset = lngOffset * (0.5 + distanceMultiplier);
     
@@ -308,18 +300,18 @@ function HotelMap({ hotels, selectedHotel, onHotelSelect, searchData }) {
     };
   };
 
-  // String hash fonksiyonu
+  
   const hashCode = (str) => {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i);
       hash = ((hash << 5) - hash) + char;
-      hash = hash & hash; // 32bit integer'a dönüştür
+      hash = hash & hash; 
     }
     return hash;
   };
 
-  // Otel detay sayfasına yönlendirme fonksiyonu
+  
   const navigateToHotelDetail = (hotel) => {
     navigate(`/hotel/${hotel.id}`, {
       state: {
@@ -329,7 +321,6 @@ function HotelMap({ hotels, selectedHotel, onHotelSelect, searchData }) {
     });
   };
 
-  // Global click listener için unique ID oluşturma
   const generateUniqueId = () => {
     return 'hotel-' + Math.random().toString(36).substr(2, 9);
   };
