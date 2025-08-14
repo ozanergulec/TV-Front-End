@@ -35,30 +35,30 @@ Room for Sprint is built with modern DevOps principles:
 Users can quickly search for hotels in their desired city and set date and guest preferences.
 
 <p>
-  <img src="public/images/Screenshot_1.png" alt="Search Hotels" width="1000"  />
+  <img src="./public/images/Screenshot_1.png" alt="Search Hotels" width="1000"  />
 </p>
 
 **Browse & Filter Results:**  
 Filter hotels by price and rating, and sort by recommendations or other criteria.
 
 <p>
-  <img src="public/images/Screenshot_3.png" alt="Browse Hotels" width="1000" />
+  <img src="./public/images/Screenshot_3.png" alt="Browse Hotels" width="1000" />
 <p>
 
 **Hotel Details:**  
 View hotel photos, amenities, and location. 
 
 </p>
-<img src="public/images/Screenshot_6.png" alt="Filter Hotels" width="500" height="400" />
-<img src="public/images/Screenshot_8.png" alt="Hotel Details" width="500" height="400"/>
+<img src="./public/images/Screenshot_6.png" alt="Filter Hotels" width="500" height="400" />
+<img src="./public/images/Screenshot_8.png" alt="Hotel Details" width="500" height="400"/>
 </p>
 
 **Booking Steps:** 
 Make bookings with a clear summary and multi-step form.
 
 </p>
- <img src="public/images/Screenshot_12.png" alt="Hotel Amenities" width="500" height="400" />
- <img src="public/images/Screenshot_18.png" alt="Booking Steps" width="500" height="400" />
+ <img src="./public/images/Screenshot_12.png" alt="Hotel Amenities" width="500" height="400" />
+ <img src="./public/images/Screenshot_18.png" alt="Booking Steps" width="500" height="400" />
 </p>
 
 ## Technologies Used
