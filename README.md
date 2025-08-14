@@ -38,7 +38,6 @@ Room for Sprint is built with modern DevOps principles:
   </tr>
   <tr>
     <td><img src="./public/images/Screenshot_1.png" alt="Search Hotels" width="300"></td>
-    <td></td>
   </tr>
 
   <tr>
@@ -47,7 +46,6 @@ Room for Sprint is built with modern DevOps principles:
   </tr>
   <tr>
     <td><img src="./public/images/Screenshot_3.png" alt="Browse Hotels" width="300"></td>
-    <td></td>
   </tr>
 
   <tr>
