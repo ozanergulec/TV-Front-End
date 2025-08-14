@@ -1,70 +1,85 @@
-# Getting Started with Create React App
+# Room for Sprint
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Welcome to **Room for Sprint** — an internship project designed to help you discover hotels offering the best deals with a fast and modern web experience. This platform provides users with powerful search, filtering, and booking capabilities. The project also utilizes a robust backend infrastructure, including Redis caching and Docker-based deployment pipelines.
 
-## Available Scripts
+## Project Overview
 
-In the project directory, you can run:
+Room for Sprint is a hotel listing and reservation web application. The goal is to allow users to quickly find hotels in their desired city, compare prices and offers, view rich hotel details, and book rooms easily.
 
-### `npm start`
+## Key Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Advanced Hotel Search:** Search hotels by city, check-in/out dates, and guest/room details.  
+- **Filtering & Sorting:** Refine hotel results using price ranges, ratings, and recommendations.
+- **Hotel Detail Pages:** Explore hotel features, locations, and photo galleries.
+- **Booking Flow:** Step-by-step reservation including guest info, contact details, and payment summary.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Redis Integration
 
-### `npm test`
+To ensure a fast and scalable user experience, Room for Sprint leverages **Redis**:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- **Offers Caching:** Hotel offers are cached in Redis to provide instant access to deals and minimize backend load.
+- **Price Search:** Price queries are optimized using Redis for rapid filtering and comparison.
+- **Session Data:** User session and state management are handled efficiently.
 
-### `npm run build`
+### CI/CD Pipeline & Docker
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Room for Sprint is built with modern DevOps principles:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- **Continuous Integration/Delivery:** Automated pipelines are set up for testing and deployment. Each change is validated and pushed seamlessly.
+- **Dockerized Environment:** The entire project runs inside Docker containers, ensuring consistency across development, staging, and production.
+- **Docker Hub:** Images are published to Docker Hub for easy distribution and deployment.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### UI Screenshots
 
-### `npm run eject`
+**Search Hotels:**  
+Users can quickly search for hotels in their desired city and set date and guest preferences.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+<p>
+  <img src="public/images/Screenshot_1.png" alt="Search Hotels" width="1000"  />
+</p>
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+**Browse & Filter Results:**  
+Filter hotels by price and rating, and sort by recommendations or other criteria.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+<p>
+  <img src="public/images/Screenshot_3.png" alt="Browse Hotels" width="1000" />
+<p>
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+**Hotel Details:**  
+View hotel photos, amenities, and location. 
 
-## Learn More
+</p>
+<img src="public/images/Screenshot_6.png" alt="Filter Hotels" width="500" height="400" />
+<img src="public/images/Screenshot_8.png" alt="Hotel Details" width="500" height="400"/>
+</p>
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+**Booking Steps:** 
+Make bookings with a clear summary and multi-step form.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+</p>
+ <img src="public/images/Screenshot_12.png" alt="Hotel Amenities" width="500" height="400" />
+ <img src="public/images/Screenshot_18.png" alt="Booking Steps" width="500" height="400" />
+</p>
 
-### Code Splitting
+## Technologies Used
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- **Frontend:** React(JavaScript), CSS, HTML
+- **Backend:** C# .NET, Redis for caching
+- **DevOps:** Docker, Docker Hub, CI/CD pipelines
 
-### Analyzing the Bundle Size
+## Getting Started
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/ozanergulec/TV-Front-End.git
+   ```
+2. **Start with Docker Compose:**  
+   The project includes Docker configuration for easy setup.  
+   ```bash
+   docker-compose up --build
+   ```
+3. **Environment Variables:**  
+   Set up Redis connection and other required variables in your `.env` file.
+4. **Access the app:**  
+   Open your browser at the configured local port.
 
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
