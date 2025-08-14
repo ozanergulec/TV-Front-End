@@ -49,16 +49,16 @@ Filter hotels by price and rating, and sort by recommendations or other criteria
 View hotel photos, amenities, and location. 
 
 </p>
-<img src="./public/images/Screenshot_6.png" alt="Filter Hotels" width="500" height="400" />
-<img src="./public/images/Screenshot_8.png" alt="Hotel Details" width="500" height="400"/>
+<img src="./public/images/Screenshot_6.png" alt="Filter Hotels" width="400" height="400" />
+<img src="./public/images/Screenshot_8.png" alt="Hotel Details" width="400" height="400"/>
 </p>
 
 **Booking Steps:** 
 Make bookings with a clear summary and multi-step form.
 
 </p>
- <img src="./public/images/Screenshot_12.png" alt="Hotel Amenities" width="500" height="400" />
- <img src="./public/images/Screenshot_18.png" alt="Booking Steps" width="500" height="400" />
+ <img src="./public/images/Screenshot_12.png" alt="Hotel Amenities" width="400" height="300" />
+ <img src="./public/images/Screenshot_18.png" alt="Booking Steps" width="400" height="300" />
 </p>
 
 ## Technologies Used
